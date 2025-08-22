@@ -1,9 +1,6 @@
 {
     "name": "{{ cookiecutter.project_name }}",
     "image": "mcr.microsoft.com/devcontainers/python:{{ cookiecutter.python_version }}-bookworm",
-    "features": {
-        "ghcr.io/astral-sh/uv-devcontainer-features/uv:latest": {}
-    },
     "customizations": {
         "vscode": {
             "extensions": [
@@ -18,5 +15,5 @@
         }
     },
     "forwardPorts": [8888],
-    "postCreateCommand": "uv pip install -e ."
+    "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && source ~/.cargo/env && uv pip install -e ."
 }
