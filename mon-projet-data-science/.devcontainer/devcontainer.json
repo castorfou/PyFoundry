@@ -1,9 +1,6 @@
 {
-    "name": "{{ cookiecutter.project_name }}",
-    "image": "mcr.microsoft.com/devcontainers/python:{{ cookiecutter.python_version }}-bookworm",
-    "features": {
-        "ghcr.io/astral-sh/uv-devcontainer-features/uv:latest": {}
-    },
+    "name": "Mon Projet Data Science",
+    "image": "mcr.microsoft.com/devcontainers/python:3.11-bookworm",
     "customizations": {
         "vscode": {
             "extensions": [

@@ -1,0 +1,16 @@
+{
+  "template": "/home/guillaume/git/PyFoundry",
+  "commit": "d85a7f28e5fa23ab9044148766da0044f77425bc",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "Mon Projet Data Science",
+      "project_slug": "mon-projet-data-science",
+      "description": "Description de votre projet de Data Science",
+      "python_version": "3.11",
+      "_template": "/home/guillaume/git/PyFoundry",
+      "_commit": "d85a7f28e5fa23ab9044148766da0044f77425bc"
+    }
+  },
+  "directory": null
+}
