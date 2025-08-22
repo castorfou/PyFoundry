@@ -1,0 +1,46 @@
+site_name: PyFoundry Template
+site_description: Template Cookiecutter de qualité industrielle pour projets Data Science Python
+site_url: https://guillaume.github.io/PyFoundry
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - toc.follow
+
+nav:
+  - Accueil: index.md
+  - Guide Utilisateur:
+    - Installation: user/installation.md
+    - Utilisation: user/usage.md
+    - Structure: user/structure.md
+  - Guide Développeur:
+    - Architecture: dev/architecture.md
+    - Contribution: dev/contributing.md
+    - Roadmap: dev/roadmap.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.details
+  - pymdownx.superfences
+  - toc:
+      permalink: true

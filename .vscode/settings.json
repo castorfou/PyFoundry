@@ -1,0 +1,13 @@
+{
+    "python.defaultInterpreterPath": "~/anaconda3/envs/pyfoundry/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.profiles.linux": {
+        "zsh": {
+            "path": "zsh",
+            "args": ["-c", "conda activate pyfoundry && exec zsh"]
+        }
+    },
+    "terminal.integrated.shellIntegration.enabled": true,
+    "python.terminal.activateEnvInCurrentTerminal": true
+}

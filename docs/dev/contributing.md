@@ -1,0 +1,225 @@
+# Guide de contribution
+
+## Configuration de développement
+
+### Pré-requis
+- Python 3.11+
+- [uv](https://github.com/astral-sh/uv)
+- [cruft](https://cruft.github.io/cruft/) 
+- Git
+
+### Setup initial
+```bash
+# Cloner le dépôt
+git clone https://github.com/username/PyFoundry.git
+cd PyFoundry
+
+# Installer les dépendances de développement
+uv pip install -e ".[dev]"
+
+# Installer les hooks pre-commit (quand disponibles)
+pre-commit install
+```
+
+### Environnement de test
+```bash
+# Générer un projet test
+cruft create . --no-input
+
+# Tester le projet généré
+cd mon-projet-data-science
+uv pip install -e .
+```
+
+## Workflow de développement
+
+### Structure des contributions
+
+```
+PyFoundry/
+├── {{ cookiecutter.project_slug }}/     # Template du projet généré
+├── docs/                                 # Documentation (cette section)
+├── tests/                                # Tests du template
+├── hooks/                                # Hooks Cookiecutter
+├── cookiecutter.json                    # Configuration du template
+└── mkdocs.yml                           # Configuration documentation
+```
+
+### Cycle de développement
+
+1. **Issue/Feature** : Créer ou prendre une issue GitHub
+2. **Branche** : `git checkout -b feature/nom-feature`
+3. **Développement** : Modifier le template
+4. **Test** : Générer et tester un projet
+5. **Documentation** : Mettre à jour la doc si nécessaire
+6. **PR** : Ouvrir une Pull Request
+
+### Types de modifications
+
+#### 1. Modification du template généré
+```bash
+# Modifier les fichiers dans {{ cookiecutter.project_slug }}/
+vim "{{ cookiecutter.project_slug }}/pyproject.toml"
+
+# Tester la génération
+cruft create . --no-input
+cd mon-projet-data-science
+# Valider les changements
+```
+
+#### 2. Ajout de variables Cookiecutter
+```json
+{
+    "project_name": "Mon Projet Data Science",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
+    "description": "Description du projet",
+    "python_version": "3.11",
+    "nouvelle_variable": "valeur_par_defaut"
+}
+```
+
+#### 3. Documentation
+```bash
+# Modifier la documentation
+vim docs/user/usage.md
+
+# Prévisualiser localement
+mkdocs serve
+
+# Accessible sur http://127.0.0.1:8000
+```
+
+## Standards de qualité
+
+### Messages de commit
+Format : `type(scope): description`
+
+**Types** :
+- `feat` : Nouvelle fonctionnalité
+- `fix` : Correction de bug
+- `docs` : Documentation seulement
+- `style` : Formatting, missing semicolons, etc.
+- `refactor` : Refactoring de code
+- `test` : Ajout de tests
+- `chore` : Maintenance, deps, etc.
+
+**Exemples** :
+```bash
+feat(devcontainer): ajouter support pour uv
+fix(template): corriger chemin dans .gitignore  
+docs(user): améliorer guide installation
+chore(deps): mettre à jour mkdocs-material
+```
+
+### Structure des templates
+
+#### Variables Cookiecutter
+- **snake_case** pour les variables techniques
+- **Descriptions claires** pour l'utilisateur final
+- **Valeurs par défaut sensées**
+- **Validation** dans les hooks si nécessaire
+
+#### Fichiers générés
+- **Cohérence** : même style dans tous les fichiers
+- **Comments** : expliquer les choix non évidents
+- **Extensibilité** : faciliter les modifications futures
+
+### Tests requis
+
+#### Tests unitaires (à venir v0.4)
+```bash
+# Tester la génération du template
+pytest tests/test_generation.py
+
+# Tester le contenu généré  
+pytest tests/test_project_structure.py
+
+# Tester les commandes dans le projet généré
+pytest tests/test_project_commands.py
+```
+
+#### Tests manuels
+1. **Génération** : `cruft create . --no-input`
+2. **Devcontainer** : Ouvrir dans VS Code
+3. **Installation** : `uv pip install -e .`
+4. **Jupyter** : `jupyter lab` fonctionne
+5. **Git** : Repository initialisé correctement
+
+## Roadmap et priorités
+
+### v0.2 : Environnement reproductible
+- [ ] Fichier `uv.lock` pour lock des dépendances
+- [ ] Scripts de setup automatisés
+- [ ] Support multi-OS (Windows, macOS, Linux)
+
+### v0.3 : Qualité de code
+- [ ] Configuration pre-commit complète
+- [ ] Configuration ruff dans pyproject.toml
+- [ ] Intégration mypy pour le typing
+- [ ] Formatage automatique (black/ruff format)
+
+### v0.4 : Tests
+- [ ] Structure de tests avec pytest
+- [ ] Tests du template avec pytest-cookies
+- [ ] Coverage reporting
+- [ ] Tests d'intégration CI/CD
+
+### v0.5 : CI/CD
+- [ ] GitHub Actions workflows
+- [ ] Tests automatisés sur PR
+- [ ] Publication automatique documentation
+- [ ] Release automation
+
+## Bonnes pratiques
+
+### Documentation
+- **Toujours** documenter les nouveautés
+- **Screenshots** pour les changements UI/UX
+- **Exemples concrets** plutôt qu'abstraits
+- **Mise à jour** de la roadmap
+
+### Backward compatibility
+- **Pas de breaking changes** sans version majeure
+- **Deprecation warnings** avant suppression
+- **Migration guide** pour les changements majeurs
+
+### Performance
+- **Template léger** : éviter les dépendances lourdes par défaut
+- **Génération rapide** : optimiser les hooks
+- **Documentation efficace** : structure claire, recherche facile
+
+## Résolution de problèmes
+
+### Template ne se génère pas
+```bash
+# Vérifier la syntaxe JSON
+python -m json.tool cookiecutter.json
+
+# Tester avec debug
+cruft create . --no-input --verbose
+```
+
+### Erreurs de devcontainer  
+```bash
+# Valider le JSON
+python -m json.tool "{{ cookiecutter.project_slug }}/.devcontainer/devcontainer.json"
+
+# Tester l'image Docker
+docker run -it mcr.microsoft.com/devcontainers/python:3.11-bookworm bash
+```
+
+### Documentation ne se build pas
+```bash
+# Vérifier la config MkDocs
+mkdocs build --strict
+
+# Tester localement
+mkdocs serve --dev-addr=127.0.0.1:8000
+```
+
+## Ressources
+
+- [Cookiecutter Documentation](https://cookiecutter.readthedocs.io/)
+- [Dev Containers Specification](https://containers.dev/)
+- [MkDocs Material](https://squidfunk.github.io/mkdocs-material/)
+- [uv Documentation](https://github.com/astral-sh/uv)
