@@ -1,0 +1,19 @@
+{
+    "name": "{{ cookiecutter.project_name }}",
+    "image": "mcr.microsoft.com/devcontainers/python:{{ cookiecutter.python_version }}-bookworm",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-toolsai.jupyter",
+                "ms-python.isort",
+                "charliermarsh.ruff",
+                "GitHub.copilot",
+                "GitHub.copilot-chat"
+            ]
+        }
+    },
+    "forwardPorts": [8888],
+    "postCreateCommand": "uv pip install -e ."
+}

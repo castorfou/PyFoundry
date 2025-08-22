@@ -1,0 +1,6 @@
+{
+    "project_name": "Mon Projet Data Science",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '-').replace('_', '-') }}",
+    "description": "Description de votre projet de Data Science",
+    "python_version": "3.11"
+}
