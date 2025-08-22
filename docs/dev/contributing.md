@@ -9,17 +9,34 @@
 - Git
 
 ### Setup initial
+
+#### 1. Créer l'environnement de développement
+```bash
+# Créer un environnement conda/mamba pour le développement du template
+mamba create -y -n pyfoundry -c conda-forge python=3.11
+
+# Activer l'environnement
+mamba activate pyfoundry
+
+# Installer les outils nécessaires pour développer le template
+mamba install nb_conda_kernels cruft mkdocs-material --yes
+```
+
+#### 2. Cloner et configurer le projet
 ```bash
 # Cloner le dépôt
 git clone https://github.com/username/PyFoundry.git
 cd PyFoundry
 
-# Installer les dépendances de développement
-uv pip install -e ".[dev]"
+# Installer les dépendances de développement (si applicables)
+# uv pip install -e ".[dev]"  # Sera disponible en v0.4
 
-# Installer les hooks pre-commit (quand disponibles)
-pre-commit install
+# Installer les hooks pre-commit (quand disponibles v0.3)
+# pre-commit install
 ```
+
+!!! info "Environnement pyfoundry"
+    L'environnement `pyfoundry` est utilisé pour développer et tester le template lui-même. Les projets générés par le template auront leurs propres environnements.
 
 ### Environnement de test
 ```bash

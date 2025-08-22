@@ -1,0 +1,6 @@
+# Documentation build
+site/
+
+# Testing generated projects
+test-project/
+mon-projet-data-science/
