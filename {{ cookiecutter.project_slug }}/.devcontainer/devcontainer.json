@@ -15,5 +15,5 @@
         }
     },
     "forwardPorts": [8888],
-    "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && source ~/.cargo/env && uv pip install -e ."
+    "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && ~/.local/bin/uv pip install -e ."
 }
