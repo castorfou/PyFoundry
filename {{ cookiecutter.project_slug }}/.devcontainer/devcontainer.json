@@ -1,23 +1,152 @@
 {
-    "name": "{{ cookiecutter.project_name }}",
+    "name": "{{ cookiecutter.project_name }} - Dev Environment",
     "image": "mcr.microsoft.com/devcontainers/python:{{ cookiecutter.python_version }}-bookworm",
+    
+    // Optimisation des performances
+    "workspaceFolder": "/workspaces/{{ cookiecutter.project_slug }}",
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/workspaces/{{ cookiecutter.project_slug }},type=bind,consistency=cached"
+    ],
+    
+    // Variables d'environnement
+    "containerEnv": {
+        "PROJECT_NAME": "{{ cookiecutter.project_name }}",
+        "PROJECT_SLUG": "{{ cookiecutter.project_slug }}",
+        "PYTHON_VERSION": "{{ cookiecutter.python_version }}",
+        "ENVIRONMENT": "development",
+        "PYTHONPATH": "/workspaces/{{ cookiecutter.project_slug }}/src",
+        "DATA_DIR": "/workspaces/{{ cookiecutter.project_slug }}/data",
+        "JUPYTER_CONFIG_DIR": "/workspaces/{{ cookiecutter.project_slug }}/.jupyter"
+    },
+    
     "customizations": {
         "vscode": {
             "extensions": [
+                // Python essentiels
                 "ms-python.python",
                 "ms-python.vscode-pylance",
-                "ms-toolsai.jupyter",
+                "ms-python.black-formatter",
                 "ms-python.isort",
                 "charliermarsh.ruff",
+                
+                // Jupyter et data science
+                "ms-toolsai.jupyter",
+                "ms-toolsai.jupyter-keymap",
+                "ms-toolsai.jupyter-renderers",
+                
+                // Git et développement
+                "eamodio.gitlens",
+                "GitHub.vscode-pull-request-github",
+                
+                // Qualité de code
+                "ms-python.flake8",
+                "ms-vscode.test-adapter-converter",
+                "littlefoxteam.vscode-python-test-adapter",
+                
+                // Productivité
                 "GitHub.copilot",
-                "GitHub.copilot-chat"
+                "GitHub.copilot-chat",
+                "ms-vscode.vscode-json",
+                "redhat.vscode-yaml",
+                "ms-vscode.makefile-tools"
+                {% if cookiecutter.use_node == "y" %},
+                "ms-vscode.vscode-typescript-next",
+                "ms-vscode.vscode-json"
+                {% endif %}
             ],
             "settings": {
+                // Configuration Python
                 "python.defaultInterpreterPath": "./.venv/bin/python",
-                "python.terminal.activateEnvironment": true
+                "python.terminal.activateEnvironment": true,
+                "python.analysis.autoImportCompletions": true,
+                "python.analysis.typeCheckingMode": "basic",
+                
+                // Configuration Jupyter
+                "jupyter.askForKernelRestart": false,
+                "jupyter.interactiveWindowMode": "perFile",
+                "jupyter.notebookFileRoot": "${workspaceFolder}/notebooks",
+                
+                // Configuration des formatters
+                "python.formatting.provider": "black",
+                "python.sortImports.args": ["--profile", "black"],
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": true
+                    }
+                },
+                
+                // Configuration générale
+                "files.autoSave": "afterDelay",
+                "files.autoSaveDelay": 1000,
+                "editor.minimap.enabled": true,
+                "editor.rulers": [88],
+                "files.trimTrailingWhitespace": true,
+                "files.insertFinalNewline": true,
+                
+                // Configuration des tests
+                "python.testing.pytestEnabled": true,
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestArgs": ["tests"],
+                
+                // Exclusions pour améliorer les performances
+                "files.exclude": {
+                    "**/__pycache__": true,
+                    "**/.pytest_cache": true,
+                    "**/node_modules": true,
+                    "**/.git": false
+                },
+                "search.exclude": {
+                    "**/__pycache__": true,
+                    "**/.venv": true,
+                    "**/node_modules": true
+                }
             }
         }
     },
-    "forwardPorts": [8888],
-    "postCreateCommand": "chmod +x .devcontainer/postCreateCommand.sh && .devcontainer/postCreateCommand.sh"
+    
+    // Ports à exposer
+    "forwardPorts": [8888, 8889, 8080, 3000],
+    "portsAttributes": {
+        "8888": {
+            "label": "Jupyter Lab",
+            "onAutoForward": "notify"
+        },
+        "8889": {
+            "label": "Jupyter Notebook",
+            "onAutoForward": "silent"
+        },
+        "8080": {
+            "label": "Development Server",
+            "onAutoForward": "silent"
+        }
+    },
+    
+    // Features avancées
+    "features": {
+        {% if cookiecutter.use_node == "y" %}
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "lts"
+        },
+        {% endif %}
+        "ghcr.io/devcontainers/features/git:1": {
+            "ppa": true,
+            "version": "os-provided"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {
+            "version": "latest"
+        }
+    },
+    
+    // Configuration du shell et de l'environnement
+    "postCreateCommand": "chmod +x .devcontainer/postCreateCommand.sh && .devcontainer/postCreateCommand.sh",
+    "postStartCommand": "echo '🚀 {{ cookiecutter.project_name }} - Environnement prêt!'",
+    
+    // Utilisateur non-root pour la sécurité
+    "remoteUser": "vscode",
+    
+    // Optimisations de performance
+    "shutdownAction": "none",
+    "overrideCommand": false
 }

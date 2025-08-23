@@ -32,6 +32,7 @@ nav:
     - Installation: user/installation.md
     - Utilisation: user/usage.md
     - Structure: user/structure.md
+    - "Nouveautés v0.2": user/v0.2-features.md
   - Guide Développeur:
     - Architecture: dev/architecture.md
     - Contribution: dev/contributing.md

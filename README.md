@@ -21,15 +21,18 @@ code mon-nouveau-projet
 
 ## ✨ Fonctionnalités
 
-- **Environnement reproductible** : Devcontainer VS Code avec environnement virtuel `.venv`
-- **Outils modernes** : Installation conditionnelle d'uv, Node.js, configuration Git
-- **Structure standardisée** : Dossiers `src/`, `data/`, `notebooks/` pré-configurés
+- **Environnement reproductible** : Devcontainer VS Code optimisé avec `.venv` et verrouillage des dépendances
+- **Scripts multi-plateformes** : Setup automatisé Linux/macOS/Windows avec détection d'OS
+- **Configuration avancée** : Variables d'environnement, fichiers `.env.template`, pyproject.toml enrichi
+- **Structure intelligente** : Dossiers `data/`, `models/`, `logs/`, `reports/` auto-créés avec sous-structure
+- **Outils modernes** : uv natif, extensions VS Code étendues, configuration Jupyter intégrée
 - **Documentation complète** : Guide utilisateur et développeur avec MkDocs Material
 - **CI/CD prêt** : Workflows GitHub Actions pour tests et déploiement de documentation
 
 ## 📚 Documentation
 
 - **[Guide d'installation](https://castorfou.github.io/PyFoundry/user/installation/)** - Comment installer et utiliser le template
+- **[Nouveautés v0.2](https://castorfou.github.io/PyFoundry/user/v0.2-features/)** - Scripts multi-plateformes et environnement reproductible avancé
 - **[Guide d'usage](https://castorfou.github.io/PyFoundry/user/usage/)** - Commandes et workflow recommandés  
 - **[Structure du projet](https://castorfou.github.io/PyFoundry/user/structure/)** - Organisation des fichiers et dossiers
 - **[Guide développeur](https://castorfou.github.io/PyFoundry/dev/contributing/)** - Comment contribuer au template
@@ -53,10 +56,10 @@ code mon-nouveau-projet
 
 ```bash
 # Méthode interactive
-cruft create https://github.com/guillaume/PyFoundry.git
+cruft create https://github.com/castorfou/PyFoundry.git
 
 # Avec paramètres
-cruft create https://github.com/guillaume/PyFoundry.git \
+cruft create https://github.com/castorfou/PyFoundry.git \
   --extra-context '{
     "project_name": "Mon Analyse",
     "use_uv": "y",
@@ -65,13 +68,13 @@ cruft create https://github.com/guillaume/PyFoundry.git \
   }'
 
 # Valeurs par défaut
-cruft create https://github.com/guillaume/PyFoundry.git --no-input
+cruft create https://github.com/castorfou/PyFoundry.git --no-input
 ```
 
 ## 🎯 Roadmap
 
 - **v0.1** ✅ : Squelette avec environnement reproductible
-- **v0.2** : Environnement reproductible avancé (uv.lock, scripts)
+- **v0.2** ✅ : Environnement reproductible avancé (uv.lock, scripts, devcontainer optimisé)
 - **v0.3** : Qualité de code (pre-commit, ruff)
 - **v0.4** : Tests automatisés (pytest, coverage)
 - **v0.5** : CI/CD complet (release automation)

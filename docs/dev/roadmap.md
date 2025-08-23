@@ -32,21 +32,32 @@ PyFoundry suit une approche de développement **graduelle et itérative**. Chaqu
 
 ---
 
-### 🚧 v0.2 : Environnement Reproductible  
-**Objectif** : Garantir la reproductibilité totale
+### ✅ v0.2 : Environnement Reproductible (En cours)
+**Objectif** : Garantir la reproductibilité totale et optimiser l'expérience développeur
 
-**Fonctionnalités prévues** :
-- [ ] Fichier `uv.lock` pour verrouillage des dépendances
-- [ ] Scripts de setup automatisés (`scripts/setup.sh`)
-- [ ] Support multi-plateforme (Windows, macOS, Linux)
-- [ ] Configuration d'environnement avancée
-- [ ] Integration avec Docker Compose (optionnel)
+**Fonctionnalités implémentées** :
+- ✅ Fichiers de verrouillage des dépendances (requirements.lock, requirements-full.lock)
+- ✅ Scripts de setup automatisés multi-plateformes (`scripts/setup.sh`, `scripts/setup.ps1`)
+- ✅ Support Windows, macOS, Linux avec détection automatique
+- ✅ Configuration d'environnement avancée avec `.env.template`
+- ✅ pyproject.toml enrichi avec métadonnées complètes
+- ✅ Dépendances étendues pour data science (pandas, numpy, matplotlib, seaborn)
 
 **Améliorations devcontainer** :
-- [ ] Variables d'environnement configurables
-- [ ] Montage de volumes pour données externes
-- [ ] Support GPU (CUDA) optionnel
-- [ ] Optimisation de la vitesse de build
+- ✅ Variables d'environnement configurables (containerEnv)
+- ✅ Optimisation des performances (mounts cached, exclusions)
+- ✅ Extensions VS Code étendues (GitLens, formatters, tests)
+- ✅ Configuration Jupyter avancée intégrée
+- ✅ Features devcontainer (Git, GitHub CLI, Node.js conditionnel)
+- ✅ Ports configurés avec labels (8888, 8889, 8080, 3000)
+- ✅ Structure de projet automatisée (dossiers data/, models/, logs/)
+
+**Scripts avancés** :
+- ✅ Détection OS automatique et installation adaptée
+- ✅ Gestion robuste des erreurs avec logs colorés
+- ✅ Timer de performance et diagnostics
+- ✅ Configuration Git automatisée avec .gitignore intelligent
+- ✅ Support uv natif avec fallback pip
 
 ---
 
