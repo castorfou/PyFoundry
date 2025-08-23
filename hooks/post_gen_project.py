@@ -55,6 +55,41 @@ def check_ghcr_auth():
         print("❌ Impossible de vérifier l'authentification")
         return False
 
+def handle_auth_failure():
+    """Gère l'échec d'authentification - interrompt ou continue selon FORCE_CREATE."""
+    force_create = os.environ.get('PYFOUNDRY_FORCE_CREATE', '').lower() in ['1', 'true', 'yes']
+    
+    if not force_create:
+        print("\n" + "="*70)
+        print("❌ ERREUR : Authentification ghcr.io requise")
+        print("="*70)
+        print("Ce template utilise des features devcontainer de ghcr.io.")
+        print("Vous devez être authentifié pour utiliser le devcontainer.")
+        print("")
+        print("SOLUTIONS :")
+        print("")
+        print("Option 1 - S'authentifier maintenant :")
+        print("1. Créez un Personal Access Token GitHub :")
+        print("   https://github.com/settings/tokens/new")
+        print("   Permissions requis : read:packages")
+        print("")
+        print("2. Connectez-vous à ghcr.io :")
+        print("   docker login ghcr.io -u VOTRE_USERNAME")
+        print("   (utilisez le token comme mot de passe)")
+        print("")
+        print("3. Relancez la création du projet :")
+        print("   cruft create https://github.com/castorfou/PyFoundry.git")
+        print("")
+        print("Option 2 - Forcer la création (devcontainer ne marchera pas) :")
+        print("   PYFOUNDRY_FORCE_CREATE=1 cruft create https://github.com/castorfou/PyFoundry.git")
+        print("="*70)
+        print("")
+        print("🗑️  Suppression du projet non configuré...")
+        sys.exit(1)  # Interrompt cruft et supprime le projet
+    else:
+        print("⚠️  Création forcée - devcontainer ne fonctionnera pas sans authentification ghcr.io")
+        return True
+
 def show_setup_info(docker_available, ghcr_auth):
     """Affiche les informations de configuration."""
     print("\n" + "="*70)
@@ -102,38 +137,7 @@ def main():
         ghcr_auth = check_ghcr_auth()
         
         if not ghcr_auth:
-            # Vérifier si l'utilisateur veut forcer la création
-            force_create = os.environ.get('PYFOUNDRY_FORCE_CREATE', '').lower() in ['1', 'true', 'yes']
-            
-            if not force_create:
-                print("\n" + "="*70)
-                print("❌ ERREUR : Authentification ghcr.io requise")
-                print("="*70)
-                print("Ce template utilise des features devcontainer de ghcr.io.")
-                print("Vous devez être authentifié pour utiliser le devcontainer.")
-                print("")
-                print("SOLUTIONS :")
-                print("")
-                print("Option 1 - S'authentifier maintenant :")
-                print("1. Créez un Personal Access Token GitHub :")
-                print("   https://github.com/settings/tokens/new")
-                print("   Permissions requis : read:packages")
-                print("")
-                print("2. Connectez-vous à ghcr.io :")
-                print("   docker login ghcr.io -u VOTRE_USERNAME")
-                print("   (utilisez le token comme mot de passe)")
-                print("")
-                print("3. Relancez la création du projet :")
-                print("   cruft create https://github.com/castorfou/PyFoundry.git")
-                print("")
-                print("Option 2 - Forcer la création (devcontainer ne marchera pas) :")
-                print("   PYFOUNDRY_FORCE_CREATE=1 cruft create https://github.com/castorfou/PyFoundry.git")
-                print("="*70)
-                print("")
-                print("🗑️  Suppression du projet non configuré...")
-                sys.exit(1)  # Interrompt cruft et supprime le projet
-            else:
-                print("⚠️  Création forcée - devcontainer ne fonctionnera pas sans authentification ghcr.io")
+            handle_auth_failure()
     
     show_setup_info(docker_available, ghcr_auth)
     
