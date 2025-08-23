@@ -1,6 +1,6 @@
 # PyFoundry Template
 
-Un template Cookiecutter de qualité industrielle pour démarrer rapidement des projets de Data Science en Python avec un **environnement reproductible avancé** et une **expérience développeur optimisée**.
+Un template Cookiecutter pour démarrer rapidement des projets de Data Science en Python avec un **environnement reproductible**.
 
 [![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://castorfou.github.io/PyFoundry)
 [![Template Tests](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml/badge.svg)](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml)
@@ -9,7 +9,7 @@ Un template Cookiecutter de qualité industrielle pour démarrer rapidement des 
 
 ## 🚀 Vision
 
-PyFoundry vise à garantir la **reproductibilité totale**, la **qualité du code** et un **démarrage rapide** (50-60% plus rapide qu'avant) grâce à une configuration complète et automatisée sur toutes les plateformes.
+PyFoundry vise à garantir la **reproductibilité totale**, et la **qualité du code** en s'appuyant sur des outils modernes: uv, devcontainer, cruft/cookie cutter, pre-commit, ruff, ...
 
 ## ⚡ Démarrage rapide
 
@@ -20,17 +20,9 @@ pip install cruft
 # 2. Créer un nouveau projet
 cruft create https://github.com/castorfou/PyFoundry.git
 
-# 3. Setup automatique multi-plateforme
-cd mon-nouveau-projet
-./scripts/setup.sh        # Linux/macOS
-# ou .\scripts\setup.ps1   # Windows
-
-# 4. Ou utiliser devcontainer (recommandé)
+# 3. Builder devcontainer 
 code mon-nouveau-projet    # VS Code propose "Reopen in Container"
 ```
-
-!!! success "**Nouveau v0.2** : Setup 50-60% plus rapide !"
-    Avec les nouveaux scripts automatisés et le devcontainer optimisé, créer un projet prend maintenant 2-4 minutes au lieu de 5-8 minutes !
 
 ## 🛠️ Stack technologique
 
@@ -44,24 +36,7 @@ code mon-nouveau-projet    # VS Code propose "Reopen in Container"
 - **Documentation** : MkDocs & mkdocs-material
 - **CI/CD** : GitHub Actions avec tests multi-plateformes
 
-## ✨ Fonctionnalités v0.2 - Environnement Reproductible Avancé
-
-### 🚀 Scripts Multi-Plateformes
-- **Linux/macOS** : `scripts/setup.sh` avec détection d'OS automatique
-- **Windows** : `scripts/setup.ps1` avec support PowerShell natif  
-- **Features** : Logs colorés, gestion d'erreurs robuste, diagnostics de performance
-
-### 📦 Reproductibilité Totale
-- **Verrouillage automatique** : `requirements.lock` et `requirements-full.lock`
-- **Export uv complet** : Métadonnées et versions exactes préservées
-- **pyproject.toml enrichi** : Dépendances versionnées et groupes optionnels
-
-### 🔧 Configuration Avancée
-- **Template .env** : 40+ variables d'environnement pré-configurées
-- **Variables devcontainer** : PYTHONPATH, DATA_DIR, configuration intégrée
-- **Configuration Jupyter** : Lab settings et répertoires runtime automatiques
-
-### 🏗️ Structure Intelligente
+### 🏗️ Structure 
 ```
 mon-projet/
 ├── data/
@@ -85,16 +60,6 @@ mon-projet/
 - **Image** : Python 3.12 officielle Microsoft avec utilisateur vscode
 - **Performance** : Configuration simplifiée, build plus rapide
 - **Extensions** : Extensions VS Code essentielles (Python, Jupyter, Git)
-- **Ports** : Multi-port (8888, 8889, 8080, 3000) avec labels automatiques
-- **Environment** : Variables intégrées et feature uv officielle
-
-## 📊 Performances v0.2
-
-| Plateforme | Avant (v0.1) | Maintenant (v0.2) | Amélioration |
-|------------|--------------|-------------------|--------------|
-| **Linux**  | ~5 minutes   | ~2 minutes        | **60% plus rapide** |
-| **macOS**  | ~6 minutes   | ~3 minutes        | **50% plus rapide** |
-| **Windows**| ~8 minutes   | ~4 minutes        | **50% plus rapide** |
 
 ## 🗺️ Roadmap
 
@@ -105,16 +70,11 @@ mon-projet/
 - **v0.4** 📋 : Tests automatisés (pytest, coverage)
 - **v0.5** 🎯 : CI/CD complet (GitHub Actions automation)
 
-## 🎉 Nouveautés v0.2
-
-!!! info "**[📖 Guide complet des nouveautés v0.2](user/v0.2-features.md)**"
-    Découvrez en détail toutes les améliorations : scripts automatisés, reproductibilité, devcontainer optimisé, et benchmarks de performance.
 
 ## 📚 Documentation
 
 ### Pour les Utilisateurs
 - **[Guide d'installation](user/installation.md)** : Pré-requis et création de projet
-- **[Nouveautés v0.2](user/v0.2-features.md)** : Scripts, reproductibilité, performances
 - **[Guide d'usage](user/usage.md)** : Commandes et workflow quotidien  
 - **[Structure du projet](user/structure.md)** : Organisation des fichiers et dossiers
 
