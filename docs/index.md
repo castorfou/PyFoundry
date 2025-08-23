@@ -35,8 +35,8 @@ code mon-nouveau-projet    # VS Code propose "Reopen in Container"
 ## 🛠️ Stack technologique
 
 - **Templating** : Cookiecutter / Cruft pour templates évolutifs
-- **Environnement** : Devcontainer VS Code optimisé avec variables d'environnement
-- **Dépendances** : uv natif & pyproject.toml avec métadonnées complètes
+- **Environnement** : Devcontainer VS Code (Python 3.12) avec variables d'environnement
+- **Dépendances** : uv obligatoire & pyproject.toml avec métadonnées complètes
 - **Reproductibilité** : Verrouillage automatique des dépendances (requirements.lock)
 - **Configuration** : Templates .env et configuration Jupyter intégrée
 - **Qualité de Code** : pre-commit & ruff (préparation v0.3)
@@ -82,10 +82,11 @@ mon-projet/
 ```
 
 ### 🎯 DevContainer Optimisé
-- **Performance** : Mounts cachés, exclusions optimisées, build plus rapide
-- **Extensions** : 15+ extensions VS Code (GitLens, formatters, tests, Jupyter)
+- **Image** : Python 3.12 officielle Microsoft avec utilisateur vscode
+- **Performance** : Configuration simplifiée, build plus rapide
+- **Extensions** : Extensions VS Code essentielles (Python, Jupyter, Git)
 - **Ports** : Multi-port (8888, 8889, 8080, 3000) avec labels automatiques
-- **Environment** : Variables intégrées et activation automatique
+- **Environment** : Variables intégrées et installation uv automatique
 
 ## 📊 Performances v0.2
 
@@ -99,6 +100,7 @@ mon-projet/
 
 - **v0.1** ✅ : Squelette avec environnement reproductible
 - **v0.2** ✅ : **Environnement reproductible avancé** (scripts, uv.lock, devcontainer optimisé)
+- **v0.2.1** ✅ : **Simplification** (uv obligatoire, devcontainer Python 3.12 fixe)
 - **v0.3** 🚧 : Qualité de code (pre-commit, ruff, mypy)
 - **v0.4** 📋 : Tests automatisés (pytest, coverage)
 - **v0.5** 🎯 : CI/CD complet (GitHub Actions automation)

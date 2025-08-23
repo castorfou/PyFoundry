@@ -94,6 +94,7 @@
     },
        
     // Configuration du shell et de l'environnement
+    "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
     "postStartCommand": "echo '🚀 {{ cookiecutter.project_name }} - Environnement prêt!'",
     
     // Utilisateur non-root pour la sécurité

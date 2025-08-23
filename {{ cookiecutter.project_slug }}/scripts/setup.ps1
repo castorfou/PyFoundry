@@ -9,7 +9,6 @@ param(
 # Configuration
 $ProjectName = "{{ cookiecutter.project_name }}"
 $PythonVersion = "{{ cookiecutter.python_version }}"
-$UseUv = "{{ cookiecutter.use_uv }}"
 $UseNode = "{{ cookiecutter.use_node }}"
 $SetupGit = "{{ cookiecutter.setup_git }}"
 
@@ -68,26 +67,25 @@ function Test-Prerequisites {
 
 # Installation d'uv
 function Install-Uv {
-    if ($UseUv -eq "y") {
-        Write-Info "Installation de uv..."
-        
-        if (Get-Command uv -ErrorAction SilentlyContinue) {
-            Write-Warning "uv déjà installé"
+    Write-Info "Installation de uv..."
+    
+    if (Get-Command uv -ErrorAction SilentlyContinue) {
+        Write-Warning "uv déjà installé"
+    }
+    else {
+        try {
+            # Installation via PowerShell
+            irm https://astral.sh/uv/install.ps1 | iex
+            
+            # Ajouter au PATH pour la session courante
+            $uvPath = "$env:USERPROFILE\.local\bin"
+            $env:PATH = "$uvPath;$env:PATH"
+            
+            Write-Success "uv installé"
         }
-        else {
-            try {
-                # Installation via PowerShell
-                irm https://astral.sh/uv/install.ps1 | iex
-                
-                # Ajouter au PATH pour la session courante
-                $uvPath = "$env:USERPROFILE\.local\bin"
-                $env:PATH = "$uvPath;$env:PATH"
-                
-                Write-Success "uv installé"
-            }
-            catch {
-                Write-Error "Erreur lors de l'installation d'uv: $_"
-                exit 1
+        catch {
+            Write-Error "Erreur lors de l'installation d'uv: $_"
+            exit 1
             }
         }
     }
@@ -132,12 +130,7 @@ function New-VirtualEnv {
     }
     
     try {
-        if ($UseUv -eq "y") {
-            & "$env:USERPROFILE\.local\bin\uv" venv .venv
-        }
-        else {
-            python -m venv .venv
-        }
+        & "$env:USERPROFILE\.local\bin\uv" venv .venv --python $PythonVersion
         Write-Success "Environnement virtuel créé"
     }
     catch {
@@ -154,16 +147,9 @@ function Install-Dependencies {
         # Activation de l'environnement virtuel
         & .\.venv\Scripts\Activate.ps1
         
-        if ($UseUv -eq "y") {
-            & "$env:USERPROFILE\.local\bin\uv" pip install -e .
-            # Générer requirements.lock pour reproductibilité
-            & "$env:USERPROFILE\.local\bin\uv" pip freeze | Out-File -FilePath "requirements.lock" -Encoding UTF8
-        }
-        else {
-            pip install -e .
-            # Générer requirements.lock pour reproductibilité
-            pip freeze | Out-File -FilePath "requirements.lock" -Encoding UTF8
-        }
+        & "$env:USERPROFILE\.local\bin\uv" pip install -e .
+        # Générer requirements.lock pour reproductibilité
+        & "$env:USERPROFILE\.local\bin\uv" pip freeze | Out-File -FilePath "requirements.lock" -Encoding UTF8
         
         Write-Success "Dépendances installées"
     }

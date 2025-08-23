@@ -33,7 +33,7 @@ jobs:
 
       - name: Test template generation (custom)
         run: |
-          echo '{"project_name": "Test Project", "use_uv": "y", "use_node": "n", "setup_git": "n"}' > test-context.json
+          echo '{"project_name": "Test Project", "use_node": "n", "setup_git": "n"}' > test-context.json
           cruft create . --extra-context-file test-context.json --output-dir test-custom --no-input
           ls -la test-custom/test-project/
 

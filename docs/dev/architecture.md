@@ -11,7 +11,7 @@ PyFoundry suit ces principes d'architecture :
 
 ### 🔄 Reproductibilité
 - **Devcontainer** garantit l'environnement identique
-- **uv** pour des résolutions de dépendances déterministes
+- **uv obligatoire** pour des résolutions de dépendances déterministes
 - **Versions épinglées** des outils critiques
 
 ### 🚀 Démarrage rapide
@@ -42,7 +42,9 @@ PyFoundry/                                    # Dépôt du template
     "project_name": "Nom affiché",
     "project_slug": "nom-technique", 
     "description": "Description courte",
-    "python_version": "Version Python"
+    "python_version": "Version Python",
+    "use_node": "Support Node.js (y/n)",
+    "setup_git": "Configuration Git (y/n)"
 }
 ```
 

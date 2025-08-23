@@ -14,7 +14,6 @@ NC='\033[0m' # No Color
 # Configuration
 PROJECT_NAME="{{ cookiecutter.project_name }}"
 PYTHON_VERSION="{{ cookiecutter.python_version }}"
-USE_UV="{{ cookiecutter.use_uv }}"
 USE_NODE="{{ cookiecutter.use_node }}"
 SETUP_GIT="{{ cookiecutter.setup_git }}"
 
@@ -72,23 +71,21 @@ check_prerequisites() {
 
 # Installation d'uv
 install_uv() {
-    if [[ "$USE_UV" == "y" ]]; then
-        log_info "Installation de uv..."
-        if command -v uv &> /dev/null; then
-            log_warning "uv déjà installé"
-        else
-            curl -LsSf https://astral.sh/uv/install.sh | sh
-            export PATH="$HOME/.local/bin:$PATH"
-            # Ajouter au profil shell
-            if [[ -f "$HOME/.bashrc" ]]; then
-                echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
-            fi
-            if [[ -f "$HOME/.zshrc" ]]; then
-                echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
-            fi
+    log_info "Installation de uv..."
+    if command -v uv &> /dev/null; then
+        log_warning "uv déjà installé"
+    else
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        export PATH="$HOME/.local/bin:$PATH"
+        # Ajouter au profil shell
+        if [[ -f "$HOME/.bashrc" ]]; then
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
         fi
-        log_success "uv installé"
+        if [[ -f "$HOME/.zshrc" ]]; then
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
+        fi
     fi
+    log_success "uv installé"
 }
 
 # Installation de Node.js
@@ -129,11 +126,7 @@ create_venv() {
         fi
     fi
     
-    if [[ "$USE_UV" == "y" ]]; then
-        ~/.local/bin/uv venv .venv
-    else
-        python -m venv .venv
-    fi
+    ~/.local/bin/uv venv .venv --python $PYTHON_VERSION
     
     log_success "Environnement virtuel créé"
 }
@@ -145,15 +138,9 @@ install_dependencies() {
     # Activation de l'environnement virtuel
     source .venv/bin/activate
     
-    if [[ "$USE_UV" == "y" ]]; then
-        ~/.local/bin/uv pip install -e .
-        # Générer uv.lock pour reproductibilité
-        ~/.local/bin/uv pip freeze > requirements.lock
-    else
-        pip install -e .
-        # Générer requirements.lock pour reproductibilité
-        pip freeze > requirements.lock
-    fi
+    ~/.local/bin/uv pip install -e .
+    # Générer requirements.lock pour reproductibilité
+    ~/.local/bin/uv pip freeze > requirements.lock
     
     log_success "Dépendances installées"
 }

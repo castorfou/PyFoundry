@@ -25,7 +25,7 @@ code mon-nouveau-projet
 - **Scripts multi-plateformes** : Setup automatisé Linux/macOS/Windows avec détection d'OS
 - **Configuration avancée** : Variables d'environnement, fichiers `.env.template`, pyproject.toml enrichi
 - **Structure intelligente** : Dossiers `data/`, `models/`, `logs/`, `reports/` auto-créés avec sous-structure
-- **Outils modernes** : uv natif, extensions VS Code étendues, configuration Jupyter intégrée
+- **Outils modernes** : uv obligatoire, extensions VS Code essentielles, configuration Jupyter intégrée
 - **Documentation complète** : Guide utilisateur et développeur avec MkDocs Material
 - **CI/CD prêt** : Workflows GitHub Actions pour tests et déploiement de documentation
 
@@ -62,7 +62,6 @@ cruft create https://github.com/castorfou/PyFoundry.git
 cruft create https://github.com/castorfou/PyFoundry.git \
   --extra-context '{
     "project_name": "Mon Analyse",
-    "use_uv": "y",
     "use_node": "n",
     "setup_git": "y"
   }'

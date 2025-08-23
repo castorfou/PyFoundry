@@ -12,7 +12,7 @@
 - Extension [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 ### Option 2 : Installation locale
-- [uv](https://github.com/astral-sh/uv) pour la gestion des dépendances (optionnel mais recommandé)
+- [uv](https://github.com/astral-sh/uv) sera installé automatiquement par les scripts de setup
 
 ## Installation des outils
 
@@ -77,7 +77,7 @@ Vous serez invité à renseigner :
 - **project_slug** : Nom technique (généré automatiquement)
 - **description** : Description courte du projet
 - **python_version** : Version Python (défaut: 3.11)
-- **use_uv** : Installer uv pour la gestion des dépendances (recommandé: y)
+- *uv est maintenant installé automatiquement*
 - **use_node** : Installer Node.js/npm pour des outils web (défaut: n)
 - **setup_git** : Configuration Git de base (défaut: y)
 
@@ -88,7 +88,6 @@ cruft create https://github.com/username/PyFoundry.git \
     "project_name": "Analyse des Ventes",
     "description": "Analyse des données de vente trimestrielles",
     "python_version": "3.11",
-    "use_uv": "y",
     "use_node": "n",
     "setup_git": "y"
   }'

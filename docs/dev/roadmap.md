@@ -25,10 +25,10 @@ PyFoundry suit une approche de développement **graduelle et itérative**. Chaqu
 - `gitpython` : Intégration Git programmatique
 - `pre-commit` : Préparation pour v0.3
 
-**Options configurables** :
-- `use_uv` : Installation d'uv (recommandé)
-- `use_node` : Installation Node.js/npm
-- `setup_git` : Configuration Git de base
+**Configuration** :
+- uv : Installation automatique (obligatoire)
+- `use_node` : Installation Node.js/npm (optionnel)
+- `setup_git` : Configuration Git de base (optionnel)
 
 ---
 

@@ -1,8 +1,0 @@
-{
-    "project_name": "Mon Projet Data Science",
-    "description": "Description de votre projet de Data Science",
-    "python_version": "3.11",
-    "use_uv": "y",
-    "use_node": "n",
-    "setup_git": "y"
-}

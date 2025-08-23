@@ -13,9 +13,9 @@ NC='\033[0m'
 
 # Variables du projet
 PROJECT_PATH=$(pwd)
-USE_UV="{{ cookiecutter.use_uv }}"
 USE_NODE="{{ cookiecutter.use_node }}"
 SETUP_GIT="{{ cookiecutter.setup_git }}"
+PYTHON_VERSION="{{ cookiecutter.python_version }}"
 
 # Fonctions utilitaires
 log_info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
@@ -35,7 +35,6 @@ sudo apt-get update -qq && sudo apt-get upgrade -y -qq
 log_success "Système mis à jour"
 
 # Installation d'uv avec optimisations
-{% if cookiecutter.use_uv == "y" %}
 log_info "Installation de uv..."
 if command -v uv &> /dev/null; then
     log_warning "uv déjà installé"
@@ -50,7 +49,6 @@ else
     done
 fi
 log_success "uv installé et configuré"
-{% endif %}
 
 # Installation Node.js conditionnelle
 {% if cookiecutter.use_node == "y" %}
@@ -66,11 +64,10 @@ fi
 # Création et optimisation de l'environnement virtuel
 log_info "Configuration de l'environnement Python..."
 
-{% if cookiecutter.use_uv == "y" %}
 # Créer avec uv
 if [[ ! -d ".venv" ]]; then
     log_info "Création de l'environnement virtuel avec uv..."
-    ~/.local/bin/uv venv .venv --python {{ cookiecutter.python_version }}
+    ~/.local/bin/uv venv .venv --python $PYTHON_VERSION
 else
     log_warning "Environnement virtuel .venv existe déjà"
 fi
@@ -90,31 +87,6 @@ fi
 log_info "Génération du fichier de verrouillage..."
 ~/.local/bin/uv pip freeze > requirements.lock
 ~/.local/bin/uv export --format requirements-txt --output-file requirements-full.lock
-
-{% else %}
-# Créer avec venv standard
-if [[ ! -d ".venv" ]]; then
-    log_info "Création de l'environnement virtuel avec python..."
-    python -m venv .venv
-else
-    log_warning "Environnement virtuel .venv existe déjà"
-fi
-
-source .venv/bin/activate
-log_info "Installation des dépendances avec pip..."
-pip install --upgrade pip
-pip install -e .
-
-# Installation des dépendances de développement
-if [[ -f "pyproject.toml" ]] && grep -q "\[project.optional-dependencies\]" pyproject.toml; then
-    log_info "Installation des dépendances de développement..."
-    pip install -e ".[dev]"
-fi
-
-# Génération du fichier de verrouillage
-log_info "Génération du fichier de verrouillage..."
-pip freeze > requirements.lock
-{% endif %}
 
 # Configuration automatique de l'activation
 log_info "Configuration de l'activation automatique..."
@@ -197,7 +169,7 @@ if [[ ! -d ".git" ]]; then
 
     🚀 Project initialized with PyFoundry template
     - Python {{ cookiecutter.python_version }}
-    {% if cookiecutter.use_uv == "y" %}- uv package manager{% endif %}
+    - uv package manager
     - Dev containers support
     - Jupyter notebooks ready
     "
@@ -251,9 +223,7 @@ done
 log_info "Informations de l'environnement:"
 echo "  - Projet: {{ cookiecutter.project_name }}"
 echo "  - Python: $(python --version 2>/dev/null || echo 'Non accessible')"
-{% if cookiecutter.use_uv == "y" %}
 echo "  - uv: $(~/.local/bin/uv --version 2>/dev/null || echo 'Non accessible')"
-{% endif %}
 echo "  - Packages installés: $(pip list | wc -l) packages"
 echo "  - Espace disque .venv: $(du -sh .venv 2>/dev/null | cut -f1 || echo 'N/A')"
 
