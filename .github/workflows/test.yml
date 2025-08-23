@@ -33,7 +33,8 @@ jobs:
 
       - name: Test template generation (custom)
         run: |
-          cruft create . --extra-context '{"project_name": "Test Project", "use_uv": "y", "use_node": "n", "setup_git": "n"}' --output-dir test-custom
+          echo '{"project_name": "Test Project", "use_uv": "y", "use_node": "n", "setup_git": "n"}' > test-context.json
+          cruft create . --extra-context test-context.json --output-dir test-custom --no-input
           ls -la test-custom/test-project/
 
       - name: Validate generated structure
