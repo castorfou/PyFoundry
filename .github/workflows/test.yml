@@ -1,0 +1,55 @@
+name: Test Template
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test-template:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install cruft
+
+      - name: Test template generation (defaults)
+        run: |
+          cruft create . --no-input
+          ls -la mon-projet-data-science/
+
+      - name: Test template generation (custom)
+        run: |
+          cruft create . --extra-context '{"project_name": "Test Project", "use_uv": "y", "use_node": "n", "setup_git": "n"}' --output-dir test-custom
+          ls -la test-custom/test-project/
+
+      - name: Validate generated structure
+        run: |
+          # Check essential files exist
+          test -f mon-projet-data-science/pyproject.toml
+          test -f mon-projet-data-science/.devcontainer/devcontainer.json
+          test -f mon-projet-data-science/.devcontainer/postCreateCommand.sh
+          test -d mon-projet-data-science/src
+          test -d mon-projet-data-science/data
+          test -d mon-projet-data-science/notebooks
+
+      - name: Test Python setup in generated project
+        run: |
+          cd mon-projet-data-science
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -e .
+          python -c "import sys; print(f'Python {sys.version}')"

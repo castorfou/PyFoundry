@@ -48,6 +48,36 @@ cd mon-projet-data-science
 uv pip install -e .
 ```
 
+### Documentation
+
+#### Développement local
+```bash
+# Installer les dépendances de documentation
+mamba install mkdocs-material --yes
+
+# Serveur local avec rechargement automatique
+mkdocs serve
+
+# Accessible sur http://127.0.0.1:8000
+```
+
+#### Build de production
+```bash
+# Générer les fichiers statiques
+mkdocs build
+
+# Les fichiers sont générés dans le dossier site/
+ls site/
+```
+
+#### Déploiement GitHub Pages
+```bash
+# Déploiement automatique (nécessite droits push)
+mkdocs gh-deploy
+
+# Ou via GitHub Actions (recommandé pour la production)
+```
+
 ## Workflow de développement
 
 ### Structure des contributions
