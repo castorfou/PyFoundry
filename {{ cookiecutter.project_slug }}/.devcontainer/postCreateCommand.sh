@@ -52,6 +52,14 @@ create_python_environment() {
     echo "Génération du fichier de verrouillage..."
     ~/.local/bin/uv pip freeze > requirements.lock
     
+    echo "Configuration de l'activation automatique..."
+    PROJECT_PATH=$(pwd)
+    for shell_config in "$HOME/.bashrc" "$HOME/.zshrc"; do
+        if [[ -f "$shell_config" ]] && ! grep -q "source $PROJECT_PATH/.venv/bin/activate" "$shell_config"; then
+            echo "source $PROJECT_PATH/.venv/bin/activate" >> "$shell_config"
+        fi
+    done
+    
     echo "Environnement Python configuré"
 }
 
