@@ -11,7 +11,11 @@
                 "charliermarsh.ruff",
                 "GitHub.copilot",
                 "GitHub.copilot-chat"
-            ]
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "./.venv/bin/python",
+                "python.terminal.activateEnvironment": true
+            }
         }
     },
     "forwardPorts": [8888],

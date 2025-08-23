@@ -21,11 +21,20 @@ sudo apt-get install -y nodejs
 
 # Installation des dépendances Python
 {% if cookiecutter.use_uv == "y" %}
-echo "🐍 Installation des dépendances Python avec uv..."
-~/.local/bin/uv pip install -e . --system
+echo "🐍 Création de l'environnement virtuel avec uv..."
+~/.local/bin/uv venv .venv
+echo "🐍 Activation et installation des dépendances..."
+source .venv/bin/activate
+~/.local/bin/uv pip install -e .
+echo "source /workspaces/{{ cookiecutter.project_slug }}/.venv/bin/activate" >> ~/.bashrc
+echo "source /workspaces/{{ cookiecutter.project_slug }}/.venv/bin/activate" >> ~/.zshrc
 {% else %}
-echo "🐍 Installation des dépendances Python avec pip..."
+echo "🐍 Création de l'environnement virtuel avec python..."
+python -m venv .venv
+source .venv/bin/activate
 pip install -e .
+echo "source /workspaces/{{ cookiecutter.project_slug }}/.venv/bin/activate" >> ~/.bashrc
+echo "source /workspaces/{{ cookiecutter.project_slug }}/.venv/bin/activate" >> ~/.zshrc
 {% endif %}
 
 # Configuration Git (optionnel)
