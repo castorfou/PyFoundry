@@ -3,6 +3,9 @@ set -e
 
 echo "🚀 Configuration de l'environnement de développement..."
 
+# Définir le chemin du projet (répertoire courant)
+PROJECT_PATH=$(pwd)
+
 # Installation uv
 {% if cookiecutter.use_uv == "y" %}
 echo "📦 Installation de uv..."
@@ -26,15 +29,15 @@ echo "🐍 Création de l'environnement virtuel avec uv..."
 echo "🐍 Activation et installation des dépendances..."
 source .venv/bin/activate
 ~/.local/bin/uv pip install -e .
-echo "source /workspaces/{{ cookiecutter.project_slug }}/.venv/bin/activate" >> ~/.bashrc
-echo "source /workspaces/{{ cookiecutter.project_slug }}/.venv/bin/activate" >> ~/.zshrc
+echo "source $PROJECT_PATH/.venv/bin/activate" >> ~/.bashrc
+echo "source $PROJECT_PATH/.venv/bin/activate" >> ~/.zshrc
 {% else %}
 echo "🐍 Création de l'environnement virtuel avec python..."
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
-echo "source /workspaces/{{ cookiecutter.project_slug }}/.venv/bin/activate" >> ~/.bashrc
-echo "source /workspaces/{{ cookiecutter.project_slug }}/.venv/bin/activate" >> ~/.zshrc
+echo "source $PROJECT_PATH/.venv/bin/activate" >> ~/.bashrc
+echo "source $PROJECT_PATH/.venv/bin/activate" >> ~/.zshrc
 {% endif %}
 
 # Configuration Git (optionnel)
