@@ -2,17 +2,20 @@
 
 > Un template Cookiecutter de qualité industrielle pour démarrer rapidement des projets de Data Science en Python.
 
-[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://guillaume.github.io/PyFoundry)
-[![Template Tests](https://github.com/guillaume/PyFoundry/actions/workflows/test.yml/badge.svg)](https://github.com/guillaume/PyFoundry/actions/workflows/test.yml)
+[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://castorfou.github.io/PyFoundry)
+[![Template Tests](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml/badge.svg)](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 ## 🚀 Démarrage rapide
 
 ```bash
-# Créer un nouveau projet
-cruft create https://github.com/guillaume/PyFoundry.git
+# 1. Installer cruft (si pas déjà fait)
+pip install cruft
 
-# Ouvrir dans VS Code avec devcontainer
+# 2. Créer un nouveau projet
+cruft create https://github.com/castorfou/PyFoundry.git
+
+# 3. Ouvrir dans VS Code avec devcontainer
 code mon-nouveau-projet
 ```
 
@@ -26,10 +29,10 @@ code mon-nouveau-projet
 
 ## 📚 Documentation
 
-- **[Guide d'installation](https://guillaume.github.io/PyFoundry/user/installation/)** - Comment installer et utiliser le template
-- **[Guide d'usage](https://guillaume.github.io/PyFoundry/user/usage/)** - Commandes et workflow recommandés  
-- **[Structure du projet](https://guillaume.github.io/PyFoundry/user/structure/)** - Organisation des fichiers et dossiers
-- **[Guide développeur](https://guillaume.github.io/PyFoundry/dev/contributing/)** - Comment contribuer au template
+- **[Guide d'installation](https://castorfou.github.io/PyFoundry/user/installation/)** - Comment installer et utiliser le template
+- **[Guide d'usage](https://castorfou.github.io/PyFoundry/user/usage/)** - Commandes et workflow recommandés  
+- **[Structure du projet](https://castorfou.github.io/PyFoundry/user/structure/)** - Organisation des fichiers et dossiers
+- **[Guide développeur](https://castorfou.github.io/PyFoundry/dev/contributing/)** - Comment contribuer au template
 
 ## 🛠️ Stack technologique
 

@@ -2,27 +2,68 @@
 
 ## Pré-requis
 
+### Obligatoire
+- **Python 3.11+**
+- **[Cruft](https://cruft.github.io/cruft/)** - Pour créer des projets depuis le template
+
 ### Option 1 : Avec VS Code + Docker (Recommandé)
 - [VS Code](https://code.visualstudio.com/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - Extension [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 ### Option 2 : Installation locale
-- Python 3.11+
-- [uv](https://github.com/astral-sh/uv) pour la gestion des dépendances
-- [Cookiecutter](https://cookiecutter.readthedocs.io/) ou [Cruft](https://cruft.github.io/cruft/)
+- [uv](https://github.com/astral-sh/uv) pour la gestion des dépendances (optionnel mais recommandé)
 
 ## Installation des outils
 
-### Installer Cruft (recommandé)
+### Installer Cruft (requis)
+
+Cruft est **obligatoire** pour utiliser le template PyFoundry. Choisissez une méthode d'installation :
+
+#### Option 1 : Installation globale avec pip
 ```bash
 pip install cruft
 ```
 
-### Installer uv
+#### Option 2 : Environnement conda/mamba dédié (recommandé)
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+# Créer un environnement pour les outils de templating
+mamba create -y -n pyfoundry -c conda-forge python=3.11
+
+# Activer l'environnement
+mamba activate pyfoundry
+
+# Installer cruft et autres outils utiles
+mamba install cruft mkdocs-material --yes
+
+# Vérification de l'installation
+cruft --version
 ```
+
+#### Option 3 : Installation avec uv
+```bash
+# Installer uv d'abord
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Installer cruft avec uv
+uv pip install cruft
+```
+
+!!! warning "Installation obligatoire"
+    **Cruft doit être installé et accessible** avant de pouvoir utiliser le template. Vérifiez avec `cruft --version`.
+
+### Vérification rapide
+```bash
+# Vérifier que cruft est installé
+cruft --version
+# Devrait afficher : cruft, version X.X.X
+
+# Vérifier que Python est accessible
+python --version
+# Devrait afficher : Python 3.11.X ou plus récent
+```
+
+Si ces commandes échouent, suivez les instructions d'installation ci-dessus.
 
 ## Créer un nouveau projet
 
