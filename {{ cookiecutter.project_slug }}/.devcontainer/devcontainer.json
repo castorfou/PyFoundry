@@ -2,11 +2,8 @@
     "name": "{{ cookiecutter.project_name }} - Dev Environment",
     "image": "mcr.microsoft.com/devcontainers/python:{{ cookiecutter.python_version }}-bookworm",
     
-    // Optimisation des performances
+    // Configuration du workspace
     "workspaceFolder": "/workspaces/{{ cookiecutter.project_slug }}",
-    "mounts": [
-        "source=${localWorkspaceFolder},target=/workspaces/{{ cookiecutter.project_slug }},type=bind,consistency=cached"
-    ],
     
     // Variables d'environnement
     "containerEnv": {
