@@ -36,6 +36,9 @@ Vous serez invité à renseigner :
 - **project_slug** : Nom technique (généré automatiquement)
 - **description** : Description courte du projet
 - **python_version** : Version Python (défaut: 3.11)
+- **use_uv** : Installer uv pour la gestion des dépendances (recommandé: y)
+- **use_node** : Installer Node.js/npm pour des outils web (défaut: n)
+- **setup_git** : Configuration Git de base (défaut: y)
 
 ### Méthode avec paramètres
 ```bash
@@ -43,8 +46,16 @@ cruft create https://github.com/username/PyFoundry.git \
   --extra-context '{
     "project_name": "Analyse des Ventes",
     "description": "Analyse des données de vente trimestrielles",
-    "python_version": "3.11"
+    "python_version": "3.11",
+    "use_uv": "y",
+    "use_node": "n",
+    "setup_git": "y"
   }'
+```
+
+### Méthode avec valeurs par défaut
+```bash
+cruft create https://github.com/username/PyFoundry.git --no-input
 ```
 
 ## Démarrage du projet
