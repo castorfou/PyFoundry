@@ -12,10 +12,13 @@
 # 1. Installer cruft (si pas déjà fait)
 pip install cruft
 
-# 2. Créer un nouveau projet
+# 2. Se logger à ghcr.io
+docker login ghcr.io
+
+# 3. Créer un nouveau projet mon-nouveau-projet
 cruft create https://github.com/castorfou/PyFoundry.git
 
-# 3. Ouvrir dans VS Code avec devcontainer
+# 4. Ouvrir dans VS Code avec devcontainer
 code mon-nouveau-projet
 ```
 

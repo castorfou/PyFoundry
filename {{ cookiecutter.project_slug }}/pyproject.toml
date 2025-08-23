@@ -19,43 +19,26 @@ classifiers = [
 ]
 
 dependencies = [
-    "ipykernel>=6.20.0",
-    "ipywidgets>=8.0.0", 
-    "python-dotenv>=1.0.0",
-    "gitpython>=3.1.0",
-    "pandas>=2.0.0",
-    "numpy>=1.24.0",
-    "matplotlib>=3.6.0",
-    "seaborn>=0.12.0"
+    "ipykernel",
+    "ipywidgets", 
+    "python-dotenv",
+    "gitpython",
+    "pandas",
+    "numpy",
+    "matplotlib",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit>=3.0.0",
-    "jupyter>=1.0.0",
-    "jupyterlab>=4.0.0",
-    "black>=23.0.0",
-    "isort>=5.12.0",
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0"
-]
-analysis = [
-    "scikit-learn>=1.3.0",
-    "scipy>=1.10.0",
-    "plotly>=5.0.0",
-    "bokeh>=3.0.0"
-]
-export = [
-    "openpyxl>=3.1.0",
-    "xlsxwriter>=3.0.0",
-    "pyarrow>=12.0.0"
+    "pre-commit",
+    "pytest",
 ]
 
 [project.urls]
-Homepage = "https://github.com/username/{{ cookiecutter.project_slug }}"
-Documentation = "https://github.com/username/{{ cookiecutter.project_slug }}#readme"
-Repository = "https://github.com/username/{{ cookiecutter.project_slug }}.git"
-Issues = "https://github.com/username/{{ cookiecutter.project_slug }}/issues"
+Homepage = "https://github.com/castorfou/{{ cookiecutter.project_slug }}"
+Documentation = "https://github.com/castorfou/{{ cookiecutter.project_slug }}#readme"
+Repository = "https://github.com/castorfou/{{ cookiecutter.project_slug }}.git"
+Issues = "https://github.com/castorfou/{{ cookiecutter.project_slug }}/issues"
 
 [project.scripts]
 {{ cookiecutter.project_slug|replace('-', '_') }}_setup = "scripts.setup:main"
@@ -73,21 +56,5 @@ where = ["src"]
 # Configuration uv pour la reproductibilité
 [tool.uv]
 dev-dependencies = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "black>=23.0.0",
-    "isort>=5.12.0",
-    "pre-commit>=3.0.0"
+    "pytest",
 ]
-
-# Configuration pour les notebooks Jupyter
-[tool.jupyter]
-notebook_dir = "notebooks"
-config_dir = ".jupyter"
-
-# Configuration des variables d'environnement par défaut
-[tool.env]
-PROJECT_NAME = "{{ cookiecutter.project_name }}"
-DATA_DIR = "data"
-NOTEBOOKS_DIR = "notebooks"
-SRC_DIR = "src"

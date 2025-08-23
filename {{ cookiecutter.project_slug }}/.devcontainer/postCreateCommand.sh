@@ -25,35 +25,17 @@ ensure_uv() {
         return 0
     fi
     
-    echo "⚠️  uv non trouvé, tentative d'installation manuelle..."
-    echo "   (Les features devcontainer ont probablement échoué)"
-    
-    # Installation de fallback
-    if curl -LsSf https://astral.sh/uv/install.sh | sh; then
-        export PATH="$HOME/.local/bin:$PATH"
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-        
-        if command -v uv &> /dev/null; then
-            echo "✅ uv installé manuellement ($(uv --version))"
-            return 0
-        fi
-    fi
-    
     echo "❌ Échec d'installation d'uv"
-    echo "   Vérifiez votre connexion Docker/ghcr.io"
+    echo "   Vérifiez votre connexion Docker/ghcr.io (docker login ghcr.io)"
     exit 1
 }
 
 # Création de l'environnement Python
 create_python_environment() {
     echo "Configuration de l'environnement Python $PYTHON_VERSION ..."
-    
-    if [[ ! -d ".venv" ]]; then
-        echo "Création de l'environnement virtuel..."
-        uv venv .venv --python $PYTHON_VERSION
-    else
-        echo "Environnement virtuel existe déjà"
-    fi
+
+    echo "Création de l'environnement virtuel..."
+    uv venv .venv --python $PYTHON_VERSION
     
     source .venv/bin/activate
     echo "Installation des dépendances..."

@@ -12,10 +12,7 @@
         "PROJECT_NAME": "{{ cookiecutter.project_name }}",
         "PROJECT_SLUG": "{{ cookiecutter.project_slug }}",
         "PYTHON_VERSION": "{{ cookiecutter.python_version }}",
-        "ENVIRONMENT": "development",
         "PYTHONPATH": "/workspaces/{{ cookiecutter.project_slug }}/src",
-        "DATA_DIR": "/workspaces/{{ cookiecutter.project_slug }}/data",
-        "JUPYTER_CONFIG_DIR": "/workspaces/{{ cookiecutter.project_slug }}/.jupyter"
     },
     
     "customizations": {
@@ -47,35 +44,10 @@
                 "python.terminal.activateEnvironment": true,
                 "python.analysis.autoImportCompletions": true,
                 "python.analysis.typeCheckingMode": "basic",
-                
-                // Configuration Jupyter
-                "jupyter.askForKernelRestart": false,
-                "jupyter.interactiveWindowMode": "perFile",
-                "jupyter.notebookFileRoot": "${workspaceFolder}/notebooks",
-                
-                // Configuration des formatters
-                "python.formatting.provider": "black",
-                "python.sortImports.args": ["--profile", "black"],
-                "[python]": {
-                    "editor.defaultFormatter": "ms-python.black-formatter",
-                    "editor.formatOnSave": true,
-                    "editor.codeActionsOnSave": {
-                        "source.organizeImports": true
-                    }
-                },
-                
+                                
                 // Configuration générale
-                "files.autoSave": "afterDelay",
-                "files.autoSaveDelay": 1000,
                 "editor.minimap.enabled": true,
                 "editor.rulers": [100],
-                "files.trimTrailingWhitespace": true,
-                "files.insertFinalNewline": true,
-                
-                // Configuration des tests
-                "python.testing.pytestEnabled": true,
-                "python.testing.unittestEnabled": false,
-                "python.testing.pytestArgs": ["tests"],
                 
                 // Exclusions pour améliorer les performances
                 "files.exclude": {
@@ -85,6 +57,7 @@
                     "**/.git": true,
                     "**/.venv": true
                 },
+
                 "search.exclude": {
                     "**/__pycache__": true,
                     "**/.venv": true,
@@ -96,7 +69,7 @@
     
     // Features devcontainer
     "features": {
-        "ghcr.io/astral-sh/uv/devcontainer-feature:latest": {}
+        "ghcr.io/va-h/devcontainers-features/uv:1": {}
     },
        
     // Configuration du shell et de l'environnement

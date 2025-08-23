@@ -21,24 +21,6 @@ code .
 # VS Code proposera "Reopen in Container"
 ```
 
-### Installation manuelle
-
-Si vous n'utilisez pas de devcontainer :
-
-```bash
-# 1. Installer uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
-export PATH="$HOME/.local/bin:$PATH"
-
-# 2. Créer l'environnement Python
-uv venv .venv --python {{ cookiecutter.python_version }}
-source .venv/bin/activate
-
-# 3. Installer les dépendances
-uv pip install -e .
-uv pip install -e ".[dev]"
-```
-
 ## Structure du projet
 
 ```
