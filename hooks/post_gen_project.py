@@ -22,29 +22,65 @@ def check_docker_available():
         print("   Installez Docker Desktop pour utiliser les devcontainers")
         return False
 
-def show_setup_info(docker_available):
+def check_ghcr_auth():
+    """Teste l'authentification à ghcr.io."""
+    print("🔍 Vérification de l'authentification ghcr.io...")
+    
+    try:
+        # Tenter un login avec des credentials vides pour tester l'état
+        result = subprocess.run(
+            ["docker", "login", "ghcr.io", "--password-stdin", "--username", "test"],
+            input="",
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        
+        # Analyser la sortie
+        output = result.stderr.lower() + result.stdout.lower()
+        
+        if "login succeeded" in output:
+            print("✅ Déjà connecté à ghcr.io")
+            return True
+        elif "unauthorized" in output or "authentication required" in output:
+            print("❌ Non connecté à ghcr.io")
+            return False
+        else:
+            # État incertain, assumons non connecté
+            print("⚠️  État d'authentification incertain")
+            return False
+            
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        print("❌ Impossible de vérifier l'authentification")
+        return False
+
+def show_setup_info(docker_available, ghcr_auth):
     """Affiche les informations de configuration."""
     print("\n" + "="*70)
     print("📋 PROCHAINES ÉTAPES")
     print("="*70)
     
     if docker_available:
-        print("🐳 Devcontainer VS Code (Recommandé)")
-        print("")
-        print("Ce projet utilise des features devcontainer avec uv.")
-        print("Si VS Code échoue à construire le devcontainer :")
-        print("")
-        print("1. Créez un Personal Access Token GitHub :")
-        print("   https://github.com/settings/tokens/new")
-        print("   Permissions requis : read:packages")
-        print("")
-        print("2. Connectez-vous à ghcr.io :")
-        print("   docker login ghcr.io -u VOTRE_USERNAME")
-        print("   (utilisez le token comme mot de passe)")
-        print("")
-        print("3. Ouvrez le projet dans VS Code :")
-        print("   code .")
-        print("   VS Code proposera 'Reopen in Container'")
+        if ghcr_auth:
+            print("🚀 Tout est prêt !")
+            print("")
+            print("Ouvrez le projet dans VS Code :")
+            print("   code .")
+            print("   VS Code proposera 'Reopen in Container'")
+        else:
+            print("🔧 Configuration requise pour ghcr.io")
+            print("")
+            print("1. Créez un Personal Access Token GitHub :")
+            print("   https://github.com/settings/tokens/new")
+            print("   Permissions requis : read:packages")
+            print("")
+            print("2. Connectez-vous à ghcr.io :")
+            print("   docker login ghcr.io -u VOTRE_USERNAME")
+            print("   (utilisez le token comme mot de passe)")
+            print("")
+            print("3. Ouvrez le projet dans VS Code :")
+            print("   code .")
+            print("   VS Code proposera 'Reopen in Container'")
     else:
         print("🔧 Installation avec uv")
         print("")
@@ -59,7 +95,12 @@ def main():
     print(f"🚀 Projet {{ cookiecutter.project_name }} créé avec succès !")
     
     docker_available = check_docker_available()
-    show_setup_info(docker_available)
+    ghcr_auth = False
+    
+    if docker_available:
+        ghcr_auth = check_ghcr_auth()
+    
+    show_setup_info(docker_available, ghcr_auth)
     
     print("📚 Documentation : https://castorfou.github.io/PyFoundry")
     print("🐛 Support : https://github.com/castorfou/PyFoundry/issues")
