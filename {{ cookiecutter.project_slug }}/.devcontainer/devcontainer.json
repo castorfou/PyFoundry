@@ -82,7 +82,8 @@
                     "**/__pycache__": true,
                     "**/.pytest_cache": true,
                     "**/node_modules": true,
-                    "**/.git": false
+                    "**/.git": true,
+                    "**/.venv": true
                 },
                 "search.exclude": {
                     "**/__pycache__": true,
@@ -101,5 +102,5 @@
     "remoteUser": "vscode",
     
     // Optimisations de performance
-    "shutdownAction": "none",
+    "shutdownAction": "none"
 }
