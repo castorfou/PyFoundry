@@ -22,8 +22,13 @@ mon-projet-data-science/
 
 ### `.devcontainer/`
 Configuration pour VS Code Dev Containers. Garantit un environnement de développement reproductible avec :
+- **`devcontainer.json`** : Configuration principale du container
+- **`postCreateCommand.sh`** : Script de configuration automatique
 - Python {{ cookiecutter.python_version }}
-- uv pour la gestion des dépendances
+- Installation conditionnelle d'outils selon vos choix :
+  - uv (gestion des dépendances moderne)
+  - Node.js/npm (pour outils web)  
+  - Configuration Git de base
 - Extensions VS Code pré-installées
 - Port 8888 exposé pour Jupyter
 

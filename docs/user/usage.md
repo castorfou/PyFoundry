@@ -155,6 +155,14 @@ jupyter kernelspec list
 ```
 
 ### Problèmes devcontainer
-1. Rebuild container : `Ctrl+Shift+P` → "Dev Containers: Rebuild Container"
-2. Vérifier Docker Desktop est lancé
-3. Vérifier les logs du container dans VS Code
+1. **Rebuild container** : `Ctrl+Shift+P` → "Dev Containers: Rebuild Container"
+2. **Vérifier Docker Desktop** est lancé
+3. **Logs détaillés** : Ouvrir "Terminal" pendant la construction pour voir les détails
+4. **Environnement .venv** : Si pas créé automatiquement :
+   ```bash
+   # Manuellement dans le container
+   uv venv .venv  # ou python -m venv .venv
+   source .venv/bin/activate
+   uv pip install -e .  # ou pip install -e .
+   ```
+5. **Problèmes de permissions** : Parfois résolu par un redémarrage de VS Code

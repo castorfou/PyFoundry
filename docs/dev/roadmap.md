@@ -7,13 +7,16 @@ PyFoundry suit une approche de développement **graduelle et itérative**. Chaqu
 ## Versions planifiées
 
 ### ✅ v0.1 : Squelette (Actuel)
-**Objectif** : Structure de base fonctionnelle
+**Objectif** : Structure de base fonctionnelle avec environnement reproductible
 
 **Fonctionnalités** :
 - ✅ Structure de projet standardisée (`src/`, `data/`, `notebooks/`)
-- ✅ Configuration devcontainer VS Code 
+- ✅ Configuration devcontainer VS Code avec script externe
+- ✅ Environnement virtuel `.venv` automatique
+- ✅ Installation conditionnelle d'outils (uv, Node.js, Git)
+- ✅ Variables cookiecutter configurables
 - ✅ `pyproject.toml` avec dépendances essentielles
-- ✅ Documentation utilisateur et développeur
+- ✅ Documentation utilisateur et développeur complète
 - ✅ `.gitignore` adapté Data Science
 
 **Dépendances incluses** :
@@ -21,6 +24,11 @@ PyFoundry suit une approche de développement **graduelle et itérative**. Chaqu
 - `python-dotenv` : Configuration par variables d'environnement  
 - `gitpython` : Intégration Git programmatique
 - `pre-commit` : Préparation pour v0.3
+
+**Options configurables** :
+- `use_uv` : Installation d'uv (recommandé)
+- `use_node` : Installation Node.js/npm
+- `setup_git` : Configuration Git de base
 
 ---
 
