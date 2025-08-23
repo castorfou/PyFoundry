@@ -25,13 +25,13 @@ def check_docker_available():
 def show_setup_info(docker_available):
     """Affiche les informations de configuration."""
     print("\n" + "="*70)
-    print("📋 INSTRUCTIONS DE CONFIGURATION")
+    print("📋 PROCHAINES ÉTAPES")
     print("="*70)
     
     if docker_available:
-        print("🐳 OPTION 1 : Devcontainer VS Code (Recommandé)")
+        print("🐳 Devcontainer VS Code (Recommandé)")
         print("")
-        print("Ce projet utilise des features devcontainer de ghcr.io.")
+        print("Ce projet utilise des features devcontainer avec uv.")
         print("Si VS Code échoue à construire le devcontainer :")
         print("")
         print("1. Créez un Personal Access Token GitHub :")
@@ -46,16 +46,18 @@ def show_setup_info(docker_available):
         print("   code {{ cookiecutter.project_slug }}")
         print("   VS Code proposera 'Reopen in Container'")
         print("")
+    else:
+        print("🔧 Installation manuelle avec uv")
+        print("")
+        print("cd {{ cookiecutter.project_slug }}")
+        print("curl -LsSf https://astral.sh/uv/install.sh | sh")
+        print("export PATH=\"$HOME/.local/bin:$PATH\"")
+        print("uv venv .venv --python {{ cookiecutter.python_version }}")
+        print("source .venv/bin/activate")
+        print("uv pip install -e .")
+        print("uv pip install -e \".[dev]\"")
+        print("")
     
-    print("💻 OPTION 2 : Installation locale")
-    print("")
-    print("cd {{ cookiecutter.project_slug }}")
-    print("python -m venv .venv")
-    print("source .venv/bin/activate  # Linux/macOS")
-    print("pip install uv")
-    print("uv pip install -e .")
-    print("uv pip install -e \".[dev]\"")
-    print("")
     print("="*70)
 
 def main():

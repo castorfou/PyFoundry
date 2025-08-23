@@ -2,41 +2,41 @@
 
 {{ cookiecutter.description }}
 
-## Configuration Initiale
+## Installation
 
-### Option 1 : Devcontainer VS Code (Recommandé)
+Ce projet utilise **uv** pour la gestion des dépendances et des environnements Python.
 
-Si vous utilisez VS Code avec Docker, le projet se configurera automatiquement dans un devcontainer.
+### Avec VS Code + Devcontainer (Recommandé)
 
-**Prérequis** : Authentification à ghcr.io pour les features devcontainer :
+Si vous avez Docker et VS Code :
 
 ```bash
-# 1. Créez un Personal Access Token sur GitHub avec permission 'read:packages'
-# https://github.com/settings/tokens/new
-
-# 2. Connectez-vous à ghcr.io
+# 1. Authentifiez-vous à ghcr.io (si nécessaire)
+# Créez un Personal Access Token : https://github.com/settings/tokens/new
+# Permissions : read:packages
 docker login ghcr.io -u VOTRE_USERNAME
-# Utilisez le token comme mot de passe
 
-# 3. Ouvrez le projet dans VS Code
+# 2. Ouvrez dans VS Code
 code .
-# VS Code proposera d'ouvrir dans un devcontainer
+# VS Code proposera "Reopen in Container"
 ```
 
-### Option 2 : Installation locale
+### Installation manuelle
+
+Si vous n'utilisez pas de devcontainer :
 
 ```bash
-# Créer un environnement virtuel
-python -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-# ou .venv\Scripts\activate  # Windows
+# 1. Installer uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="$HOME/.local/bin:$PATH"
 
-# Installer uv si nécessaire
-pip install uv
+# 2. Créer l'environnement Python
+uv venv .venv --python {{ cookiecutter.python_version }}
+source .venv/bin/activate
 
-# Installer les dépendances
+# 3. Installer les dépendances
 uv pip install -e .
-uv pip install -e ".[dev]"  # Dépendances de développement
+uv pip install -e ".[dev]"
 ```
 
 ## Structure du projet
