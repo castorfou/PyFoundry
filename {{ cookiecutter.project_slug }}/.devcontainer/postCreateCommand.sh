@@ -17,16 +17,15 @@ update_system() {
     echo "Système mis à jour"
 }
 
-# Installation d'uv
-install_uv() {
-    echo "Installation de uv..."
+# Vérification d'uv (installé via devcontainer feature)
+check_uv() {
+    echo "Vérification de uv..."
     if command -v uv &> /dev/null; then
-        echo "uv déjà installé"
+        echo "uv disponible ($(uv --version))"
     else
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        export PATH="$HOME/.local/bin:$PATH"
+        echo "Erreur: uv non trouvé"
+        exit 1
     fi
-    echo "uv installé"
 }
 
 # Création de l'environnement Python
@@ -35,22 +34,22 @@ create_python_environment() {
     
     if [[ ! -d ".venv" ]]; then
         echo "Création de l'environnement virtuel..."
-        ~/.local/bin/uv venv .venv --python $PYTHON_VERSION
+        uv venv .venv --python $PYTHON_VERSION
     else
         echo "Environnement virtuel existe déjà"
     fi
     
     source .venv/bin/activate
     echo "Installation des dépendances..."
-    ~/.local/bin/uv pip install -e .
+    uv pip install -e .
     
     if [[ -f "pyproject.toml" ]] && grep -q "\[project.optional-dependencies\]" pyproject.toml; then
         echo "Installation des dépendances de développement..."
-        ~/.local/bin/uv pip install -e ".[dev]"
+        uv pip install -e ".[dev]"
     fi
     
     echo "Génération du fichier de verrouillage..."
-    ~/.local/bin/uv pip freeze > requirements.lock
+    uv pip freeze > requirements.lock
     
     echo "Configuration de l'activation automatique..."
     PROJECT_PATH=$(pwd)
@@ -65,7 +64,7 @@ create_python_environment() {
 
 # Exécution des étapes
 update_system
-install_uv
+check_uv
 create_python_environment
 
 echo ""

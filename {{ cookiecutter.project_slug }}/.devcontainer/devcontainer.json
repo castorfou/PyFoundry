@@ -93,6 +93,11 @@
             }
         }
     },
+    
+    // Features devcontainer
+    "features": {
+        "ghcr.io/astral-sh/uv/devcontainer-feature:latest": {}
+    },
        
     // Configuration du shell et de l'environnement
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
