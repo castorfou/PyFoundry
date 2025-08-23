@@ -1,6 +1,6 @@
 {
     "name": "{{ cookiecutter.project_name }} - Dev Environment",
-    "image": "python:{{ cookiecutter.python_version }}-slim",
+    "image": "mcr.microsoft.com/vscode/devcontainers/python:{{ cookiecutter.python_version }}",
     
     // Configuration du workspace
     "workspaceFolder": "/workspaces/{{ cookiecutter.project_slug }}",
@@ -125,7 +125,6 @@
     },
     
     // Configuration du shell et de l'environnement
-    "postCreateCommand": "apt-get update && apt-get install -y git curl && useradd -m -s /bin/bash vscode && echo 'Setup completed'",
     "postStartCommand": "echo '🚀 {{ cookiecutter.project_name }} - Environnement prêt!'",
     
     // Utilisateur non-root pour la sécurité
