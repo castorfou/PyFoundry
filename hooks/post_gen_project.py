@@ -45,9 +45,6 @@ def show_setup_info(docker_available):
         print("3. Ouvrez le projet dans VS Code :")
         print("   code .")
         print("   VS Code proposera 'Reopen in Container'")
-        print("")
-        print("Alternative : Installation manuelle avec uv")
-        print("Consultez le README.md pour les instructions détaillées")
     else:
         print("🔧 Installation avec uv")
         print("")
