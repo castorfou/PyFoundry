@@ -35,8 +35,8 @@ code mon-nouveau-projet    # VS Code propose "Reopen in Container"
 ## 🛠️ Stack technologique
 
 - **Templating** : Cookiecutter / Cruft pour templates évolutifs
-- **Environnement** : Devcontainer VS Code (Python 3.12) avec variables d'environnement
-- **Dépendances** : uv obligatoire & pyproject.toml avec métadonnées complètes
+- **Environnement** : Devcontainer VS Code (Python 3.12) avec features officielles
+- **Dépendances** : uv via devcontainer feature & pyproject.toml avec métadonnées complètes
 - **Reproductibilité** : Verrouillage automatique des dépendances (requirements.lock)
 - **Configuration** : Templates .env et configuration Jupyter intégrée
 - **Qualité de Code** : pre-commit & ruff (préparation v0.3)
@@ -86,7 +86,7 @@ mon-projet/
 - **Performance** : Configuration simplifiée, build plus rapide
 - **Extensions** : Extensions VS Code essentielles (Python, Jupyter, Git)
 - **Ports** : Multi-port (8888, 8889, 8080, 3000) avec labels automatiques
-- **Environment** : Variables intégrées et installation uv automatique
+- **Environment** : Variables intégrées et feature uv officielle
 
 ## 📊 Performances v0.2
 

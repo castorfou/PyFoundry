@@ -12,7 +12,7 @@
 - Extension [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 ### Option 2 : Installation locale
-- [uv](https://github.com/astral-sh/uv) sera installé automatiquement par les scripts de setup
+- [uv](https://github.com/astral-sh/uv) sera installé automatiquement via devcontainer feature
 
 ## Installation des outils
 

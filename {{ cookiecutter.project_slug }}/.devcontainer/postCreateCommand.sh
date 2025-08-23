@@ -17,15 +17,31 @@ update_system() {
     echo "Système mis à jour"
 }
 
-# Vérification d'uv (installé via devcontainer feature)
-check_uv() {
+# Vérification et installation d'uv (priorité: devcontainer feature, fallback: installation manuelle)
+ensure_uv() {
     echo "Vérification de uv..."
     if command -v uv &> /dev/null; then
-        echo "uv disponible ($(uv --version))"
-    else
-        echo "Erreur: uv non trouvé"
-        exit 1
+        echo "✅ uv disponible ($(uv --version))"
+        return 0
     fi
+    
+    echo "⚠️  uv non trouvé, tentative d'installation manuelle..."
+    echo "   (Les features devcontainer ont probablement échoué)"
+    
+    # Installation de fallback
+    if curl -LsSf https://astral.sh/uv/install.sh | sh; then
+        export PATH="$HOME/.local/bin:$PATH"
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+        
+        if command -v uv &> /dev/null; then
+            echo "✅ uv installé manuellement ($(uv --version))"
+            return 0
+        fi
+    fi
+    
+    echo "❌ Échec d'installation d'uv"
+    echo "   Vérifiez votre connexion Docker/ghcr.io"
+    exit 1
 }
 
 # Création de l'environnement Python
@@ -64,7 +80,7 @@ create_python_environment() {
 
 # Exécution des étapes
 update_system
-check_uv
+ensure_uv
 create_python_environment
 
 echo ""

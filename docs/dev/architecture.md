@@ -11,7 +11,7 @@ PyFoundry suit ces principes d'architecture :
 
 ### 🔄 Reproductibilité
 - **Devcontainer** garantit l'environnement identique
-- **uv obligatoire** pour des résolutions de dépendances déterministes
+- **uv via devcontainer feature** pour des résolutions de dépendances déterministes
 - **Versions épinglées** des outils critiques
 
 ### 🚀 Démarrage rapide
@@ -72,12 +72,28 @@ PyFoundry/                                    # Dépôt du template
 ```
 
 **Choix techniques** :
-- **Image officielle Microsoft** pour la compatibilité
-- **Script externe** pour la configuration flexible
-- **Environnement virtuel .venv** pour l'isolation
-- **Installation conditionnelle** d'outils (uv, node, etc.)
-- **Bookworm** (Debian 12) pour la stabilité
-- **Extensions VS Code** pré-installées pour la productivité
+- **Image officielle Microsoft** Python 3.12 pour la compatibilité
+- **Devcontainer features** pour l'installation standardisée des outils
+- **Script postCreateCommand** simplifié pour la configuration
+- **Environnement virtuel .venv** avec version Python dynamique
+- **Features officielles** (uv) au lieu d'installation manuelle
+
+### Devcontainer Features
+
+```json
+{
+    "features": {
+        "ghcr.io/astral-sh/uv/devcontainer-feature:latest": {}
+    }
+}
+```
+
+**Avantages des features** :
+- **Installation standardisée** via les registres officiels
+- **Gestion des dépendances** automatique
+- **Chemins PATH** configurés correctement
+- **Versions** gérées de manière cohérente
+- **Maintenance** par les mainteneurs officiels
 
 ## Choix technologiques
 
