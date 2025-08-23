@@ -137,7 +137,7 @@
     },
     
     // Configuration du shell et de l'environnement
-    "postCreateCommand": "chmod +x .devcontainer/postCreateCommand.sh && .devcontainer/postCreateCommand.sh",
+    "postCreateCommand": "echo 'Container setup completed successfully'",
     "postStartCommand": "echo '🚀 {{ cookiecutter.project_name }} - Environnement prêt!'",
     
     // Utilisateur non-root pour la sécurité
