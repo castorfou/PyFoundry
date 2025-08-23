@@ -22,7 +22,7 @@ sudo apt-get install -y nodejs
 # Installation des dépendances Python
 {% if cookiecutter.use_uv == "y" %}
 echo "🐍 Installation des dépendances Python avec uv..."
-~/.local/bin/uv pip install -e .
+~/.local/bin/uv pip install -e . --system
 {% else %}
 echo "🐍 Installation des dépendances Python avec pip..."
 pip install -e .
