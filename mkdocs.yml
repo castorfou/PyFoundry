@@ -33,12 +33,12 @@ nav:
     - Utilisation: user/usage.md
     - Structure: user/structure.md
     - "Nouveautés v0.2": user/v0.2-features.md
-    - Claude code: user/claude-code.md
   - Guide Développeur:
     - Architecture: dev/architecture.md
     - Contribution: dev/contributing.md
     - Déploiement: dev/deployment.md
     - Roadmap: dev/roadmap.md
+    - Claude code: dev/claude-code.md
 
 markdown_extensions:
   - admonition
