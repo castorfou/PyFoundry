@@ -31,10 +31,11 @@ code mon-nouveau-projet
 
 ## 📋 Fonctionnalités actuelles (v0.1)
 
-- ✅ Structure de projet standardisée
-- ✅ Configuration devcontainer VS Code
+- ✅ Structure de projet standardisée (`src/`, `data/`, `notebooks/`)
+- ✅ Configuration devcontainer VS Code avec environnement virtuel `.venv`
+- ✅ Installation conditionnelle d'outils (uv, Node.js, Git)
 - ✅ Configuration pyproject.toml avec dépendances essentielles
-- ✅ Documentation utilisateur et développeur
+- ✅ Documentation utilisateur et développeur complète
 - ✅ .gitignore adapté Data Science
 
 ## 🗺️ Roadmap

@@ -27,6 +27,13 @@ Configuration pour VS Code Dev Containers. Garantit un environnement de dévelop
 - Extensions VS Code pré-installées
 - Port 8888 exposé pour Jupyter
 
+### `.venv/` (généré)
+Environnement virtuel Python créé automatiquement par le devcontainer :
+- Contient toutes les dépendances du projet
+- Isolé des autres projets
+- Activé automatiquement dans VS Code et les terminaux
+- Ignoré par Git
+
 ### `src/`
 Code source principal du projet. Structure recommandée :
 

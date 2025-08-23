@@ -2,9 +2,13 @@
 
 ## Commandes principales
 
-### Gestion des dépendances avec uv
+### Gestion des dépendances
 
+#### Avec uv (recommandé)
 ```bash
+# Activer l'environnement (si pas déjà fait)
+source .venv/bin/activate
+
 # Installer les dépendances du projet
 uv pip install -e .
 
@@ -16,6 +20,19 @@ uv add pandas numpy scikit-learn
 
 # Ajouter une dépendance de développement
 uv add --dev pytest black
+```
+
+#### Avec pip standard
+```bash
+# Activer l'environnement
+source .venv/bin/activate
+
+# Installer les dépendances
+pip install -e .
+pip install -e ".[dev]"
+
+# Ajouter des dépendances (modifier pyproject.toml puis)
+pip install -e .
 ```
 
 ### Jupyter et notebooks

@@ -69,12 +69,25 @@ cruft create https://github.com/username/PyFoundry.git --no-input
 ### En local
 ```bash
 cd mon-projet
-uv pip install -e .
-uv pip install -e ".[dev]"
+
+# L'environnement .venv est déjà créé si vous avez choisi uv
+# Sinon, créez-le manuellement :
+# python -m venv .venv  # ou uv venv .venv
+
+# Activer l'environnement
+source .venv/bin/activate
+
+# Installer les dépendances
+uv pip install -e .          # si uv choisi
+# ou pip install -e .        # si pip standard
+
+# Installer les dépendances de développement
+uv pip install -e ".[dev]"   # si uv choisi
+# ou pip install -e ".[dev]" # si pip standard
 ```
 
-!!! tip "Environnement virtuel"
-    uv créera automatiquement un environnement virtuel si nécessaire.
+!!! tip "Environnement virtuel automatique"
+    Le devcontainer crée automatiquement `.venv` et l'active. En local, vous devez l'activer manuellement avec `source .venv/bin/activate`.
 
 ## Vérification de l'installation
 

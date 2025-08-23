@@ -57,16 +57,23 @@ PyFoundry/                                    # Dépôt du template
 {
     "name": "{{ cookiecutter.project_name }}",
     "image": "mcr.microsoft.com/devcontainers/python:{{ cookiecutter.python_version }}-bookworm",
-    "features": {
-        "ghcr.io/astral-sh/uv-devcontainer-features/uv:latest": {}
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": "./.venv/bin/python",
+                "python.terminal.activateEnvironment": true
+            }
+        }
     },
-    "postCreateCommand": "uv pip install -e ."
+    "postCreateCommand": "chmod +x .devcontainer/postCreateCommand.sh && .devcontainer/postCreateCommand.sh"
 }
 ```
 
 **Choix techniques** :
 - **Image officielle Microsoft** pour la compatibilité
-- **Feature uv officielle** pour l'installation automatique
+- **Script externe** pour la configuration flexible
+- **Environnement virtuel .venv** pour l'isolation
+- **Installation conditionnelle** d'outils (uv, node, etc.)
 - **Bookworm** (Debian 12) pour la stabilité
 - **Extensions VS Code** pré-installées pour la productivité
 
