@@ -120,20 +120,8 @@
         }
     },
     
-    // Features avancées
+    // Features simplifiées pour debug
     "features": {
-        {% if cookiecutter.use_node == "y" %}
-        "ghcr.io/devcontainers/features/node:1": {
-            "version": "lts"
-        },
-        {% endif %}
-        "ghcr.io/devcontainers/features/git:1": {
-            "ppa": true,
-            "version": "os-provided"
-        },
-        "ghcr.io/devcontainers/features/github-cli:1": {
-            "version": "latest"
-        }
     },
     
     // Configuration du shell et de l'environnement
