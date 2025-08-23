@@ -78,6 +78,66 @@ mkdocs gh-deploy
 # Ou via GitHub Actions (recommandé pour la production)
 ```
 
+### Publication sur GitHub
+
+#### Installation GitHub CLI
+```bash
+# Ubuntu/Debian
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+sudo apt update && sudo apt install gh
+
+# macOS
+brew install gh
+
+# Windows
+winget install --id GitHub.cli
+```
+
+#### Authentification GitHub
+```bash
+# Configuration initiale
+gh auth login
+
+# Choisir:
+# - GitHub.com
+# - HTTPS
+# - Authentification via browser ou token
+# - Upload SSH key (optionnel)
+```
+
+#### Création du repository
+```bash
+# Depuis le dossier PyFoundry
+cd /path/to/PyFoundry
+
+# Créer le repository directement
+gh repo create PyFoundry --public --source=. --remote=origin --push
+
+# Alternative avec paramètres complets
+gh repo create PyFoundry \
+  --description "Template Cookiecutter de qualité industrielle pour projets Data Science Python" \
+  --homepage "https://guillaume.github.io/PyFoundry" \
+  --public \
+  --source=. \
+  --remote=origin \
+  --push
+```
+
+#### Configuration GitHub Pages
+```bash
+# Activer GitHub Pages via CLI
+gh api repos/:owner/:repo/pages \
+  --method POST \
+  --field source[branch]=main \
+  --field source[path]="/" \
+  --field build_type="workflow"
+
+# Vérifier le statut
+gh api repos/:owner/:repo/pages
+```
+
 ## Workflow de développement
 
 ### Structure des contributions

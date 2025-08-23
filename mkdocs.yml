@@ -35,6 +35,7 @@ nav:
   - Guide Développeur:
     - Architecture: dev/architecture.md
     - Contribution: dev/contributing.md
+    - Déploiement: dev/deployment.md
     - Roadmap: dev/roadmap.md
 
 markdown_extensions:
