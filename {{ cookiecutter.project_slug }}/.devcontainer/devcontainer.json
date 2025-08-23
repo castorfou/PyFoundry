@@ -68,7 +68,7 @@
                 "files.autoSave": "afterDelay",
                 "files.autoSaveDelay": 1000,
                 "editor.minimap.enabled": true,
-                "editor.rulers": [88],
+                "editor.rulers": [100],
                 "files.trimTrailingWhitespace": true,
                 "files.insertFinalNewline": true,
                 
@@ -101,5 +101,4 @@
     
     // Optimisations de performance
     "shutdownAction": "none",
-    "overrideCommand": false
 }
