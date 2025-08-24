@@ -1,0 +1,22 @@
+[project]
+name = "PyFoundry"
+version = "0.4.0-dev"
+description = "Template Cookiecutter pour projets Data Science Python"
+requires-python = ">=3.11"
+
+dependencies = [
+    "cookiecutter",
+    "cruft",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cookies",
+    "pytest-cov",
+]
+
+# Configuration pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--cov=.", "--cov-report=term-missing", "--cov-report=xml"]

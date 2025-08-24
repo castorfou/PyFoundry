@@ -1,43 +1,43 @@
 {
     "name": "{{ cookiecutter.project_name }} - Dev Environment",
     "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
-	"runArgs": [
-		"--network=host",
-		"--label", "com.centurylinklabs.watchtower.enable=false",
-		"--env", "CONTAINER_NAME=vscode-dev-container_{{ cookiecutter.project_slug }}"
-	],    
+    "runArgs": [
+        "--network=host",
+        "--label", "com.centurylinklabs.watchtower.enable=false",
+        "--env", "CONTAINER_NAME=vscode-dev-container_{{ cookiecutter.project_slug }}"
+    ],
     
     // Variables d'environnement
     "containerEnv": {
         "PROJECT_NAME": "{{ cookiecutter.project_name }}",
         "PROJECT_SLUG": "{{ cookiecutter.project_slug }}",
         "PYTHON_VERSION": "{{ cookiecutter.python_version }}",
-        "PYTHONPATH": "/workspaces/{{ cookiecutter.project_slug }}/src",
+        "PYTHONPATH": "/workspaces/{{ cookiecutter.project_slug }}/src"
     },
     
     "customizations": {
         "vscode": {
-			"extensions": [
-				"ms-toolsai.jupyter",
-				"ms-toolsai.vscode-jupyter-cell-tags",
-				"ms-toolsai.jupyter-renderers",
-				"ms-toolsai.vscode-jupyter-slideshow",
-				"ms-toolsai.jupyter-keymap",
-				"ms-python.isort",
-				"ms-python.debugpy",
-				"ms-python.python",
-				"github.vscode-github-actions",
-				"mikoz.black-py",
-				"vscode-icons-team.vscode-icons",
-				"mongodb.mongodb-vscode",
-				"yzhang.markdown-all-in-one",
-				"ukoloff.win-ca",
-				"ms-python.vscode-pylance",
-				"GitHub.copilot-chat",
-				"GitHub.copilot",
-				"dbaeumer.vscode-eslint",
-				"ms-python.autopep8"
-			],
+            "extensions": [
+                "ms-toolsai.jupyter",
+                "ms-toolsai.vscode-jupyter-cell-tags",
+                "ms-toolsai.jupyter-renderers",
+                "ms-toolsai.vscode-jupyter-slideshow",
+                "ms-toolsai.jupyter-keymap",
+                "ms-python.isort",
+                "ms-python.debugpy",
+                "ms-python.python",
+                "github.vscode-github-actions",
+                "mikoz.black-py",
+                "vscode-icons-team.vscode-icons",
+                "mongodb.mongodb-vscode",
+                "yzhang.markdown-all-in-one",
+                "ukoloff.win-ca",
+                "ms-python.vscode-pylance",
+                "GitHub.copilot-chat",
+                "GitHub.copilot",
+                "dbaeumer.vscode-eslint",
+                "ms-python.autopep8"
+            ],
             "settings": {
                 // Configuration Python
                 "python.defaultInterpreterPath": "./.venv/bin/python",

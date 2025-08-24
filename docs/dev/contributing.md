@@ -19,7 +19,7 @@ mamba create -y -n pyfoundry -c conda-forge python=3.11
 mamba activate pyfoundry
 
 # Installer les outils nécessaires pour développer le template
-mamba install nb_conda_kernels cruft mkdocs-material --yes
+mamba install nb_conda_kernels cruft mkdocs-material pytest pytest-cookies pytest-cov pre-commit ruff mypy --yes
 ```
 
 #### 2. Cloner et configurer le projet
@@ -231,19 +231,111 @@ chore(deps): mettre à jour mkdocs-material
 - **Comments** : expliquer les choix non évidents
 - **Extensibilité** : faciliter les modifications futures
 
-### Tests requis
+### Tests automatisés (v0.4)
 
-#### Tests unitaires (à venir v0.4)
-```bash
-# Tester la génération du template
-pytest tests/test_generation.py
+#### Architecture des tests
+Les tests utilisent `pytest-cookies` pour valider la génération du template dans un environnement isolé :
 
-# Tester le contenu généré  
-pytest tests/test_project_structure.py
-
-# Tester les commandes dans le projet généré
-pytest tests/test_project_commands.py
 ```
+tests/
+├── __init__.py                    # Package tests
+├── conftest.py                    # Fixtures pytest
+├── test_template_generation.py   # Tests de génération du template
+└── test_configurations.py        # Tests de validation des configurations
+```
+
+#### Types de tests
+
+**Tests de génération** (`test_template_generation.py`) :
+- Génération sans erreur avec différents contextes
+- Structure de projet créée (dossiers `src/`, `data/`, `notebooks/`)
+- Fichiers essentiels présents (`README.md`, `pyproject.toml`, `.gitignore`)
+- Transformation correcte du `project_slug`
+- Intégration `github_username` dans les URLs
+
+**Tests de validation** (`test_configurations.py`) :
+- `pyproject.toml` : syntaxe TOML valide, structure projet, configuration ruff/mypy
+- `.pre-commit-config.yaml` : YAML valide, repos attendus (ruff, mypy, hooks)
+- `devcontainer.json` : structure devcontainer, éléments essentiels
+- `.gitignore` : patterns Data Science essentiels
+- Configuration Ruff : règles pandas/numpy, line-length
+- Configuration MyPy : mode progressif, overrides Data Science
+
+#### Lancement des tests
+
+```bash
+# Activer l'environnement
+mamba activate pyfoundry
+
+# Lancer tous les tests avec couverture
+pytest tests/ -v --cov=. --cov-report=term-missing
+
+# Lancer un fichier de test spécifique
+pytest tests/test_template_generation.py -v
+
+# Lancer un test spécifique
+pytest tests/test_configurations.py::test_pyproject_toml_valid -v
+
+# Tests sans couverture (plus rapide)
+pytest tests/ -v
+```
+
+#### Modifier et enrichir les tests
+
+**Ajouter un nouveau test de génération** :
+```python
+# Dans tests/test_template_generation.py
+def test_nouvelle_fonctionnalite(cookies, default_template_context):
+    """Test de la nouvelle fonctionnalité."""
+    result = cookies.bake(extra_context=default_template_context)
+    
+    # Vérifier le projet généré
+    assert result.exit_code == 0
+    assert (result.project_path / "nouveau_fichier.txt").exists()
+```
+
+**Ajouter un test de validation** :
+```python
+# Dans tests/test_configurations.py  
+def test_nouvelle_config_valid(cookies, minimal_template_context):
+    """Test que nouvelle_config.yml est valide."""
+    result = cookies.bake(extra_context=minimal_template_context)
+    
+    config_path = result.project_path / "nouvelle_config.yml"
+    assert config_path.exists()
+    
+    content = yaml.safe_load(config_path.read_text())
+    assert "expected_key" in content
+```
+
+**Créer un nouveau contexte de test** :
+```python
+# Dans tests/conftest.py
+@pytest.fixture
+def nouveau_contexte():
+    """Contexte spécialisé pour tests spécifiques."""
+    return {
+        "project_name": "Test Spécialisé",
+        "nouvelle_option": "valeur_test",
+        # ... autres paramètres
+    }
+```
+
+#### CI/CD GitHub Actions
+
+Les tests s'exécutent automatiquement via `.github/workflows/test-template.yml` :
+- Déclenchement sur `push` et `pull_request`
+- Test sur Python 3.11 et 3.12
+- Validation du projet généré avec `uv`, `ruff`, `mypy`
+- Upload de couverture vers Codecov
+
+#### Bonnes pratiques
+
+1. **Fixtures** : Utiliser `minimal_template_context` pour tests rapides, `default_template_context` pour tests complets
+2. **Isolation** : Chaque test génère un projet dans un dossier temporaire
+3. **Performance** : Préférer les tests de structure aux tests d'exécution
+4. **Validation** : Tester la syntaxe des fichiers de configuration
+5. **Couverture** : Viser 100% de couverture des tests critiques
 
 #### Tests manuels
 1. **Génération** : `cruft create . --no-input`
