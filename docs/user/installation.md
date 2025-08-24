@@ -5,14 +5,8 @@
 ### Obligatoire
 - **Python 3.11+**
 - **[Cruft](https://cruft.github.io/cruft/)** - Pour créer des projets depuis le template
-
-### Option 1 : Avec VS Code + Docker (Recommandé)
-- [VS Code](https://code.visualstudio.com/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Extension [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-
-### Option 2 : Installation locale
-- [uv](https://github.com/astral-sh/uv) sera installé automatiquement via devcontainer feature
+- **VS Code + Docker**
+  - Extension [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 ## Installation des outils
 
@@ -40,15 +34,6 @@ mamba install cruft mkdocs-material --yes
 cruft --version
 ```
 
-#### Option 3 : Installation avec uv
-```bash
-# Installer uv d'abord
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Installer cruft avec uv
-uv pip install cruft
-```
-
 !!! warning "Installation obligatoire"
     **Cruft doit être installé et accessible** avant de pouvoir utiliser le template. Vérifiez avec `cruft --version`.
 
@@ -63,8 +48,6 @@ python --version
 # Devrait afficher : Python 3.11.X ou plus récent
 ```
 
-Si ces commandes échouent, suivez les instructions d'installation ci-dessus.
-
 ## Créer un nouveau projet
 
 ### Méthode interactive
@@ -77,9 +60,7 @@ Vous serez invité à renseigner :
 - **project_slug** : Nom technique (généré automatiquement)
 - **description** : Description courte du projet
 - **python_version** : Version Python (défaut: 3.11)
-- *uv est maintenant installé automatiquement*
 - **use_node** : Installer Node.js/npm pour des outils web (défaut: n)
-- **setup_git** : Configuration Git de base (défaut: y)
 
 ### Méthode avec paramètres
 ```bash
@@ -106,29 +87,6 @@ cruft create https://github.com/username/PyFoundry.git --no-input
 3. Attendre l'installation automatique des dépendances
 4. Commencer à développer !
 
-### En local
-```bash
-cd mon-projet
-
-# L'environnement .venv est déjà créé si vous avez choisi uv
-# Sinon, créez-le manuellement :
-# python -m venv .venv  # ou uv venv .venv
-
-# Activer l'environnement
-source .venv/bin/activate
-
-# Installer les dépendances
-uv pip install -e .          # si uv choisi
-# ou pip install -e .        # si pip standard
-
-# Installer les dépendances de développement
-uv pip install -e ".[dev]"   # si uv choisi
-# ou pip install -e ".[dev]" # si pip standard
-```
-
-!!! tip "Environnement virtuel automatique"
-    Le devcontainer crée automatiquement `.venv` et l'active. En local, vous devez l'activer manuellement avec `source .venv/bin/activate`.
-
 ## Vérification de l'installation
 
 ```bash
@@ -146,6 +104,3 @@ Si le template PyFoundry est mis à jour, vous pouvez synchroniser votre projet 
 ```bash
 cruft update
 ```
-
-!!! warning "Conflits potentiels"
-    La mise à jour peut créer des conflits si vous avez modifié les fichiers de configuration. Résolvez-les manuellement.

@@ -13,9 +13,11 @@ PyFoundry automatise complètement la création d'environnements Data Science mo
 
 ## ⚡ Démarrage rapide
 
+pour créer un projet suivant le template PyFoundry
+
 ```bash
-# 1. Installer cruft
-pip install cruft
+# 1. Activer cruft
+mamba activate pyfoundry # un exemple d'activation d'environnement contenant cruft
 
 # 2. Se logger à ghcr.io (pour les features devcontainer)  
 docker login ghcr.io
@@ -26,7 +28,7 @@ cruft create https://github.com/castorfou/PyFoundry.git
 # 4. Ouvrir dans VS Code (setup automatique complet)
 code mon-nouveau-projet
 # → VS Code propose "Reopen in Container"
-# → Configuration Git + GitHub + Pre-commit automatique
+# → Configuration Git + GitHub (un connexion à github sera effectuée) + Pre-commit automatique
 ```
 
 ## ✨ Fonctionnalités
@@ -34,7 +36,7 @@ code mon-nouveau-projet
 - **🐳 Environnement reproductible** : Devcontainer VS Code avec uv, extensions optimisées DS
 - **🔧 Qualité de code automatisée** : Ruff + MyPy + Pre-commit hooks pré-configurés  
 - **🌐 Intégration GitHub complète** : Authentification automatique, remote configuré
-- **📁 Structure intelligente** : Organisation standardisée pour projets Data Science
+- **📁 Structure** : Organisation standardisée pour projets Data Science
 - **⚡ Setup zero-config** : Git init + hooks + auth GitHub en une commande
 - **📚 Documentation moderne** : Guide complet avec MkDocs Material
 - **🔄 Mise à jour facile** : Template évolutif avec cruft
@@ -80,7 +82,7 @@ mon-projet/
 - **v0.1** ✅ : Squelette avec environnement reproductible
 - **v0.2** ✅ : Environnement reproductible avancé (scripts, devcontainer optimisé)
 - **v0.3** ✅ : **Qualité de code automatisée** (ruff, mypy, pre-commit, git/github integration)
-- **v0.4** 📋 : Tests automatisés (pytest, pytest-cookies, coverage)
+- **v0.4** ✅ : Tests automatisés (pytest, pytest-cookies, coverage)
 - **v0.5** 🎯 : CI/CD complet (GitHub Actions, release automation)
 
 
