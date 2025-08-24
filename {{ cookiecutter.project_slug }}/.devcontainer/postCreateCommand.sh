@@ -67,7 +67,7 @@ setup_git() {
     # Initialisation du dépôt si pas encore fait
     if [ ! -d ".git" ]; then
         echo "Initialisation du dépôt Git..."
-        git init
+        git init --initial-branch=main
         
         # Création du commit initial si applicable
         if [ "{{ cookiecutter.setup_git }}" = "y" ]; then
