@@ -89,6 +89,10 @@ Features: ruff, mypy, pre-commit hooks"
             pre-commit autoupdate
             pre-commit install
             
+            echo "Pré-installation des environnements pre-commit..."
+            # Force l'installation des environnements maintenant pour éviter les délais futurs
+            pre-commit install-hooks
+            
             # Commiter les changements de pre-commit autoupdate + corrections formatage
             if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
                 echo "Commit des mises à jour et corrections pre-commit..."
