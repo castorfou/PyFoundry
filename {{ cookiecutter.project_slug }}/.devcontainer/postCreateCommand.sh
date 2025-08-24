@@ -130,6 +130,14 @@ Features: ruff, mypy, pre-commit hooks"
                 echo "   → Entrez manuellement l'URL et le code dans votre navigateur host."
                 echo ""
                 gh auth login --git-protocol https --web
+                
+                # Configuration du credential helper après authentification
+                if gh auth status &>/dev/null; then
+                    echo "Configuration du credential helper Git..."
+                    git config --global credential.helper ""
+                    git config --global credential."https://github.com".helper "!gh auth git-credential"
+                    echo "✅ Credential helper configuré"
+                fi
             else
                 echo "✅ Déjà authentifié sur GitHub"
             fi
