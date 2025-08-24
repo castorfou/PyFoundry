@@ -88,6 +88,14 @@ Features: ruff, mypy, pre-commit hooks"
             echo "Mise à jour des hooks vers les dernières versions..."
             pre-commit autoupdate
             pre-commit install
+            
+            # Commiter les changements de pre-commit autoupdate si nécessaire
+            if ! git diff --quiet .pre-commit-config.yaml 2>/dev/null; then
+                echo "Commit des mises à jour pre-commit..."
+                git add .pre-commit-config.yaml
+                git commit -m "chore: update pre-commit hooks to latest versions"
+            fi
+            
             echo "✅ Pre-commit hooks installés et mis à jour"
         else
             echo "⚠️  pre-commit non installé, ignoré"
