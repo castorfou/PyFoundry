@@ -125,8 +125,9 @@ Features: ruff, mypy, pre-commit hooks"
                 echo "🔐 Authentification GitHub requise pour push/pull"
                 echo "Lancement de l'authentification..."
                 echo ""
-                echo "ℹ️  Le navigateur ne peut pas s'ouvrir dans le devcontainer."
-                echo "   Copiez le code affiché et ouvrez manuellement l'URL dans votre navigateur host."
+                echo "ℹ️  Note : Vous devrez appuyer sur Entrée pour 'ouvrir' le navigateur."
+                echo "   Le navigateur ne s'ouvrira pas (limitation devcontainer connue)."
+                echo "   → Entrez manuellement l'URL et le code dans votre navigateur host."
                 echo ""
                 gh auth login --git-protocol https --web
             else
