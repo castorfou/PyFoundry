@@ -30,14 +30,14 @@ nav:
   - Accueil: index.md
   - Guide Utilisateur:
     - Installation: user/installation.md
-    - Utilisation: user/usage.md
+    - Guide complet: user/guide.md
     - Structure: user/structure.md
-    - "Nouveautés v0.2": user/v0.2-features.md
   - Guide Développeur:
     - Architecture: dev/architecture.md
     - Contribution: dev/contributing.md
-    - Déploiement: dev/deployment.md
     - Roadmap: dev/roadmap.md
+    - "Implémentation v0.3": dev/v0.3-implementation.md
+    - Déploiement: dev/deployment.md
     - Claude code: dev/claude-code.md
 
 markdown_extensions:
