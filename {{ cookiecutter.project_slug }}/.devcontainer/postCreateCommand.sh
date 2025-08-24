@@ -121,8 +121,8 @@ Features: ruff, mypy, pre-commit hooks"
         # Configuration de l'upstream pour la branche main
         git branch --set-upstream-to=origin/main main 2>/dev/null || true
         
-        # Configuration automatique des upstream pour futures branches
-        git config --global push.autoSetupRemote true
+        # Configuration automatique des upstream pour futures branches (local au projet)
+        git config push.autoSetupRemote true
         
         # Configuration de l'authentification GitHub avec gh CLI
         if command -v gh &> /dev/null; then
@@ -137,11 +137,11 @@ Features: ruff, mypy, pre-commit hooks"
                 echo ""
                 gh auth login --git-protocol https --web
                 
-                # Configuration du credential helper après authentification
+                # Configuration du credential helper après authentification (local au projet)
                 if gh auth status &>/dev/null; then
                     echo "Configuration du credential helper Git..."
-                    git config --global credential.helper ""
-                    git config --global credential."https://github.com".helper "!gh auth git-credential"
+                    git config credential.helper ""
+                    git config credential."https://github.com".helper "!gh auth git-credential"
                     echo "✅ Credential helper configuré"
                 fi
             else
