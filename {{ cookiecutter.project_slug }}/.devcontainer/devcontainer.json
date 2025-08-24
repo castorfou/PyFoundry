@@ -70,7 +70,10 @@
     // Features devcontainer
     "features": {
         "ghcr.io/va-h/devcontainers-features/uv:1": {},
-        "ghcr.io/devcontainers/features/github-cli:1": {}
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/git:1": {
+            "ppa": true
+        }
     },
     
     // Montages pour hériter de la config git du host

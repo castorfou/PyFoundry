@@ -117,6 +117,13 @@ Features: ruff, mypy, pre-commit hooks"
     if [ "{{ cookiecutter.github_username }}" != "votre-username" ]; then
         echo "Configuration du remote GitHub..."
         git remote add origin "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
+        
+        # Configuration de l'authentification GitHub avec gh CLI
+        if command -v gh &> /dev/null; then
+            echo "Configuration de l'authentification GitHub..."
+            echo "Utilisez 'gh auth login' pour vous authentifier"
+        fi
+        
         echo "✅ Remote GitHub configuré"
     fi
     
