@@ -1,50 +1,56 @@
 # PyFoundry Template
 
-> Un template Cookiecutter de qualité industrielle pour démarrer rapidement des projets de Data Science en Python.
+> Un template Cookiecutter de qualité industrielle pour démarrer rapidement des projets de Data Science en Python avec un environnement reproductible et des outils de qualité automatisés.
 
 [![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://castorfou.github.io/PyFoundry)
 [![Template Tests](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml/badge.svg)](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Version](https://img.shields.io/badge/version-v0.3.0-green.svg)](https://github.com/castorfou/PyFoundry/releases/tag/v0.3.0)
 
 ## 🚀 Démarrage rapide
 
 ```bash
-# 1. Installer cruft (si pas déjà fait)
+# 1. Installer cruft
 pip install cruft
 
-# 2. Se logger à ghcr.io
+# 2. Se logger à ghcr.io (pour les features devcontainer)
 docker login ghcr.io
 
-# 3. Créer un nouveau projet mon-nouveau-projet
+# 3. Créer un nouveau projet
 cruft create https://github.com/castorfou/PyFoundry.git
 
-# 4. Ouvrir dans VS Code avec devcontainer
+# 4. Ouvrir dans VS Code (setup automatique complet)
 code mon-nouveau-projet
+# → VS Code propose "Reopen in Container"
+# → Configuration Git + GitHub + Pre-commit automatique
 ```
 
 ## ✨ Fonctionnalités
 
-- **Environnement reproductible** : Devcontainer VS Code optimisé avec `.venv` et verrouillage des dépendances
-- **Scripts multi-plateformes** : Setup automatisé Linux/macOS/Windows avec détection d'OS
-- **Configuration avancée** : Variables d'environnement, fichiers `.env.template`, pyproject.toml enrichi
-- **Structure intelligente** : Dossiers `data/`, `models/`, `logs/`, `reports/` auto-créés avec sous-structure
-- **Outils modernes** : uv via devcontainer feature, extensions VS Code essentielles, configuration Jupyter intégrée
-- **Documentation complète** : Guide utilisateur et développeur avec MkDocs Material
-- **CI/CD prêt** : Workflows GitHub Actions pour tests et déploiement de documentation
+- **🐳 Environnement reproductible** : Devcontainer VS Code avec uv, extensions optimisées DS
+- **🔧 Qualité de code automatisée** : Ruff + MyPy + Pre-commit hooks pré-configurés  
+- **🌐 Intégration GitHub complète** : Authentification automatique, remote configuré
+- **📁 Structure intelligente** : Organisation standardisée pour projets Data Science
+- **⚡ Setup zero-config** : Git init + hooks + auth GitHub en une commande
+- **📚 Documentation moderne** : Guide complet avec MkDocs Material
+- **🔄 Mise à jour facile** : Template évolutif avec cruft
 
 ## 📚 Documentation
 
-- **[Guide d'installation](https://castorfou.github.io/PyFoundry/user/installation/)** - Comment installer et utiliser le template
-- **[Nouveautés v0.2](https://castorfou.github.io/PyFoundry/user/v0.2-features/)** - Scripts multi-plateformes et environnement reproductible avancé
-- **[Guide d'usage](https://castorfou.github.io/PyFoundry/user/usage/)** - Commandes et workflow recommandés  
+- **[Guide complet](https://castorfou.github.io/PyFoundry/user/guide/)** - Toutes les fonctionnalités et workflow
+- **[Installation](https://castorfou.github.io/PyFoundry/user/installation/)** - Pré-requis et setup initial
 - **[Structure du projet](https://castorfou.github.io/PyFoundry/user/structure/)** - Organisation des fichiers et dossiers
 - **[Guide développeur](https://castorfou.github.io/PyFoundry/dev/contributing/)** - Comment contribuer au template
+- **[Roadmap](https://castorfou.github.io/PyFoundry/dev/roadmap/)** - Historique et évolutions du template
 
 ## 🛠️ Stack technologique
 
-- **Templating** : Cookiecutter / Cruft
-- **Environnement** : Devcontainer (VS Code)
-- **Dépendances** : uv & pyproject.toml
+- **Templating** : Cookiecutter / Cruft pour templates évolutifs
+- **Environnement** : Devcontainer VS Code avec features officielles
+- **Dépendances** : uv & pyproject.toml avec verrouillage automatique
+- **Qualité de code** : Ruff (linting + formatage) + MyPy (types statiques)
+- **Hooks** : Pre-commit avec 4 repos optimisés pour Data Science
+- **Git/GitHub** : Authentification automatique + configuration seamless
 - **Documentation** : MkDocs & mkdocs-material
 - **CI/CD** : GitHub Actions
 
@@ -75,15 +81,15 @@ cruft create https://github.com/castorfou/PyFoundry.git --no-input
 
 ## 🎯 Roadmap
 
-- **v0.1** ✅ : Squelette avec environnement reproductible
-- **v0.2** ✅ : Environnement reproductible avancé (uv.lock, scripts, devcontainer optimisé)
-- **v0.3** : Qualité de code (pre-commit, ruff)
-- **v0.4** : Tests automatisés (pytest, coverage)
-- **v0.5** : CI/CD complet (release automation)
+- **v0.1** ✅ : Squelette avec environnement reproductible  
+- **v0.2** ✅ : Environnement reproductible avancé (scripts, devcontainer optimisé)
+- **v0.3** ✅ : **Qualité de code automatisée** (ruff, mypy, pre-commit, git/github integration)
+- **v0.4** 📋 : Tests automatisés (pytest, pytest-cookies, coverage)
+- **v0.5** 🎯 : CI/CD complet (GitHub Actions, release automation)
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! Consultez le [guide de contribution](https://guillaume.github.io/PyFoundry/dev/contributing/) pour démarrer.
+Les contributions sont les bienvenues ! Consultez le [guide de contribution](https://castorfou.github.io/PyFoundry/dev/contributing/) pour démarrer.
 
 ## 📄 Licence
 

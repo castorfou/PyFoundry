@@ -1,15 +1,15 @@
 # PyFoundry Template
 
-Un template Cookiecutter pour démarrer rapidement des projets de Data Science en Python avec un **environnement reproductible**.
+Un template Cookiecutter de qualité industrielle pour démarrer rapidement des projets de Data Science en Python avec un environnement reproductible et des outils de qualité automatisés.
 
 [![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://castorfou.github.io/PyFoundry)
 [![Template Tests](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml/badge.svg)](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-v0.2-green.svg)](https://github.com/castorfou/PyFoundry/releases/tag/v0.2.0)
+[![Version](https://img.shields.io/badge/version-v0.3.0-green.svg)](https://github.com/castorfou/PyFoundry/releases/tag/v0.3.0)
 
 ## 🚀 Vision
 
-PyFoundry vise à garantir la **reproductibilité totale**, et la **qualité du code** en s'appuyant sur des outils modernes: uv, devcontainer, cruft/cookie cutter, pre-commit, ruff, ...
+PyFoundry automatise complètement la création d'environnements Data Science modernes : **environnement reproductible**, **qualité de code**, **intégration Git/GitHub** et **workflow zero-config**.
 
 ## ⚡ Démarrage rapide
 
@@ -17,24 +17,38 @@ PyFoundry vise à garantir la **reproductibilité totale**, et la **qualité du 
 # 1. Installer cruft
 pip install cruft
 
-# 2. Créer un nouveau projet
+# 2. Se logger à ghcr.io (pour les features devcontainer)  
+docker login ghcr.io
+
+# 3. Créer un nouveau projet
 cruft create https://github.com/castorfou/PyFoundry.git
 
-# 3. Builder devcontainer 
-code mon-nouveau-projet    # VS Code propose "Reopen in Container"
+# 4. Ouvrir dans VS Code (setup automatique complet)
+code mon-nouveau-projet
+# → VS Code propose "Reopen in Container"
+# → Configuration Git + GitHub + Pre-commit automatique
 ```
+
+## ✨ Fonctionnalités
+
+- **🐳 Environnement reproductible** : Devcontainer VS Code avec uv, extensions optimisées DS
+- **🔧 Qualité de code automatisée** : Ruff + MyPy + Pre-commit hooks pré-configurés  
+- **🌐 Intégration GitHub complète** : Authentification automatique, remote configuré
+- **📁 Structure intelligente** : Organisation standardisée pour projets Data Science
+- **⚡ Setup zero-config** : Git init + hooks + auth GitHub en une commande
+- **📚 Documentation moderne** : Guide complet avec MkDocs Material
+- **🔄 Mise à jour facile** : Template évolutif avec cruft
 
 ## 🛠️ Stack technologique
 
 - **Templating** : Cookiecutter / Cruft pour templates évolutifs
-- **Environnement** : Devcontainer VS Code (Python 3.12) avec features officielles
-- **Dépendances** : uv via devcontainer feature & pyproject.toml avec métadonnées complètes
-- **Reproductibilité** : Verrouillage automatique des dépendances (requirements.lock)
-- **Configuration** : Templates .env et configuration Jupyter intégrée
-- **Qualité de Code** : pre-commit & ruff (préparation v0.3)
-- **Tests du Template** : pytest & pytest-cookies
+- **Environnement** : Devcontainer VS Code avec features officielles
+- **Dépendances** : uv & pyproject.toml avec verrouillage automatique
+- **Qualité de code** : Ruff (linting + formatage) + MyPy (types statiques)
+- **Hooks** : Pre-commit avec 4 repos optimisés pour Data Science
+- **Git/GitHub** : Authentification automatique + configuration seamless
 - **Documentation** : MkDocs & mkdocs-material
-- **CI/CD** : GitHub Actions avec tests multi-plateformes
+- **CI/CD** : GitHub Actions
 
 ### 🏗️ Structure 
 ```
@@ -64,26 +78,26 @@ mon-projet/
 ## 🗺️ Roadmap
 
 - **v0.1** ✅ : Squelette avec environnement reproductible
-- **v0.2** ✅ : **Environnement reproductible avancé** (scripts, uv.lock, devcontainer optimisé)
-- **v0.2.1** ✅ : **Simplification** (uv obligatoire, devcontainer Python 3.12 fixe)
-- **v0.3** 🚧 : Qualité de code (pre-commit, ruff, mypy)
-- **v0.4** 📋 : Tests automatisés (pytest, coverage)
-- **v0.5** 🎯 : CI/CD complet (GitHub Actions automation)
+- **v0.2** ✅ : Environnement reproductible avancé (scripts, devcontainer optimisé)
+- **v0.3** ✅ : **Qualité de code automatisée** (ruff, mypy, pre-commit, git/github integration)
+- **v0.4** 📋 : Tests automatisés (pytest, pytest-cookies, coverage)
+- **v0.5** 🎯 : CI/CD complet (GitHub Actions, release automation)
 
 
 ## 📚 Documentation
 
 ### Pour les Utilisateurs
-- **[Guide d'installation](user/installation.md)** : Pré-requis et création de projet
-- **[Guide d'usage](user/usage.md)** : Commandes et workflow quotidien  
+- **[Guide complet](user/guide.md)** : Toutes les fonctionnalités et workflow de A à Z
+- **[Installation](user/installation.md)** : Pré-requis et setup initial
 - **[Structure du projet](user/structure.md)** : Organisation des fichiers et dossiers
 
 ### Pour les Développeurs  
 - **[Architecture](dev/architecture.md)** : Design et choix techniques du template
-- **[Guide de contribution](dev/contributing.md)** : Comment contribuer au projet
-- **[Déploiement](dev/deployment.md)** : Publication et release avec GitHub CLI
-- **[Roadmap](dev/roadmap.md)** : Planification des versions futures
+- **[Roadmap](dev/roadmap.md)** : Historique et évolutions du template
+- **[Implémentation v0.3](dev/v0.3-implementation.md)** : Détails techniques v0.3
+- **[Contribution](dev/contributing.md)** : Comment contribuer au projet
+- **[Déploiement](dev/deployment.md)** : Publication et release
 
 ---
 
-**🚀 Prêt à créer votre projet ? Suivez le [guide d'installation](user/installation.md) !**
+**🚀 Prêt à créer votre projet ? Consultez le [guide complet](user/guide.md) !**
