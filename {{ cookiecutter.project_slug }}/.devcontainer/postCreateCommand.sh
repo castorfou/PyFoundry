@@ -60,12 +60,56 @@ create_python_environment() {
     echo "Environnement Python configuré"
 }
 
+# Configuration Git et GitHub
+setup_git() {
+    echo "Configuration Git..."
+    
+    # Initialisation du dépôt si pas encore fait
+    if [ ! -d ".git" ]; then
+        echo "Initialisation du dépôt Git..."
+        git init
+        
+        # Création du commit initial si applicable
+        if [ "{{ cookiecutter.setup_git }}" = "y" ]; then
+            echo "Création du commit initial..."
+            git add .
+            git commit -m "Initial commit: PyFoundry project setup
+
+Project: {{ cookiecutter.project_name }}
+Template: PyFoundry v0.3
+Features: ruff, mypy, pre-commit hooks"
+        fi
+    fi
+    
+    # Configuration pre-commit si disponible
+    if [ -f ".pre-commit-config.yaml" ]; then
+        echo "Configuration des hooks pre-commit..."
+        if command -v pre-commit &> /dev/null; then
+            pre-commit install
+            echo "✅ Pre-commit hooks installés"
+        else
+            echo "⚠️  pre-commit non installé, ignoré"
+        fi
+    fi
+    
+    # Configuration du remote GitHub si username fourni
+    if [ "{{ cookiecutter.github_username }}" != "votre-username" ]; then
+        echo "Configuration du remote GitHub..."
+        git remote add origin "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
+        echo "✅ Remote GitHub configuré"
+    fi
+    
+    echo "Configuration Git terminée"
+}
+
 # Exécution des étapes
 update_system
 ensure_uv
 create_python_environment
+setup_git
 
 echo ""
 echo "=================================================================="
 echo "✅ Configuration terminée !"
+echo "Dépôt Git initialisé avec pre-commit hooks"
 echo "Redémarrez le terminal pour activer l'environnement"

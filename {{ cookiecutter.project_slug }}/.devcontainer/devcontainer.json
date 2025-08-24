@@ -69,8 +69,15 @@
     
     // Features devcontainer
     "features": {
-        "ghcr.io/va-h/devcontainers-features/uv:1": {}
+        "ghcr.io/va-h/devcontainers-features/uv:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
     },
+    
+    // Montages pour hériter de la config git du host
+    "mounts": [
+        "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached,readonly",
+        "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly"
+    ],
        
     // Configuration du shell et de l'environnement
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
