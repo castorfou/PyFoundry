@@ -118,6 +118,12 @@ Features: ruff, mypy, pre-commit hooks"
         echo "Configuration du remote GitHub..."
         git remote add origin "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
         
+        # Configuration de l'upstream pour la branche main
+        git branch --set-upstream-to=origin/main main 2>/dev/null || true
+        
+        # Configuration automatique des upstream pour futures branches
+        git config --global push.autoSetupRemote true
+        
         # Configuration de l'authentification GitHub avec gh CLI
         if command -v gh &> /dev/null; then
             echo "Configuration de l'authentification GitHub..."
