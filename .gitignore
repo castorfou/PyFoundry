@@ -10,3 +10,5 @@ mon-projet-data-science/
 venv/
 __pycache__/
 *.pyc
+.coverage
+coverage.xml
