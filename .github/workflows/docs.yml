@@ -64,25 +64,3 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: 💬 Comment on commit
-        if: github.event_name == 'push'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const output = `## 📚 Documentation Updated
-            
-            ✅ Documentation successfully built and deployed
-            🌐 Live site: ${{ steps.deployment.outputs.page_url }}
-            
-            Updated files in this commit:
-            - Documentation pages
-            - MkDocs configuration
-            
-            The documentation is now live and accessible at the URL above.`;
-            
-            github.rest.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: output
-            });

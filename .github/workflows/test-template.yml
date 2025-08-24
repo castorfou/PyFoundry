@@ -68,24 +68,3 @@ jobs:
         files: ./coverage.xml
         fail_ci_if_error: false
         
-    - name: 💬 Comment PR with test results
-      if: github.event_name == 'pull_request' && matrix.python-version == '3.11'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const output = `## 🧪 Template Tests Results
-          
-          ✅ Template generation tests passed
-          ✅ Generated project structure validated  
-          ✅ Configuration files syntax validated
-          ✅ Tools integration (uv/ruff/mypy) validated
-          
-          Python version: ${{ matrix.python-version }}
-          Coverage report uploaded to Codecov.`;
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: output
-          });
