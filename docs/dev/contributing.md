@@ -344,6 +344,15 @@ Les tests s'exécutent automatiquement via `.github/workflows/test-template.yml`
 4. **Jupyter** : `jupyter lab` fonctionne
 5. **Git** : Repository initialisé correctement
 
+!!! warning "Important : cruft et les fichiers committés"
+    **cruft ne voit que les fichiers committés dans Git**. Pour tester des modifications :
+    
+    1. Faire les modifications au template
+    2. **Committer les changements** : `git add . && git commit -m "test: modifications template"`
+    3. Tester avec cruft : `cruft create . --no-input`
+    
+    Les fichiers non committés ne seront pas inclus dans le projet généré !
+
 ## Roadmap et priorités
 
 ### v0.2 : Environnement reproductible

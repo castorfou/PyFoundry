@@ -1,0 +1,136 @@
+name: 🚀 Release Automation
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Trigger on version tags like v1.0.0, v0.5.0, etc.
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  validate-tag:
+    name: 🏷️ Validate release tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      is-prerelease: ${{ steps.check-prerelease.outputs.is-prerelease }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🏷️ Get version from tag
+        id: get-version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: ✅ Check if prerelease
+        id: check-prerelease
+        run: |
+          VERSION=${{ steps.get-version.outputs.version }}
+          if [[ $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "is-prerelease=false" >> $GITHUB_OUTPUT
+            echo "Stable release detected"
+          else
+            echo "is-prerelease=true" >> $GITHUB_OUTPUT
+            echo "Pre-release detected"
+          fi
+
+  run-tests:
+    name: 🧪 Run tests before release
+    needs: validate-tag
+    uses: ./.github/workflows/test-template.yml
+
+  create-release:
+    name: 🚀 Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate-tag, run-tests]
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history for changelog
+
+      - name: 📝 Generate release notes
+        id: generate-notes
+        run: |
+          VERSION=${{ needs.validate-tag.outputs.version }}
+          
+          # Get the previous tag for changelog
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          
+          # Generate changelog
+          echo "## Changes since $PREVIOUS_TAG" > release_notes.md
+          echo "" >> release_notes.md
+          
+          # Get commits since last tag
+          git log --pretty=format:"- %s" $PREVIOUS_TAG..HEAD >> release_notes.md
+          
+          # Add template info
+          echo "" >> release_notes.md
+          echo "## Template Features" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "✅ **Dev Environment**: VS Code devcontainer with Python ${{ matrix.python-version || '3.11+' }}" >> release_notes.md
+          echo "✅ **Dependencies**: uv for fast package management" >> release_notes.md
+          echo "✅ **Code Quality**: Ruff + MyPy + pre-commit hooks" >> release_notes.md
+          echo "✅ **Testing**: pytest framework ready" >> release_notes.md
+          echo "✅ **Git Integration**: Automatic GitHub setup" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "## Usage" >> release_notes.md
+          echo "" >> release_notes.md
+          echo '```bash' >> release_notes.md
+          echo "# Create new project from this template" >> release_notes.md
+          echo "cruft create https://github.com/castorfou/PyFoundry.git" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "# Or use specific version" >> release_notes.md
+          echo "cruft create https://github.com/castorfou/PyFoundry.git --checkout $VERSION" >> release_notes.md
+          echo '```' >> release_notes.md
+          echo "" >> release_notes.md
+          echo "🤖 Generated with [Claude Code](https://claude.ai/code)" >> release_notes.md
+
+      - name: 🚀 Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.validate-tag.outputs.version }}
+          release_name: ${{ needs.validate-tag.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ needs.validate-tag.outputs.is-prerelease }}
+
+      - name: 📢 Notify on successful release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = "${{ needs.validate-tag.outputs.version }}";
+            const isPrerelease = "${{ needs.validate-tag.outputs.is-prerelease }}" === "true";
+            
+            const releaseType = isPrerelease ? "Pre-release" : "Stable release";
+            
+            const output = `## 🚀 ${releaseType} ${version} Published!
+            
+            ✅ All tests passed
+            ✅ Release notes generated automatically
+            ✅ GitHub release created
+            
+            **Template ready for use:**
+            \`\`\`bash
+            cruft create https://github.com/castorfou/PyFoundry.git --checkout ${version}
+            \`\`\`
+            
+            📚 [View Release](https://github.com/castorfou/PyFoundry/releases/tag/${version})
+            📖 [Documentation](https://castorfou.github.io/PyFoundry/)
+            `;
+            
+            // Create a commit comment on the tag commit
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: output
+            });
