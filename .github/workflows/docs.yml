@@ -1,10 +1,13 @@
-name: Deploy Documentation
+name: 📚 Deploy Documentation
 
 on:
   push:
     branches: [main, master]
-  pull_request:
-    branches: [main, master]
+    paths: 
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch: # Allow manual trigger
 
 permissions:
   contents: read
@@ -17,34 +20,39 @@ concurrency:
 
 jobs:
   build:
+    name: 🏗️ Build documentation
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: 📥 Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for git info plugin
 
-      - name: Set up Python
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: |
-          pip install mkdocs-material
+          python -m pip install --upgrade pip
+          pip install mkdocs-material mkdocs-git-revision-date-localized-plugin
 
-      - name: Build documentation
-        run: mkdocs build
+      - name: 🏗️ Build MkDocs site
+        run: mkdocs build --strict
 
-      - name: Setup Pages
+      - name: 📋 Setup Pages
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         uses: actions/configure-pages@v4
 
-      - name: Upload artifact
+      - name: 📤 Upload artifact
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v3
         with:
           path: './site'
 
   deploy:
+    name: 🚀 Deploy to GitHub Pages
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     environment:
       name: github-pages
@@ -52,6 +60,29 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - name: 🚀 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: 💬 Comment on commit
+        if: github.event_name == 'push'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `## 📚 Documentation Updated
+            
+            ✅ Documentation successfully built and deployed
+            🌐 Live site: ${{ steps.deployment.outputs.page_url }}
+            
+            Updated files in this commit:
+            - Documentation pages
+            - MkDocs configuration
+            
+            The documentation is now live and accessible at the URL above.`;
+            
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: output
+            });

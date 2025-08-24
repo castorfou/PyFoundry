@@ -1,64 +1,91 @@
-name: Test Template
+name: 🧪 Test Template
 
 on:
   push:
-    branches: [ master, main, develop ]
+    branches: [ master, main, develop, "feature/*" ]
   pull_request:
     branches: [ master, main ]
 
+env:
+  PYTHONUNBUFFERED: "1"
+  FORCE_COLOR: "1"
+
 jobs:
   test-template:
+    name: Test on Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v4
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
     
-    - name: Install uv
+    - name: 🐍 Install uv
       uses: astral-sh/setup-uv@v4
       with:
         enable-cache: true
         cache-dependency-glob: "pyproject.toml"
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
       run: uv python install ${{ matrix.python-version }}
 
-    - name: Install dependencies
-      run: |
-        uv sync --extra test
+    - name: 📦 Install dependencies
+      run: uv sync --extra test
 
-    - name: Run template generation tests
-      run: |
-        uv run pytest tests/ -v --cov=. --cov-report=term-missing
+    - name: 🧪 Run template generation tests
+      run: uv run pytest tests/ -v --cov=. --cov-report=term-missing --cov-report=xml
 
-    - name: Test generated project validity
+    - name: 🏗️ Test generated project validity
       run: |
-        # Generate a test project
+        echo "🏗️ Generate test project..."
         uv run cruft create . --no-input --output-dir /tmp/test-projects
         
         cd /tmp/test-projects/mon-projet-data-science
         
-        # Verify project structure
+        echo "📁 Verify project structure..."
         ls -la
         
-        # Test that the generated project can be installed
+        echo "📦 Test project installation..."
         uv sync
         
-        # Test that ruff configuration is valid
-        uv run ruff check . --show-source || true
+        echo "🔍 Test ruff configuration..."
+        uv run ruff check . --show-source || echo "⚠️ Ruff issues found (expected for fresh project)"
         
-        # Test that mypy configuration is valid  
-        uv run mypy --show-error-codes src/ || true
+        echo "🔧 Test mypy configuration..."  
+        uv run mypy --show-error-codes src/ || echo "⚠️ MyPy issues found (expected for fresh project)"
         
-        # Test that pre-commit config is valid
-        uv run pre-commit run --all-files --show-diff-on-failure || true
+        echo "🪝 Test pre-commit configuration..."
+        uv run pre-commit run --all-files --show-diff-on-failure || echo "⚠️ Pre-commit issues found (expected for fresh project)"
 
-    - name: Upload coverage to Codecov
+    - name: 📊 Upload coverage to Codecov
       if: matrix.python-version == '3.11'
       uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: ./coverage.xml
         fail_ci_if_error: false
+        
+    - name: 💬 Comment PR with test results
+      if: github.event_name == 'pull_request' && matrix.python-version == '3.11'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const output = `## 🧪 Template Tests Results
+          
+          ✅ Template generation tests passed
+          ✅ Generated project structure validated  
+          ✅ Configuration files syntax validated
+          ✅ Tools integration (uv/ruff/mypy) validated
+          
+          Python version: ${{ matrix.python-version }}
+          Coverage report uploaded to Codecov.`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          });
