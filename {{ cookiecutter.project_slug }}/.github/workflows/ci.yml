@@ -12,12 +12,12 @@ env:
 
 jobs:
   tests:
-    name: Test on Python ${{ matrix.python-version }}
+    name: Test on Python {% raw %}${{ matrix.python-version }}{% endraw %}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["{{ cookiecutter.python_version }}", "3.12"]
 
     steps:
     - name: 📥 Checkout repository
@@ -29,8 +29,8 @@ jobs:
         enable-cache: true
         cache-dependency-glob: "pyproject.toml"
 
-    - name: 🐍 Set up Python ${{ matrix.python-version }}
-      run: uv python install ${{ matrix.python-version }}
+    - name: 🐍 Set up Python {% raw %}${{ matrix.python-version }}{% endraw %}
+      run: uv python install {% raw %}${{ matrix.python-version }}{% endraw %}
 
     - name: 📦 Install dependencies
       run: uv sync --extra dev
@@ -60,10 +60,10 @@ jobs:
         fi
 
     - name: 📊 Upload coverage to Codecov
-      if: matrix.python-version == '3.11'
+      if: {% raw %}matrix.python-version == '3.11'{% endraw %}
       uses: codecov/codecov-action@v4
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+        token: {% raw %}${{ secrets.CODECOV_TOKEN }}{% endraw %}
         files: ./coverage.xml
         fail_ci_if_error: false
 
@@ -119,4 +119,4 @@ jobs:
         ls -la dist/
         
         echo "📋 Package metadata:"
-        uv run python -m pip show {{ cookiecutter.project_slug.replace('-', '_') }} || echo "Package not installed yet"
+        uv run python -m pip show {% raw %}{{ cookiecutter.project_slug.replace('-', '_') }}{% endraw %} || echo "Package not installed yet"
