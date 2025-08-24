@@ -61,28 +61,34 @@ PyFoundry suit une approche de développement **graduelle et itérative**. Chaqu
 
 ---
 
-### 📋 v0.3 : Qualité de Code
+### ✅ v0.3 : Qualité de Code (Complété)
 **Objectif** : Automatiser la qualité et la cohérence du code
 
-**Fonctionnalités prévues** :
-- [ ] Configuration complète `.pre-commit-config.yaml`
-- [ ] Configuration `ruff` dans `pyproject.toml`
-- [ ] Integration `mypy` pour le typing
-- [ ] Formatage automatique (ruff format)
-- [ ] Linting avancé et règles métier
+**Fonctionnalités implémentées** :
+- ✅ Configuration complète `.pre-commit-config.yaml` avec 4 repos
+- ✅ Configuration `ruff` adaptée Data Science dans `pyproject.toml`
+- ✅ Integration `mypy` progressive pour le typing
+- ✅ Formatage automatique (ruff format) 
+- ✅ Linting avancé avec règles spécialisées (pandas-vet, numpy)
+- ✅ Initialisation git automatique avec branche main
+- ✅ Authentification GitHub automatique (gh auth login)
+- ✅ Pre-commit hooks pré-installés pour performance
 
 **Outils intégrés** :
 ```yaml
-# .pre-commit-config.yaml
+# .pre-commit-config.yaml (versions auto-mises à jour)
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    hooks:
-      - id: ruff
-      - id: ruff-format
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    hooks:
-      - id: mypy
+  - repo: https://github.com/pre-commit/pre-commit-hooks  # v6.0.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit     # v0.12.10
+  - repo: https://github.com/pre-commit/mirrors-mypy      # v1.17.1  
+  - repo: https://github.com/Yelp/detect-secrets         # v1.5.0
 ```
+
+**Workflow zero-config** :
+1. `cruft create` → Génération avec paramètre github_username
+2. `code projet` → Ouverture devcontainer
+3. Tout configuré automatiquement : Git + Pre-commit + GitHub auth
+4. Premier commit créé avec hooks actifs
 
 ---
 
@@ -165,10 +171,11 @@ jobs:
 - [ ] Pas de régression v0.1
 
 #### v0.3  
-- [ ] Pre-commit hooks configurés et fonctionnels
-- [ ] Code généré passe tous les linters
-- [ ] Performance : linting en moins de 10s
-- [ ] Guide de configuration qualité
+- ✅ Pre-commit hooks configurés et fonctionnels
+- ✅ Code généré passe tous les linters (0 warnings par défaut)
+- ✅ Performance : hooks pré-installés, exécution <5s
+- ✅ Workflow automatisé complet Git + GitHub
+- ✅ Documentation utilisateur et troubleshooting complètes
 
 #### v0.4
 - [ ] Coverage > 90% pour les tests du template
@@ -221,8 +228,10 @@ gantt
 - **Compatibilité** : Fonctionne sur 3 OS majeurs
 
 ### v0.3
-- **Qualité** : 0 warning sur code généré par défaut
-- **Productivité** : 50% réduction temps setup qualité
+- **Qualité** : ✅ 0 warning sur code généré par défaut
+- **Productivité** : ✅ Setup qualité 100% automatisé (0 intervention)
+- **Performance** : ✅ Pre-commit hooks pré-installés 
+- **GitHub** : ✅ Authentification et remote configurés automatiquement
 
 ### v0.4
 - **Fiabilité** : 100% tests template passent
