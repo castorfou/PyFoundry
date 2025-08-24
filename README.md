@@ -2,10 +2,13 @@
 
 > Un template Cookiecutter de qualité industrielle pour démarrer rapidement des projets de Data Science en Python avec un environnement reproductible et des outils de qualité automatisés.
 
+[![Test Template](https://github.com/castorfou/PyFoundry/actions/workflows/test-template.yml/badge.svg)](https://github.com/castorfou/PyFoundry/actions/workflows/test-template.yml)
+[![Deploy Documentation](https://github.com/castorfou/PyFoundry/actions/workflows/docs.yml/badge.svg)](https://github.com/castorfou/PyFoundry/actions/workflows/docs.yml)
+[![GitHub release](https://img.shields.io/github/v/release/castorfou/PyFoundry)](https://github.com/castorfou/PyFoundry/releases)
 [![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://castorfou.github.io/PyFoundry)
-[![Template Tests](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml/badge.svg)](https://github.com/castorfou/PyFoundry/actions/workflows/test.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-v0.3.0-green.svg)](https://github.com/castorfou/PyFoundry/releases/tag/v0.3.0)
+[![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
 ## 🚀 Démarrage rapide
 
@@ -84,8 +87,8 @@ cruft create https://github.com/castorfou/PyFoundry.git --no-input
 - **v0.1** ✅ : Squelette avec environnement reproductible  
 - **v0.2** ✅ : Environnement reproductible avancé (scripts, devcontainer optimisé)
 - **v0.3** ✅ : **Qualité de code automatisée** (ruff, mypy, pre-commit, git/github integration)
-- **v0.4** 📋 : Tests automatisés (pytest, pytest-cookies, coverage)
-- **v0.5** 🎯 : CI/CD complet (GitHub Actions, release automation)
+- **v0.4** ✅ : Tests automatisés (pytest, pytest-cookies, coverage)
+- **v0.5** ✅ : **CI/CD complet** (GitHub Actions, release automation, badges intégrés)
 
 ## 🤝 Contribution
 
