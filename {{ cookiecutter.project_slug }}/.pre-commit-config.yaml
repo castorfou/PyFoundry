@@ -51,10 +51,8 @@ repos:
     hooks:
       - id: detect-secrets
         name: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
         exclude: |
           (?x)^(
-              \.secrets\.baseline|
               data/.*|
               models/.*|
               \.env\.template
