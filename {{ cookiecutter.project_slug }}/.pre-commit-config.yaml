@@ -61,7 +61,7 @@ repos:
           )$
 
 # Configuration globale
-default_stages: [commit]
+default_stages: [pre-commit]
 fail_fast: false                    # Continue même si un hook échoue
 
 # Fichiers et répertoires exclus

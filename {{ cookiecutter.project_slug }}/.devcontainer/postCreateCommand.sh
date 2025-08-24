@@ -85,8 +85,10 @@ Features: ruff, mypy, pre-commit hooks"
     if [ -f ".pre-commit-config.yaml" ]; then
         echo "Configuration des hooks pre-commit..."
         if command -v pre-commit &> /dev/null; then
+            echo "Mise à jour des hooks vers les dernières versions..."
+            pre-commit autoupdate
             pre-commit install
-            echo "✅ Pre-commit hooks installés"
+            echo "✅ Pre-commit hooks installés et mis à jour"
         else
             echo "⚠️  pre-commit non installé, ignoré"
         fi
