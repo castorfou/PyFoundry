@@ -121,7 +121,15 @@ Features: ruff, mypy, pre-commit hooks"
         # Configuration de l'authentification GitHub avec gh CLI
         if command -v gh &> /dev/null; then
             echo "Configuration de l'authentification GitHub..."
-            echo "Utilisez 'gh auth login' pour vous authentifier"
+            if ! gh auth status &>/dev/null; then
+                echo "🔐 Authentification GitHub requise pour push/pull"
+                echo "Lancement de l'authentification..."
+                echo ""
+                echo "Suivez les instructions pour vous connecter à GitHub :"
+                gh auth login --git-protocol https --web
+            else
+                echo "✅ Déjà authentifié sur GitHub"
+            fi
         fi
         
         echo "✅ Remote GitHub configuré"
