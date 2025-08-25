@@ -69,8 +69,7 @@ cruft create https://github.com/username/PyFoundry.git \
     "project_name": "Analyse des Ventes",
     "description": "Analyse des données de vente trimestrielles",
     "python_version": "3.11",
-    "use_node": "n",
-    "setup_git": "y"
+    "use_node": "n"
   }'
 ```
 

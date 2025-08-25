@@ -50,3 +50,12 @@ il faut donc appeler pytest de cette façon
 # Initialize conda and run tests in pyfoundry environment
 eval "$(conda shell.bash hook)" && conda activate pyfoundry && pytest tests -v
 ```
+
+### règle R1.2 - ruff
+
+il faut donc appeler ruff de cette façon
+
+```bash
+# Run ruff linting in pyfoundry environment on non-template files and fix issues
+eval "$(conda shell.bash hook)" && conda activate pyfoundry && ruff check tests/ docs/ --fix
+```

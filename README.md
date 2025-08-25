@@ -74,8 +74,7 @@ cruft create https://github.com/castorfou/PyFoundry.git
 cruft create https://github.com/castorfou/PyFoundry.git \
   --extra-context '{
     "project_name": "Mon Analyse",
-    "use_node": "n",
-    "setup_git": "y"
+    "use_node": "n"
   }'
 
 # Valeurs par défaut

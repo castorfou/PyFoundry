@@ -1,10 +1,8 @@
 """Tests de validation des configurations générées."""
 
-import json
 import tomllib
 import yaml
 
-import pytest
 
 
 def test_pyproject_toml_valid(cookies, minimal_template_context):

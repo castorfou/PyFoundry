@@ -12,8 +12,7 @@ def default_template_context():
         "description": "A test project for PyFoundry template",
         "python_version": "3.11",
         "github_username": "test-user",
-        "use_node": "n",
-        "setup_git": "y"
+        "use_node": "n"
     }
 
 
@@ -26,6 +25,5 @@ def minimal_template_context():
         "description": "Minimal test project",
         "python_version": "3.11",
         "github_username": "test-user",
-        "use_node": "n", 
-        "setup_git": "n"  # Pas de setup git pour tests rapides
+        "use_node": "n"
     }

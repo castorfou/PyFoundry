@@ -1,9 +1,6 @@
 """Tests de génération du template PyFoundry."""
 
-import os
-from pathlib import Path
 
-import pytest
 
 
 def test_template_generates_successfully(cookies, default_template_context):
