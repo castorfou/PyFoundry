@@ -20,4 +20,6 @@ Analyse et corrige l'issue GitHub numéro : $ARGUMENTS
 
 10. Crée une PR qui référence l'issue
 
-11. Demande a l'utilisateur une validation finale avant de faire le merge et detruire la branche
+11. Demande a l'utilisateur une validation finale et s'il veut en faire une version/tag
+
+12. Fait le merge et detruit la branche. Et si besoin crée la release note, tag la version (n'oublie pas de completer la doc à ce propos)
