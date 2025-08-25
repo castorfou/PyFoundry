@@ -4,18 +4,20 @@ Analyse et corrige l'issue GitHub numéro : $ARGUMENTS
 
 2. Cree une branche pour bosser sur cette issue, en la referancant
 
-2. Comprends le problème décrit
+3. Comprends le problème décrit
 
-3. Cherche les fichiers concernés dans le codebase
+4. Cherche les fichiers concernés dans le codebase
 
-4. Implémente la correction
+5. Implémente la correction
 
-5. Écris et lance les tests
+6. Assure-toi que la doc user et dev est à jour, modifie la au besoin
 
-6. Vérifie que tout passe (lint, typecheck)
+7. Écris et lance les tests
 
-7. Commit avec un message descriptif
+8. Vérifie que tout passe (lint, typecheck), reboucle entre les etapes 3 à 8 si probleme
 
-8. Crée une PR qui référence l'issue
+9. Commit avec un message descriptif
 
-9. Demande a l'utilisateur une validation finale avant de faire le merge et detruire la branche
+10. Crée une PR qui référence l'issue
+
+11. Demande a l'utilisateur une validation finale avant de faire le merge et detruire la branche
