@@ -152,3 +152,18 @@ data/processed/*
 
 # VS Code local settings
 .vscode/settings.local.json
+
+{% if cookiecutter.use_node == "y" %}
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.npm
+.yarn-integrity
+*.tsbuildinfo
+.next/
+.cache/
+{% endif %}

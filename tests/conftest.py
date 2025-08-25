@@ -27,3 +27,16 @@ def minimal_template_context():
         "github_username": "test-user",
         "use_node": "n"
     }
+
+
+@pytest.fixture
+def node_template_context():
+    """Contexte avec Node.js activé."""
+    return {
+        "project_name": "Node Test Project",
+        "project_slug": "node-test-project", 
+        "description": "A test project with Node.js support",
+        "python_version": "3.11",
+        "github_username": "test-user",
+        "use_node": "y"
+    }

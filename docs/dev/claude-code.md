@@ -65,3 +65,17 @@ il faut donc appeler ruff de cette façon
 # Run ruff linting in pyfoundry environment on non-template files and fix issues
 eval "$(conda shell.bash hook)" && conda activate pyfoundry && ruff check tests/ docs/ --fix
 ```
+
+## tester localement
+
+```bash
+# avec les valeurs par defaut sauf une
+# creation du projet sous /tmp
+mamba activate pyfoundry && \
+cd /tmp && \
+rm -rf /tmp/mon-projet-data-science && \
+cruft create /home/guillaume/git/PyFoundry --no-input --extra-context '{"use_node": "y"}' && \
+code mon-projet-data-science
+```
+
+et ensuite un Rebuild and Reopen container depuis vscode

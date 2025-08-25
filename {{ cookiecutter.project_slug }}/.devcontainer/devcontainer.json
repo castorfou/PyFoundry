@@ -73,7 +73,11 @@
         "ghcr.io/devcontainers/features/github-cli:1": {},
         "ghcr.io/devcontainers/features/git:1": {
             "ppa": true
-        }
+        }{% if cookiecutter.use_node == "y" %},
+        "ghcr.io/devcontainers/features/node:1": {
+            "nodeGypDependencies": true,
+            "version": "lts"
+        }{% endif %}
     },
     
     // Montages pour hériter de la config git du host
