@@ -28,5 +28,25 @@ Analyse et corrige l'issue GitHub numéro : $ARGUMENTS
 8. Crée une PR qui référence l'issue
 ```
 
-Et maintenant vous pouvez juste taper `/project:fix-issue 1234` et Claude s’occupera de tout ! 
+Et maintenant vous pouvez juste taper `/fix-issue 1234` et Claude s’occupera de tout ! 
 
+# les environnements d'execution
+
+## besoin de pyfoundry
+
+pour les commandes ayant besoin de python, cruft, pytest, mkdocs, il faut d'abord se placer dans l'environnement conda/mamba pyfoundry qui est disponible et a été créé ainsi
+
+```bash
+mamba create -y -n pyfoundry -c conda-forge python=3.11 --yes
+mamba activate pyfoundry
+mamba install nb_conda_kernels cruft mkdocs-material pytest pytest-cookies pytest-cov pre-commit ruff mypy --yes
+```
+
+### règle R1.1 - pytest
+
+il faut donc appeler pytest de cette façon
+
+```bash
+conda activate pyfoundry
+pytest tests/ -v
+```
