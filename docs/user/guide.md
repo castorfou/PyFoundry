@@ -24,7 +24,6 @@ Lors de la création, PyFoundry demande :
 - **`python_version`** : Version Python (3.11 par défaut)
 - **`github_username`** : Votre nom d'utilisateur GitHub (pour configuration automatique)
 - **`use_node`** : Installation Node.js optionnelle (n/y)
-- **`setup_git`** : Initialisation Git automatique (y/n)
 
 ### Ouverture du projet
 

@@ -69,16 +69,14 @@ setup_git() {
         echo "Initialisation du dépôt Git..."
         git init --initial-branch=main
         
-        # Création du commit initial si applicable
-        if [ "{{ cookiecutter.setup_git }}" = "y" ]; then
-            echo "Création du commit initial..."
-            git add .
-            git commit -m "Initial commit: PyFoundry project setup
+        # Création du commit initial
+        echo "Création du commit initial..."
+        git add .
+        git commit -m "Initial commit: PyFoundry project setup
 
 Project: {{ cookiecutter.project_name }}
 Template: PyFoundry v0.3
 Features: ruff, mypy, pre-commit hooks"
-        fi
     fi
     
     # Configuration pre-commit si disponible

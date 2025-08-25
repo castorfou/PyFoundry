@@ -4,6 +4,5 @@
     "description": "Description de votre projet de Data Science",
     "python_version": "3.11",
     "github_username": "castor_fou",
-    "use_node": "n",
-    "setup_git": "y"
+    "use_node": "n"
 }
