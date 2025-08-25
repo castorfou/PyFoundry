@@ -47,6 +47,6 @@ mamba install nb_conda_kernels cruft mkdocs-material pytest pytest-cookies pytes
 il faut donc appeler pytest de cette façon
 
 ```bash
-conda activate pyfoundry
-pytest tests/ -v
+# Initialize conda and run tests in pyfoundry environment
+eval "$(conda shell.bash hook)" && conda activate pyfoundry && pytest tests -v
 ```
