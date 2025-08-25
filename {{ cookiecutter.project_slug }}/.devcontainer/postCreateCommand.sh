@@ -60,6 +60,44 @@ create_python_environment() {
     echo "Environnement Python configuré"
 }
 
+{% if cookiecutter.use_node == "y" %}
+# Configuration Node.js et npm
+setup_node() {
+    echo "Configuration Node.js..."
+    
+    # Vérification de l'installation de Node.js
+    if command -v node &> /dev/null; then
+        echo "✅ Node.js disponible ($(node --version))"
+        echo "✅ npm disponible ($(npm --version))"
+        
+        # Création d'un package.json basique s'il n'existe pas
+        if [ ! -f "package.json" ]; then
+            echo "Création du fichier package.json..."
+            cat > package.json << EOF
+{
+  "name": "{{ cookiecutter.project_slug }}",
+  "version": "1.0.0",
+  "description": "{{ cookiecutter.description }}",
+  "scripts": {
+    "dev": "echo 'Add your development scripts here'",
+    "build": "echo 'Add your build scripts here'"
+  },
+  "keywords": ["data-science", "python", "node"],
+  "author": "{{ cookiecutter.github_username }}",
+  "license": "MIT",
+  "devDependencies": {}
+}
+EOF
+            echo "✅ package.json créé"
+        fi
+        
+        echo "Configuration npm terminée"
+    else
+        echo "⚠️  Node.js non disponible - vérifiez la configuration devcontainer"
+    fi
+}
+{% endif %}
+
 # Configuration Git et GitHub
 setup_git() {
     echo "Configuration Git..."
@@ -157,10 +195,12 @@ Features: ruff, mypy, pre-commit hooks"
 update_system
 ensure_uv
 create_python_environment
-setup_git
+{% if cookiecutter.use_node == "y" %}setup_node
+{% endif %}setup_git
 
 echo ""
 echo "=================================================================="
 echo "✅ Configuration terminée !"
 echo "Dépôt Git initialisé avec pre-commit hooks"
-echo "Redémarrez le terminal pour activer l'environnement"
+{% if cookiecutter.use_node == "y" %}echo "Node.js et npm configurés pour le développement frontend"
+{% endif %}echo "Redémarrez le terminal pour activer l'environnement"

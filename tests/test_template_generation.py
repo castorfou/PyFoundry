@@ -99,3 +99,42 @@ def test_github_username_integration(cookies):
     # Vérifier que pyproject.toml contient les bonnes URLs
     pyproject_content = (result.project_path / "pyproject.toml").read_text()
     assert "github.com/testuser123/test-project" in pyproject_content
+
+
+def test_node_disabled_by_default(cookies, default_template_context):
+    """Test que Node.js n'est pas installé par défaut."""
+    result = cookies.bake(extra_context=default_template_context)
+    
+    # Vérifier que Node.js n'est pas dans devcontainer.json
+    devcontainer_content = (result.project_path / ".devcontainer" / "devcontainer.json").read_text()
+    assert "ghcr.io/devcontainers/features/node" not in devcontainer_content
+    
+    # Vérifier que pas de setup_node dans postCreateCommand.sh
+    postcreate_content = (result.project_path / ".devcontainer" / "postCreateCommand.sh").read_text()
+    assert "setup_node" not in postcreate_content
+    
+    # Vérifier que pas d'extensions Node.js dans .gitignore
+    gitignore_content = (result.project_path / ".gitignore").read_text()
+    assert "node_modules/" not in gitignore_content
+
+
+def test_node_enabled_when_requested(cookies, node_template_context):
+    """Test que Node.js est correctement installé quand use_node=y."""
+    result = cookies.bake(extra_context=node_template_context)
+    
+    # Vérifier que Node.js est dans devcontainer.json
+    devcontainer_content = (result.project_path / ".devcontainer" / "devcontainer.json").read_text()
+    assert "ghcr.io/devcontainers/features/node:1" in devcontainer_content
+    assert '"nodeGypDependencies": true' in devcontainer_content
+    assert '"version": "lts"' in devcontainer_content
+    
+    # Vérifier que setup_node est appelé dans postCreateCommand.sh
+    postcreate_content = (result.project_path / ".devcontainer" / "postCreateCommand.sh").read_text()
+    assert "setup_node" in postcreate_content
+    assert "Configuration Node.js..." in postcreate_content
+    
+    # Vérifier que les exclusions Node.js sont dans .gitignore
+    gitignore_content = (result.project_path / ".gitignore").read_text()
+    assert "node_modules/" in gitignore_content
+    assert "npm-debug.log*" in gitignore_content
+    assert "package-lock.json" in gitignore_content

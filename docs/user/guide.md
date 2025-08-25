@@ -47,6 +47,23 @@ Le devcontainer configure automatiquement :
 - **GitHub CLI** pour l'intégration GitHub
 - **Pre-commit hooks** pour la qualité de code
 - **Authentification GitHub** guidée
+- **Node.js** (optionnel, si `use_node=y`)
+
+### Support Node.js (optionnel)
+
+Quand `use_node` est activé lors de la création :
+
+- **Node.js LTS** installé automatiquement
+- **npm** configuré et prêt à l'emploi
+- **package.json** basique créé
+- **`.gitignore`** étendu pour Node.js
+- Support développement frontend/fullstack en complément de Python
+
+Exemple d'activation :
+```bash
+cruft create https://github.com/castorfou/PyFoundry.git \
+  --extra-context '{"use_node": "y"}'
+```
 
 ### Fonctionnalités incluses
 
