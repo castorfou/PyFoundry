@@ -11,6 +11,7 @@ repos:
       - id: check-yaml                # Vérifie la syntaxe YAML
       - id: check-toml                # Vérifie la syntaxe TOML
       - id: check-json                # Vérifie la syntaxe JSON
+        exclude: ^\.devcontainer/devcontainer\.json$
       - id: check-merge-conflict      # Détecte les marqueurs de conflit Git
       - id: check-added-large-files   # Empêche l'ajout de gros fichiers
         args: ['--maxkb=500']
@@ -55,7 +56,7 @@ repos:
           (?x)^(
               data/.*|
               models/.*|
-              \.env\.template
+              \.cruft\.json
           )$
 
 # Configuration globale
