@@ -152,7 +152,7 @@ Features: ruff, mypy, pre-commit hooks"
     # Configuration du remote GitHub si username fourni
     if [ "{{ cookiecutter.github_username }}" != "votre-username" ]; then
         echo "Configuration du remote GitHub..."
-        git remote add origin "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
+        git remote get-url origin >/dev/null 2>&1 || git remote add origin "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
         
         # Configuration de l'upstream pour la branche main
         git branch --set-upstream-to=origin/main main 2>/dev/null || true
