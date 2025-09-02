@@ -1,25 +1,13 @@
-Analyse et corrige l'issue GitHub numéro : $ARGUMENTS
-
-1. Utilise `gh issue view` pour récupérer les détails, assigne-toi cette issue
-
-2. Cree une branche pour bosser sur cette issue, en la referancant
-
+1. Utilise `gh issue view` pour récupérer les détails
+2. Crée une PR venant de cette issue, et bascule sur la branche associée
 3. Comprends le problème décrit
-
 4. Cherche les fichiers concernés dans le codebase
-
-5. Implémente la correction
-
-6. Assure-toi que la doc user et dev est à jour, modifie la au besoin
-
-7. Écris et lance les tests
-
-8. Vérifie que tout passe (lint, typecheck), reboucle entre les etapes 3 à 8 si probleme
-
-9. Commit avec un message descriptif
-
-10. Crée une PR qui référence l'issue
-
-11. Demande a l'utilisateur une validation finale et s'il veut en faire une version/tag
-
-12. Fait le merge et detruit la branche. Et si besoin crée la release note, tag la version (n'oublie pas de completer la doc à ce propos)
+5. Implémente la correction en TDD. Ecris d'abors les tests (qui echouent) puis le code
+6. Itere entre code et execution des tests jusqu'a une resolution complete des problemes
+7. Vérifie que tout passe (tests, lint, typecheck)
+8. Cree les modifications necessaires dans la doc utilisateur et la doc developpeur
+9. Commit de façon atomique avec un message descriptif (precommit te forcera à faire quelques modifications) et push ces modifs
+10. Verifie l'etat de la CI/CD (gh run view)
+11. Demande à l'utilisateur de tester globalement (potentiellement refais une passe entre les points 3 à 10) jusqu'à satisfaction
+12. Met à jour README.md et CLAUDE.md si necessaire
+13. Prepare la pull request et demande à l'utilisateur de la valider
