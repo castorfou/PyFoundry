@@ -2,7 +2,7 @@ name: 🧪 Test Template
 
 on:
   push:
-    branches: [ master, main, develop, "feature/*" ]
+    branches: [ '**' ]  # Toutes les branches pour feedback immédiat
   pull_request:
     branches: [ master, main ]
 
