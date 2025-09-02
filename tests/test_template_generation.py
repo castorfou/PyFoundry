@@ -138,3 +138,18 @@ def test_node_enabled_when_requested(cookies, node_template_context):
     assert "node_modules/" in gitignore_content
     assert "npm-debug.log*" in gitignore_content
     assert "package-lock.json" in gitignore_content
+
+
+def test_timezone_configuration(cookies, default_template_context):
+    """Test que la timezone du host est bien héritée par le devcontainer."""
+    result = cookies.bake(extra_context=default_template_context)
+    
+    # Vérifier que devcontainer.json contient la configuration timezone
+    devcontainer_content = (result.project_path / ".devcontainer" / "devcontainer.json").read_text()
+    
+    # Vérifier la présence de la variable d'environnement TZ
+    assert '"TZ": "${localEnv:TZ}"' in devcontainer_content or "TZ" in devcontainer_content
+    
+    # Vérifier les montages pour les fichiers timezone
+    assert "/etc/timezone" in devcontainer_content
+    assert "/etc/localtime" in devcontainer_content
