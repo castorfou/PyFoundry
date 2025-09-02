@@ -77,6 +77,7 @@ PyFoundry/                                    # Dépôt du template
 - **Script postCreateCommand** simplifié pour la configuration
 - **Environnement virtuel .venv** avec version Python dynamique
 - **Features officielles** (uv) au lieu d'installation manuelle
+- **Héritage timezone du host** via montages `/etc/timezone` et `/etc/localtime`
 
 ### Devcontainer Features
 
@@ -94,6 +95,27 @@ PyFoundry/                                    # Dépôt du template
 - **Chemins PATH** configurés correctement
 - **Versions** gérées de manière cohérente
 - **Maintenance** par les mainteneurs officiels
+
+### Configuration de la timezone
+
+Le devcontainer hérite automatiquement de la timezone du système hôte :
+
+```json
+{
+    "containerEnv": {
+        "TZ": "${localEnv:TZ}"
+    },
+    "mounts": [
+        "source=/etc/timezone,target=/etc/timezone,type=bind,consistency=cached,readonly",
+        "source=/etc/localtime,target=/etc/localtime,type=bind,consistency=cached,readonly"
+    ]
+}
+```
+
+**Méthodes d'héritage** :
+- **Variable d'environnement TZ** : Utilisée par les processus Python/Node.js
+- **Montage /etc/timezone** : Configuration système Linux
+- **Montage /etc/localtime** : Fichier de timezone binaire utilisé par le système
 
 ## Choix technologiques
 

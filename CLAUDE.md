@@ -46,8 +46,21 @@ Un template Cookiecutter de qualité industrielle pour démarrer des projets de 
 - Les tests du template se trouvent dans le dossier `/tests` à la racine.
 - Utilisation de `pytest-cookies` pour générer un projet dans un environnement temporaire.
 - Les tests doivent valider la génération du projet ET exécuter des commandes de validation (`uv pip sync`, `ruff check`) à l'intérieur du projet généré.
+- Test de configuration devcontainer : validation de l'héritage de timezone du host (TZ env var + montages /etc/timezone et /etc/localtime).
+
+## Environnement de Développement
+Pour développer sur le template PyFoundry, il faut utiliser l'environnement conda/mamba `pyfoundry` qui contient toutes les dépendances nécessaires (pytest, ruff, mypy, etc.).
+
+### Activation de l'environnement
+```bash
+# Activer l'environnement conda/mamba
+source ~/miniforge3/etc/profile.d/conda.sh && conda activate pyfoundry
+# ou avec mamba si configuré
+# mamba activate pyfoundry
+```
 
 ## Commandes Utiles (à la racine du template)
+- `source ~/miniforge3/etc/profile.d/conda.sh && conda activate pyfoundry`: Active l'environnement de développement
 - `uv run pytest tests/`: Lance la suite de tests du template.
 - `cruft create . --no-input`: Génère un projet de test localement avec les valeurs par défaut.
 - `mkdocs serve`: Lance le serveur local pour la documentation.
