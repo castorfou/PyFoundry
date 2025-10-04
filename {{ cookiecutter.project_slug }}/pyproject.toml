@@ -56,10 +56,8 @@ where = ["src"]
 "" = "src"
 
 # Configuration uv pour la reproductibilité
-[tool.uv]
-dev-dependencies = [
-    "pytest",
-]
+[dependency-groups]
+dev = ["pytest",]
 
 # Configuration Ruff - Linter et formateur Python moderne
 [tool.ruff]
