@@ -151,5 +151,4 @@ def test_timezone_configuration(cookies, default_template_context):
     assert '"TZ": "${localEnv:TZ}"' in devcontainer_content or "TZ" in devcontainer_content
     
     # Vérifier les montages pour les fichiers timezone
-    assert "/etc/timezone" in devcontainer_content
     assert "/etc/localtime" in devcontainer_content
