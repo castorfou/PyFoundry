@@ -59,7 +59,7 @@ cruft check
 - **⚡ Setup zero-config** : Git init + hooks + auth GitHub en une commande
 - **📚 Documentation moderne** : Guide complet avec MkDocs Material
 - **🔄 Mise à jour facile** : Template évolutif avec cruft
-- **Claude Code preconfigure** : extension vscode, /commands 
+- **🤖 Claude Code intégré** : CLAUDE.md généré automatiquement avec documentation projet et dossier .claude/commands/ pour commandes personnalisées 
 
 ## 🛠️ Stack technologique
 

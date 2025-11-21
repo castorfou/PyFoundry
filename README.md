@@ -54,6 +54,7 @@ cruft check
 - **⚡ Setup zero-config** : Git init + hooks + auth GitHub en une commande
 - **📚 Documentation moderne** : Guide complet avec MkDocs Material
 - **🔄 Mise à jour facile** : Template évolutif avec cruft
+- **🤖 Claude Code intégré** : CLAUDE.md et structure .claude/ générés automatiquement
 
 ## 📚 Documentation
 

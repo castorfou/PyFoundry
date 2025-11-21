@@ -152,3 +152,77 @@ def test_timezone_configuration(cookies, default_template_context):
     
     # Vérifier les montages pour les fichiers timezone
     assert "/etc/localtime" in devcontainer_content
+
+
+def test_claude_md_file_created(cookies, minimal_template_context):
+    """Test que le fichier CLAUDE.md est créé avec le template."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    claude_md_path = result.project_path / "CLAUDE.md"
+    assert claude_md_path.exists(), "CLAUDE.md file should be created"
+
+
+def test_claude_md_content(cookies, default_template_context):
+    """Test que le fichier CLAUDE.md contient les informations attendues."""
+    context = {
+        "project_name": "My Data Project",
+        "project_slug": "my-data-project",
+        "description": "A data science project",
+        "python_version": "3.11",
+        "github_username": "testuser",
+        "use_node": "n"
+    }
+
+    result = cookies.bake(extra_context=context)
+
+    claude_md_path = result.project_path / "CLAUDE.md"
+    content = claude_md_path.read_text()
+
+    # Vérifier que le nom du projet est présent
+    assert "My Data Project" in content
+
+    # Vérifier que la description est présente
+    assert "A data science project" in content
+
+    # Vérifier qu'il contient des sections importantes
+    assert "# Project:" in content or "## Description" in content
+
+    # Vérifier qu'il mentionne la stack technique
+    assert "python" in content.lower() or "Python" in content
+
+    # Vérifier qu'il contient des informations sur l'environnement
+    assert "uv" in content or "pyproject.toml" in content or "dependencies" in content.lower()
+
+
+def test_claude_directory_structure(cookies, minimal_template_context):
+    """Test que la structure .claude/ est créée avec les commandes."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    claude_dir = result.project_path / ".claude"
+    commands_dir = result.project_path / ".claude" / "commands"
+
+    # Vérifier que le répertoire .claude existe
+    assert claude_dir.exists(), ".claude directory should be created"
+    assert claude_dir.is_dir(), ".claude should be a directory"
+
+    # Vérifier que le répertoire commands existe
+    assert commands_dir.exists(), ".claude/commands directory should be created"
+    assert commands_dir.is_dir(), ".claude/commands should be a directory"
+
+    # Vérifier que les commandes pré-configurées existent
+    fix_issue_cmd = commands_dir / "fix-issue.md"
+    stocke_memoire_cmd = commands_dir / "stocke-memoire.md"
+
+    assert fix_issue_cmd.exists(), "/fix-issue command should be created"
+    assert stocke_memoire_cmd.exists(), "/stocke-memoire command should be created"
+
+
+def test_claude_code_extension_in_devcontainer(cookies, minimal_template_context):
+    """Test que l'extension Claude Code est configurée dans le devcontainer."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    devcontainer_json = result.project_path / ".devcontainer" / "devcontainer.json"
+    content = devcontainer_json.read_text()
+
+    # Vérifier que l'extension Claude Code est présente
+    assert "anthropic.claude-code" in content, "Claude Code extension should be in devcontainer.json"
