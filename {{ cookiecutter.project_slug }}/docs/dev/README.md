@@ -101,5 +101,5 @@ La documentation est automatiquement déployée sur GitHub Pages à chaque push 
 
 ## Ressources
 
-- [Guide complet de développement](../../CLAUDE.md) - Instructions détaillées pour Claude Code
+- CLAUDE.md (à la racine du projet) - Instructions détaillées pour Claude Code
 - [Architecture du template PyFoundry](https://castorfou.github.io/PyFoundry/) - Documentation du template utilisé
