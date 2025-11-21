@@ -25,6 +25,7 @@ docker login ghcr.io
 cruft create https://github.com/castorfou/PyFoundry.git
 
 # 4. Ouvrir dans VS Code (setup automatique complet)
+# remplacer mon-nouveau-projet par le vrai nom (project_slug)
 code mon-nouveau-projet
 # → VS Code propose "Reopen in Container"
 # → Configuration Git + GitHub + Pre-commit automatique
@@ -33,7 +34,14 @@ code mon-nouveau-projet
 pour pousser vers github.com
 
 ```bash
-gh repo create mon-nouveau-projet --public --source=. --remote=origin --push
+gh repo create $PROJECT_SLUG --public
+git push -u origin main
+```
+pour activer les github pages
+
+```bash
+gh api repos/$GITHUB_USERNAME/$PROJECT_SLUG/pages -X POST -f build_type=workflow
+gh repo edit $GITHUB_USERNAME/$PROJECT_SLUG --homepage "https://$GITHUB_USERNAME.github.io/$PROJECT_SLUG"
 ```
 
 pour recuperer les dernieres modifications de PyFoundry
@@ -41,6 +49,8 @@ pour recuperer les dernieres modifications de PyFoundry
 ```bash
 # 1. Activer cruft
 mamba activate pyfoundry # un exemple d'activation d'environnement contenant cruft
+
+cruft update
 
 cruft check
 ```

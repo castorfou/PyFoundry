@@ -38,6 +38,46 @@ code .
 └── pyproject.toml # Configuration du projet
 ```
 
+## Documentation
+
+📚 La documentation complète est disponible sur [{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}](https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }})
+
+### Activer GitHub Pages (première fois)
+
+Pour déployer la documentation, activez GitHub Pages :
+
+```bash
+# Via gh CLI (recommandé)
+gh api repos/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/pages \
+  -X POST \
+  -f build_type=workflow
+
+# Ou manuellement :
+# 1. Allez dans Settings > Pages
+# 2. Source : sélectionnez "GitHub Actions"
+```
+
+### Générer localement
+
+```bash
+# Installer les dépendances de documentation
+uv sync --extra docs
+
+# Prévisualiser localement
+uv run mkdocs serve
+
+# La documentation sera accessible à l'URL affichée dans les logs
+# Example: http://127.0.0.1:8000/{{ cookiecutter.project_slug }}/
+```
+
+!!! note "URL locale"
+    Comme `site_url` est configuré pour GitHub Pages avec un chemin de base,
+    MkDocs servira la documentation avec ce même chemin en local.
+    Accédez à l'URL complète affichée dans les logs (avec le chemin `/{{ cookiecutter.project_slug }}/`).
+
+    Si vous souhaitez servir sans chemin de base pour le développement local,
+    commentez temporairement la ligne `site_url` dans `mkdocs.yml`.
+
 ## Usage
 
 Décrivez ici comment utiliser votre projet.

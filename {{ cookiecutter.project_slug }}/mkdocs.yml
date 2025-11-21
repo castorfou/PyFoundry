@@ -1,6 +1,11 @@
-site_name: PyFoundry Template
-site_description: Template Cookiecutter de qualité industrielle pour projets Data Science Python
-site_url: https://guillaume.github.io/PyFoundry
+site_name: {{ cookiecutter.project_name }}
+site_description: {{ cookiecutter.description }}
+site_url: https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}
+use_directory_urls: true
+
+# Exclude internal directories from documentation
+exclude_docs: |
+  claude/
 
 theme:
   name: material
@@ -28,23 +33,25 @@ theme:
 
 nav:
   - Accueil: index.md
-  - Guide Utilisateur:
-    - Installation: user/installation.md
-    - Guide complet: user/guide.md
-    - Structure: user/structure.md
-  - Guide Développeur:
-    - Architecture: dev/architecture.md
-    - Contribution: dev/contributing.md
-    - Roadmap: dev/roadmap.md
-    - Qualité Code: dev/qualite_code.md
-    - Test: dev/testing.md
-    - Déploiement: dev/deployment.md
-    - Claude code: dev/claude-code.md
+  - Documentation Utilisateur:
+    - user/README.md
+  - Documentation Développeur:
+    - dev/README.md
 
 markdown_extensions:
   - admonition
   - codehilite
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
   - toc:
       permalink: true
+  - attr_list
+  - md_in_html
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago

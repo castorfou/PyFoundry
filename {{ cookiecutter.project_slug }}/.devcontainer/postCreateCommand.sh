@@ -151,8 +151,16 @@ Features: ruff, mypy, pre-commit hooks"
     
     # Configuration du remote GitHub si username fourni
     if [ "{{ cookiecutter.github_username }}" != "votre-username" ]; then
-        echo "Configuration du remote GitHub..."
-        git remote get-url origin >/dev/null 2>&1 || git remote add origin "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
+
+        # choisir le protocole: SSH si possible, sinon HTTPS
+        if ssh -o BatchMode=yes -T git@github.com 2>&1 | grep -iq "successfully authenticated"; then
+            remote_url="git@github.com:{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
+        else
+            remote_url="https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
+        fi
+
+        echo "Configuration du remote GitHub : $remote_url"
+        git remote get-url origin >/dev/null 2>&1 || git remote add origin "$remote_url"
         
         # Configuration de l'upstream pour la branche main
         git branch --set-upstream-to=origin/main main 2>/dev/null || true

@@ -30,6 +30,7 @@ docker login ghcr.io
 cruft create https://github.com/castorfou/PyFoundry.git
 
 # 4. Ouvrir dans VS Code (setup automatique complet)
+# remplacer mon-nouveau-projet par le vrai nom (project_slug)
 code mon-nouveau-projet
 # → VS Code propose "Reopen in Container"
 # → Configuration Git + GitHub (un connexion à github sera effectuée) + Pre-commit automatique
@@ -38,7 +39,15 @@ code mon-nouveau-projet
 pour pousser vers github.com
 
 ```bash
-gh repo create mon-nouveau-projet --public --source=. --remote=origin --push
+gh repo create $PROJECT_SLUG --public
+git push -u origin main
+```
+
+pour activer les github pages
+
+```bash
+gh api repos/$GITHUB_USERNAME/$PROJECT_SLUG/pages -X POST -f build_type=workflow
+gh repo edit $GITHUB_USERNAME/$PROJECT_SLUG --homepage "https://$GITHUB_USERNAME.github.io/$PROJECT_SLUG"
 ```
 
 pour recuperer les dernieres modifications de PyFoundry
@@ -46,6 +55,8 @@ pour recuperer les dernieres modifications de PyFoundry
 ```bash
 # 1. Activer cruft
 mamba activate pyfoundry # un exemple d'activation d'environnement contenant cruft
+
+cruft update
 
 cruft check
 ```
@@ -75,11 +86,16 @@ cruft check
 ### 🏗️ Structure 
 ```
 mon-nouveau-projet/
+├── .claude/              # Config Claude Code
 ├── .devcontainer/        # Config devcontainer
 ├── .github/              # Config CI/CD (test/build lib / deploy mkdocs)
 ├── data/
 │   ├── raw/              # Données brutes (gitignorées)
 │   └── processed/        # Datasets traités
+├── docs/
+│   ├── claude/memory/    # Memoire Claude: par feature developpees
+│   ├── user/             # Doc user - comment utiliser
+│   └── developer/        # Doc developer - comment modifier
 ├── notebooks/            # Notebooks python REPL 
 └── src/                  # Libs python
 ```
@@ -88,15 +104,6 @@ mon-nouveau-projet/
 - **Image** : Python 3.12 officielle Microsoft avec utilisateur vscode
 - **Performance** : Configuration simplifiée, build plus rapide
 - **Extensions** : Extensions VS Code essentielles (Python, Jupyter, Git)
-
-## 🗺️ Roadmap
-
-- **v0.1** ✅ : Squelette avec environnement reproductible
-- **v0.2** ✅ : Environnement reproductible avancé (scripts, devcontainer optimisé)
-- **v0.3** ✅ : **Qualité de code automatisée** (ruff, mypy, pre-commit, git/github integration)
-- **v0.4** ✅ : Tests automatisés (pytest, pytest-cookies, coverage)
-- **v0.5** ✅ : **CI/CD complet** (GitHub Actions, release automation, badges intégrés)
-
 
 ## 📚 Documentation
 
@@ -108,8 +115,9 @@ mon-nouveau-projet/
 ### Pour les Développeurs  
 - **[Architecture](dev/architecture.md)** : Design et choix techniques du template
 - **[Roadmap](dev/roadmap.md)** : Historique et évolutions du template
-- **[Implémentation v0.3](dev/v0.3-implementation.md)** : Détails techniques v0.3
+- **[Qualite](dev/qualite_code.md)** : Approche qualite avec pre-commit, ruff, etc
 - **[Contribution](dev/contributing.md)** : Comment contribuer au projet
+- **[Test](dev/testing.md)** : Comment tester des devs en cours
 - **[Déploiement](dev/deployment.md)** : Publication et release
 
 ---

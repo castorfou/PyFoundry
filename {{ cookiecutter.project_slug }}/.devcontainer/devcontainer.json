@@ -11,6 +11,7 @@
     "containerEnv": {
         "PROJECT_NAME": "{{ cookiecutter.project_name }}",
         "PROJECT_SLUG": "{{ cookiecutter.project_slug }}",
+        "GITHUB_USERNAME": "{{ cookiecutter.github_username }}",
         "PYTHON_VERSION": "{{ cookiecutter.python_version }}",
         "PYTHONPATH": "/workspaces/{{ cookiecutter.project_slug }}/src",
         "UV_VENV_CLEAR": "1",

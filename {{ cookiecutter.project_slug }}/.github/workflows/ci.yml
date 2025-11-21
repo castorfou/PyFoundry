@@ -117,6 +117,6 @@ jobs:
       run: |
         echo "📦 Built packages:"
         ls -la dist/
-        
+
         echo "📋 Package metadata:"
-        uv run python -m pip show {% raw %}{{ cookiecutter.project_slug.replace('-', '_') }}{% endraw %} || echo "Package not installed yet"
+        ls -1 dist/*.whl | head -1 | xargs basename | sed 's/-[0-9].*//' | xargs -I {} uv run python -m pip show {} || echo "Package not installed yet"
