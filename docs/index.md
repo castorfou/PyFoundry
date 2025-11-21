@@ -39,8 +39,8 @@ code mon-nouveau-projet
 pour pousser vers github.com
 
 ```bash
-# remplacer mon-nouveau-projet par le vrai nom (project_slug)
-gh repo create mon-nouveau-projet --public
+# PROJECT_SLUG est dispo dans les variables env
+gh repo create $PROJECT_SLUG --public
 git push -u origin main
 ```
 
@@ -80,11 +80,16 @@ cruft check
 ### 🏗️ Structure 
 ```
 mon-nouveau-projet/
+├── .claude/              # Config Claude Code
 ├── .devcontainer/        # Config devcontainer
 ├── .github/              # Config CI/CD (test/build lib / deploy mkdocs)
 ├── data/
 │   ├── raw/              # Données brutes (gitignorées)
 │   └── processed/        # Datasets traités
+├── docs/
+│   ├── claude/memory/    # Memoire Claude: par feature developpees
+│   ├── user/             # Doc user - comment utiliser
+│   └── developer/        # Doc developer - comment modifier
 ├── notebooks/            # Notebooks python REPL 
 └── src/                  # Libs python
 ```
@@ -93,15 +98,6 @@ mon-nouveau-projet/
 - **Image** : Python 3.12 officielle Microsoft avec utilisateur vscode
 - **Performance** : Configuration simplifiée, build plus rapide
 - **Extensions** : Extensions VS Code essentielles (Python, Jupyter, Git)
-
-## 🗺️ Roadmap
-
-- **v0.1** ✅ : Squelette avec environnement reproductible
-- **v0.2** ✅ : Environnement reproductible avancé (scripts, devcontainer optimisé)
-- **v0.3** ✅ : **Qualité de code automatisée** (ruff, mypy, pre-commit, git/github integration)
-- **v0.4** ✅ : Tests automatisés (pytest, pytest-cookies, coverage)
-- **v0.5** ✅ : **CI/CD complet** (GitHub Actions, release automation, badges intégrés)
-
 
 ## 📚 Documentation
 
@@ -115,6 +111,7 @@ mon-nouveau-projet/
 - **[Roadmap](dev/roadmap.md)** : Historique et évolutions du template
 - **[Implémentation v0.3](dev/v0.3-implementation.md)** : Détails techniques v0.3
 - **[Contribution](dev/contributing.md)** : Comment contribuer au projet
+- **[Test](dev/testing.md)** : Comment tester des devs en cours
 - **[Déploiement](dev/deployment.md)** : Publication et release
 
 ---

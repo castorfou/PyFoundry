@@ -47,22 +47,33 @@ Cette documentation est générée avec l'IA (Claude Code). Pour maintenir une d
 ### ✅ Bonnes pratiques de rédaction
 
 **Décrire l'état actuel** du système :
+
 - Expliquer **comment le code fonctionne maintenant**
+
 - Documenter l'architecture et les patterns actuels
+
 - Fournir des exemples de code et d'utilisation
 
 **Éviter** :
+
 - ❌ Les références historiques ("L'issue #X a amélioré...")
+
 - ❌ Les récits d'évolution ("Nous avons d'abord implémenté X, puis Y...")
+
 - ❌ Les marqueurs temporels ("Nouvelle fonctionnalité", "Récemment ajouté")
+
 - ❌ Les métriques de tests dans la documentation
 
 ### Références GitHub appropriées
 
 Les références aux issues GitHub ont leur place dans :
+
 - ✅ Les sections dédiées "Historique" ou "Notes de développement" (en fin de document)
+
 - ✅ Les messages de commit et pull requests
+
 - ✅ Les commentaires de code expliquant des décisions techniques
+
 - ❌ **Jamais** dans la documentation fonctionnelle principale
 
 ### Exemple

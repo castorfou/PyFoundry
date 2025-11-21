@@ -36,7 +36,8 @@ nav:
     - Architecture: dev/architecture.md
     - Contribution: dev/contributing.md
     - Roadmap: dev/roadmap.md
-    - "Implémentation v0.3": dev/v0.3-implementation.md
+    - Qualité Code: dev/qualite_code.md
+    - Test: dev/testing.md
     - Déploiement: dev/deployment.md
     - Claude code: dev/claude-code.md
 

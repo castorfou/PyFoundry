@@ -27,4 +27,3 @@ Pour les personnes qui **contribuent** au projet :
 
 - 🏠 [Dépôt GitHub](https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }})
 - 🐛 [Signaler un bug](https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/issues)
-- 💬 [Discussions](https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/discussions)

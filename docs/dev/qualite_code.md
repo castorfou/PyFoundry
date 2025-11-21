@@ -1,8 +1,8 @@
-# Guide d'implémentation v0.3 - Qualité de Code
+# Qualité de Code
 
 ## 🎯 Vue d'ensemble
 
-La v0.3 apporte un système complet d'assurance qualité **zero-config** avec :
+Système complet d'assurance qualité **zero-config** avec :
 - Configuration automatique des outils de qualité
 - Intégration Git/GitHub seamless  
 - Pre-commit hooks optimisés pour la performance

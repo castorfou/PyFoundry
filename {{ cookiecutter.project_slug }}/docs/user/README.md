@@ -40,14 +40,21 @@ Cette documentation est générée avec l'IA (Claude Code). Pour maintenir une d
 ### ✅ Bonnes pratiques de rédaction
 
 **Décrire l'état actuel** du système :
+
 - Expliquer ce que le système **fait maintenant**
+
 - Fournir des spécifications techniques et des exemples d'utilisation
+
 - Documenter les fonctionnalités telles qu'elles existent
 
 **Éviter** :
+
 - ❌ Les références historiques ("L'issue #X a amélioré...")
+
 - ❌ Les récits d'évolution ("Nous avons d'abord implémenté X, puis Y...")
+
 - ❌ Les marqueurs temporels ("Nouvelle fonctionnalité", "Récemment ajouté")
+
 - ❌ Les métriques de tests dans la documentation
 
 ### Exemple
