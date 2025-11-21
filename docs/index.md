@@ -39,9 +39,14 @@ code mon-nouveau-projet
 pour pousser vers github.com
 
 ```bash
-# PROJECT_SLUG est dispo dans les variables env
 gh repo create $PROJECT_SLUG --public
 git push -u origin main
+```
+
+pour activer les github pages
+
+```bash
+gh api repos/$GITHUB_USERNAME/$PROJECT_SLUG/pages -X POST -f build_type=workflow
 ```
 
 pour recuperer les dernieres modifications de PyFoundry

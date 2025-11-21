@@ -34,9 +34,13 @@ code mon-nouveau-projet
 pour pousser vers github.com
 
 ```bash
-# remplacer mon-nouveau-projet par le vrai nom (project_slug)
-gh repo create mon-nouveau-projet --public
+gh repo create $PROJECT_SLUG --public
 git push -u origin main
+```
+pour activer les github pages
+
+```bash
+gh api repos/$GITHUB_USERNAME/$PROJECT_SLUG/pages -X POST -f build_type=workflow
 ```
 
 pour recuperer les dernieres modifications de PyFoundry

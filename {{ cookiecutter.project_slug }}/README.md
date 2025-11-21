@@ -42,7 +42,22 @@ code .
 
 📚 La documentation complète est disponible sur [{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}](https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }})
 
-Pour générer la documentation localement :
+### Activer GitHub Pages (première fois)
+
+Pour déployer la documentation, activez GitHub Pages :
+
+```bash
+# Via gh CLI (recommandé)
+gh api repos/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/pages \
+  -X POST \
+  -f build_type=workflow
+
+# Ou manuellement :
+# 1. Allez dans Settings > Pages
+# 2. Source : sélectionnez "GitHub Actions"
+```
+
+### Générer localement
 
 ```bash
 # Installer les dépendances de documentation
