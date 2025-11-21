@@ -26,6 +26,8 @@ Un template Cookiecutter de qualité industrielle pour démarrer des projets de 
 ### Structure du Projet Généré
 
 .
+├── .claude/                    # Configuration Claude Code
+│   └── commands/              # Commandes slash personnalisées
 ├── .devcontainer/              # Environnement de dev reproductible
 ├── .github/workflows/          # CI pour le code du projet
 ├── data/
@@ -33,6 +35,7 @@ Un template Cookiecutter de qualité industrielle pour démarrer des projets de 
 ├── src/
 ├── .gitignore
 ├── .pre-commit-config.yaml
+├── CLAUDE.md                   # Documentation pour Claude Code
 └── pyproject.toml              # Dépendances du projet
 
 
