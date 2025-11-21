@@ -38,6 +38,7 @@ dev = [
     "mkdocs>=1.5.0",
     "mkdocs-material>=9.4.0",
     "mkdocs-git-revision-date-localized-plugin>=1.2.0",
+    "click==8.2.1" # https://github.com/mkdocs/mkdocs/issues/4032
 ]
 
 [project.urls]
