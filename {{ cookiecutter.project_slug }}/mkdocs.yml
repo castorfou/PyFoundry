@@ -1,6 +1,7 @@
 site_name: {{ cookiecutter.project_name }}
 site_description: {{ cookiecutter.description }}
 site_url: https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}
+use_directory_urls: true
 
 # Exclude internal directories from documentation
 exclude_docs: |

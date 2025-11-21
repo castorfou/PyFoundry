@@ -65,7 +65,18 @@ uv sync --extra docs
 
 # Prévisualiser localement
 uv run mkdocs serve
+
+# La documentation sera accessible à l'URL affichée dans les logs
+# Example: http://127.0.0.1:8000/{{ cookiecutter.project_slug }}/
 ```
+
+!!! note "URL locale"
+    Comme `site_url` est configuré pour GitHub Pages avec un chemin de base,
+    MkDocs servira la documentation avec ce même chemin en local.
+    Accédez à l'URL complète affichée dans les logs (avec le chemin `/{{ cookiecutter.project_slug }}/`).
+
+    Si vous souhaitez servir sans chemin de base pour le développement local,
+    commentez temporairement la ligne `site_url` dans `mkdocs.yml`.
 
 ## Usage
 

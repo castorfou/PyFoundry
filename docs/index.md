@@ -47,6 +47,7 @@ pour activer les github pages
 
 ```bash
 gh api repos/$GITHUB_USERNAME/$PROJECT_SLUG/pages -X POST -f build_type=workflow
+gh repo edit $GITHUB_USERNAME/$PROJECT_SLUG --homepage "https://$GITHUB_USERNAME.github.io/$PROJECT_SLUG"
 ```
 
 pour recuperer les dernieres modifications de PyFoundry
