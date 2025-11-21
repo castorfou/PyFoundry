@@ -38,7 +38,7 @@ jobs:
         run: uv python install {{ cookiecutter.python_version }}
 
       - name: 📦 Install dependencies
-        run: uv sync --extra docs
+        run: uv sync --extra dev
 
       - name: 🏗️ Build MkDocs site
         run: uv run mkdocs build --strict
