@@ -38,6 +38,20 @@ code .
 └── pyproject.toml # Configuration du projet
 ```
 
+## Documentation
+
+📚 La documentation complète est disponible sur [{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}](https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }})
+
+Pour générer la documentation localement :
+
+```bash
+# Installer les dépendances de documentation
+uv sync --extra docs
+
+# Prévisualiser localement
+uv run mkdocs serve
+```
+
 ## Usage
 
 Décrivez ici comment utiliser votre projet.

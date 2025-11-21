@@ -42,6 +42,8 @@ pour recuperer les dernieres modifications de PyFoundry
 # 1. Activer cruft
 mamba activate pyfoundry # un exemple d'activation d'environnement contenant cruft
 
+cruft update
+
 cruft check
 ```
 

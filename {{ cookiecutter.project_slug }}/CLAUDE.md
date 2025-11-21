@@ -9,6 +9,7 @@
 - **Environnement de développement**: VS Code Dev Container
 - **Qualité de Code**: pre-commit hooks avec ruff
 - **Tests**: pytest
+- **Documentation**: MkDocs & mkdocs-material
 {%- if cookiecutter.use_node == 'y' %}
 - **Node.js**: Installé et configuré (version LTS)
 {%- endif %}
@@ -24,7 +25,10 @@
 ├── data/
 │   ├── raw/               # Données brutes (non versionnées)
 │   └── processed/         # Données traitées
-├── docs/
+├── docs/                   # Documentation MkDocs
+│   ├── index.md           # Page d'accueil de la documentation
+│   ├── user/              # Documentation utilisateur
+│   ├── dev/               # Documentation développeur
 │   └── claude/
 │       └── memory/        # Mémoire projet (décisions, apprentissages)
 ├── notebooks/             # Notebooks Jupyter pour l'exploration
@@ -99,6 +103,88 @@ pytest
 # Lancer avec coverage
 pytest --cov=src --cov-report=html
 ```
+
+## Documentation
+
+Ce projet utilise **MkDocs** avec le thème Material pour générer une documentation professionnelle.
+
+### Structure de la documentation
+
+La documentation est organisée en deux sections principales :
+
+- **`docs/user/`** : Documentation pour les **utilisateurs** du projet (installation, utilisation, guides)
+- **`docs/dev/`** : Documentation pour les **développeurs** qui contribuent (architecture, contribution, API interne)
+
+### Commandes MkDocs
+
+```bash
+# Installer les dépendances de documentation
+uv sync --extra docs
+
+# Prévisualiser la documentation localement (http://localhost:8000)
+uv run mkdocs serve
+
+# Construire la documentation pour la production
+uv run mkdocs build --strict
+```
+
+### Déploiement automatique
+
+La documentation est automatiquement construite et déployée sur GitHub Pages via la workflow `.github/workflows/docs.yml` :
+- Déclenché à chaque push sur `main`/`master` modifiant `docs/` ou `mkdocs.yml`
+- Disponible à l'URL : https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}
+
+### Bonnes pratiques de rédaction
+
+Lors de la génération de documentation avec l'IA (Claude Code), suivre ces principes :
+
+#### ✅ À faire
+
+**Décrire l'état actuel** du système :
+- Expliquer ce que le système **fait maintenant**
+- Fournir des spécifications techniques et des exemples d'utilisation
+- Documenter les fonctionnalités telles qu'elles existent
+- Utiliser le présent de l'indicatif
+
+#### ❌ À éviter
+
+- **Références historiques** : Éviter "L'issue #X a amélioré..." ou "La version 2.0 a introduit..."
+- **Récits d'évolution** : Éviter "Nous avons d'abord implémenté X, puis Y..."
+- **Marqueurs temporels** : Éviter "Nouvelle fonctionnalité", "Récemment ajouté", "Bientôt disponible"
+- **Métriques de tests** : Ne pas inclure le nombre de tests ou le taux de couverture dans la documentation
+
+#### Exemple de bonne documentation
+
+**❌ Mauvais** :
+> "Nouvelle dans l'issue #42 : L'authentification JWT est maintenant disponible. C'est une amélioration majeure par rapport à l'ancienne méthode OAuth que nous utilisions avant."
+
+**✅ Bon** :
+> "L'authentification utilise des tokens JWT (JSON Web Tokens) signés avec RS256. Les tokens ont une durée de vie de 24h et peuvent être renouvelés via le refresh token."
+
+#### Où placer les références historiques
+
+Les références aux issues GitHub et l'historique ont leur place dans :
+- ✅ Les sections dédiées "Historique" ou "Notes de développement" (en fin de document)
+- ✅ Les messages de commit et pull requests
+- ✅ Les commentaires de code expliquant des décisions techniques
+- ✅ Le fichier `docs/claude/memory/` pour la mémoire contextuelle
+- ❌ **Jamais** dans la documentation fonctionnelle principale (user/ ou dev/)
+
+### Organisation docs/user/ vs docs/dev/
+
+**`docs/user/`** - Pour ceux qui **utilisent** le projet :
+- Installation et configuration
+- Guides d'utilisation et tutoriels
+- Cas d'usage et exemples pratiques
+- FAQ et dépannage
+- API publique (endpoints, fonctions exposées)
+
+**`docs/dev/`** - Pour ceux qui **modifient** le projet :
+- Architecture et design patterns
+- Configuration de l'environnement de développement
+- Guide de contribution et standards de code
+- API interne et structure du code
+- Processus de développement et workflow
 
 ## Conventions de Code
 
@@ -201,10 +287,18 @@ pre-commit run --all-files
 
 # Mettre à jour pre-commit hooks
 pre-commit autoupdate
+
+# Prévisualiser la documentation
+uv run mkdocs serve
+
+# Construire la documentation
+uv run mkdocs build --strict
 ```
 
 ## Ressources
 - Dépôt GitHub: https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}
+- Documentation du projet: https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}
 - Documentation Python: https://docs.python.org/{{ cookiecutter.python_version }}/
 - Documentation uv: https://github.com/astral-sh/uv
 - Documentation ruff: https://docs.astral.sh/ruff/
+- Documentation MkDocs: https://www.mkdocs.org/
