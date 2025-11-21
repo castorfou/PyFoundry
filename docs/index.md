@@ -109,7 +109,7 @@ mon-nouveau-projet/
 ### Pour les Développeurs  
 - **[Architecture](dev/architecture.md)** : Design et choix techniques du template
 - **[Roadmap](dev/roadmap.md)** : Historique et évolutions du template
-- **[Implémentation v0.3](dev/v0.3-implementation.md)** : Détails techniques v0.3
+- **[Qualite](dev/qualite_code.md)** : Approche qualite avec pre-commit, ruff, etc
 - **[Contribution](dev/contributing.md)** : Comment contribuer au projet
 - **[Test](dev/testing.md)** : Comment tester des devs en cours
 - **[Déploiement](dev/deployment.md)** : Publication et release
