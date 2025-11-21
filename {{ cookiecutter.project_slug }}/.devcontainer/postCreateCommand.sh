@@ -153,7 +153,7 @@ Features: ruff, mypy, pre-commit hooks"
     if [ "{{ cookiecutter.github_username }}" != "votre-username" ]; then
 
         # choisir le protocole: SSH si possible, sinon HTTPS
-        if ssh -T git@github.com >/dev/null 2>&1; then
+        if ssh -o BatchMode=yes -T git@github.com 2>&1 | grep -iq "successfully authenticated"; then
             remote_url="git@github.com:{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
         else
             remote_url="https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
