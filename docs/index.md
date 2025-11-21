@@ -30,6 +30,7 @@ docker login ghcr.io
 cruft create https://github.com/castorfou/PyFoundry.git
 
 # 4. Ouvrir dans VS Code (setup automatique complet)
+# remplacer mon-nouveau-projet par le vrai nom (project_slug)
 code mon-nouveau-projet
 # → VS Code propose "Reopen in Container"
 # → Configuration Git + GitHub (un connexion à github sera effectuée) + Pre-commit automatique
@@ -38,7 +39,9 @@ code mon-nouveau-projet
 pour pousser vers github.com
 
 ```bash
-gh repo create mon-nouveau-projet --public --source=. --remote=origin --push
+# remplacer mon-nouveau-projet par le vrai nom (project_slug)
+gh repo create mon-nouveau-projet --public
+git push -u origin main
 ```
 
 pour recuperer les dernieres modifications de PyFoundry
