@@ -337,21 +337,108 @@ Les tests s'exécutent automatiquement via `.github/workflows/test-template.yml`
 4. **Validation** : Tester la syntaxe des fichiers de configuration
 5. **Couverture** : Viser 100% de couverture des tests critiques
 
-#### Tests manuels
-1. **Génération** : `cruft create . --no-input`
-2. **Devcontainer** : Ouvrir dans VS Code
-3. **Installation** : `uv pip install -e .`
-4. **Jupyter** : `jupyter lab` fonctionne
-5. **Git** : Repository initialisé correctement
+#### Tests manuels end-to-end
+
+##### Test depuis la branche main (locale)
+
+```bash
+# Depuis la racine de PyFoundry
+cruft create . --no-input
+
+# Vérifier le projet généré
+cd mon-projet-data-science
+ls -la
+
+# Vérifier les fichiers clés
+cat CLAUDE.md
+ls .claude/commands/
+cat .devcontainer/devcontainer.json | grep claude-code
+```
+
+##### Test depuis une branche de développement
+
+Lorsque vous développez une nouvelle fonctionnalité sur une branche, vous pouvez tester le template avant de merger :
+
+```bash
+# Option 1: Test depuis la branche locale
+# (nécessite que la branche soit pushée sur GitHub)
+cruft create https://github.com/castorfou/PyFoundry.git \
+  --checkout 15-ajouter-claude-code \
+  --no-input
+
+# Option 2: Test avec paramètres personnalisés
+cruft create https://github.com/castorfou/PyFoundry.git \
+  --checkout ma-branche-feature \
+  --extra-context '{"project_name": "Test Ma Feature", "use_node": "n"}'
+
+# Option 3: Test interactif depuis une branche
+cruft create https://github.com/castorfou/PyFoundry.git \
+  --checkout ma-branche-feature
+```
+
+##### Workflow de test complet depuis une branche
+
+```bash
+# 1. Créer et pousser votre branche de développement
+git checkout -b feature/nouvelle-fonctionnalite
+# ... faire vos modifications ...
+git add .
+git commit -m "feat: ajouter nouvelle fonctionnalité"
+git push origin feature/nouvelle-fonctionnalite
+
+# 2. Générer un projet test depuis cette branche
+cd /tmp  # ou tout autre répertoire de test
+cruft create https://github.com/castorfou/PyFoundry.git \
+  --checkout feature/nouvelle-fonctionnalite \
+  --no-input
+
+# 3. Vérifier le projet généré
+cd mon-projet-data-science
+
+# 4. Tester dans le devcontainer
+code .
+# → Accepter "Reopen in Container" dans VS Code
+
+# 5. Vérifier les fonctionnalités
+# - Extensions installées
+# - Fichiers de configuration corrects
+# - Scripts de setup fonctionnels
+# - Documentation à jour
+```
+
+##### Checklist de validation end-to-end
+
+Après avoir généré un projet test, vérifier :
+
+- [ ] **Structure** : Tous les dossiers attendus sont créés
+- [ ] **Fichiers** : `CLAUDE.md`, `.claude/commands/`, `.devcontainer/`, etc.
+- [ ] **Variables Cookiecutter** : Nom du projet, description correctement injectés
+- [ ] **Devcontainer** : Se construit sans erreur
+- [ ] **Extensions VS Code** : Claude Code et autres installées
+- [ ] **Scripts setup** : `postCreateCommand.sh` s'exécute correctement
+- [ ] **Git** : Repository initialisé, `.gitignore` approprié
+- [ ] **Dependencies** : `uv pip sync` fonctionne
+- [ ] **Quality tools** : `ruff check .` et `mypy src/` passent
+- [ ] **Tests** : `pytest` trouve et exécute les tests
+- [ ] **Documentation** : README.md correct avec bonnes URLs
+
+!!! tip "Astuce : Test rapide depuis une PR"
+    Vous pouvez tester directement depuis une Pull Request avant de merger :
+    ```bash
+    cruft create https://github.com/castorfou/PyFoundry.git \
+      --checkout refs/pull/42/head \
+      --no-input
+    ```
 
 !!! warning "Important : cruft et les fichiers committés"
     **cruft ne voit que les fichiers committés dans Git**. Pour tester des modifications :
-    
+
     1. Faire les modifications au template
     2. **Committer les changements** : `git add . && git commit -m "test: modifications template"`
-    3. Tester avec cruft : `cruft create . --no-input`
-    
-    Les fichiers non committés ne seront pas inclus dans le projet généré !
+    3. **Pousser sur GitHub** : `git push origin ma-branche`
+    4. Tester avec cruft depuis la branche distante
+
+    Les fichiers non committés ou non pushés ne seront pas inclus dans le projet généré !
 
 ## Roadmap et priorités
 
