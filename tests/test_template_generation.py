@@ -226,3 +226,26 @@ def test_claude_code_extension_in_devcontainer(cookies, minimal_template_context
 
     # Vérifier que l'extension Claude Code est présente
     assert "anthropic.claude-code" in content, "Claude Code extension should be in devcontainer.json"
+
+
+def test_claude_memory_directory_structure(cookies, minimal_template_context):
+    """Test que la structure docs/claude/memory/ est créée."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    docs_dir = result.project_path / "docs"
+    claude_docs_dir = result.project_path / "docs" / "claude"
+    memory_dir = result.project_path / "docs" / "claude" / "memory"
+
+    # Vérifier que la structure existe
+    assert docs_dir.exists(), "docs/ directory should be created"
+    assert claude_docs_dir.exists(), "docs/claude/ directory should be created"
+    assert memory_dir.exists(), "docs/claude/memory/ directory should be created"
+
+    # Vérifier que le README est présent
+    memory_readme = memory_dir / "README.md"
+    assert memory_readme.exists(), "docs/claude/memory/README.md should be created"
+
+    # Vérifier le contenu du README
+    readme_content = memory_readme.read_text()
+    assert "Mémoire Claude Code" in readme_content
+    assert "YYMMDD-HHMM" in readme_content
