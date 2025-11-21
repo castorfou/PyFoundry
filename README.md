@@ -12,6 +12,8 @@
 
 ## 🚀 Démarrage rapide
 
+pour créer un projet suivant le template PyFoundry
+
 ```bash
 # 1. Installer cruft
 pip install cruft
@@ -26,6 +28,21 @@ cruft create https://github.com/castorfou/PyFoundry.git
 code mon-nouveau-projet
 # → VS Code propose "Reopen in Container"
 # → Configuration Git + GitHub + Pre-commit automatique
+```
+
+pour pousser vers github.com
+
+```bash
+gh repo create mon-nouveau-projet --public --source=. --remote=origin --push
+```
+
+pour recuperer les dernieres modifications de PyFoundry
+
+```bash
+# 1. Activer cruft
+mamba activate pyfoundry # un exemple d'activation d'environnement contenant cruft
+
+cruft check
 ```
 
 ## ✨ Fonctionnalités

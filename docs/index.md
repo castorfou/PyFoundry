@@ -25,13 +25,29 @@ mamba activate pyfoundry # un exemple d'activation d'environnement contenant cru
 # 2. Se logger à ghcr.io (pour les features devcontainer)  
 docker login ghcr.io
 
-# 3. Créer un nouveau projet
+# 3. Créer un nouveau projet (tu devras repondre a quelques questions)
+# nom du projet, etc
 cruft create https://github.com/castorfou/PyFoundry.git
 
 # 4. Ouvrir dans VS Code (setup automatique complet)
 code mon-nouveau-projet
 # → VS Code propose "Reopen in Container"
 # → Configuration Git + GitHub (un connexion à github sera effectuée) + Pre-commit automatique
+```
+
+pour pousser vers github.com
+
+```bash
+gh repo create mon-nouveau-projet --public --source=. --remote=origin --push
+```
+
+pour recuperer les dernieres modifications de PyFoundry
+
+```bash
+# 1. Activer cruft
+mamba activate pyfoundry # un exemple d'activation d'environnement contenant cruft
+
+cruft check
 ```
 
 ## ✨ Fonctionnalités
@@ -43,6 +59,7 @@ code mon-nouveau-projet
 - **⚡ Setup zero-config** : Git init + hooks + auth GitHub en une commande
 - **📚 Documentation moderne** : Guide complet avec MkDocs Material
 - **🔄 Mise à jour facile** : Template évolutif avec cruft
+- **Claude Code preconfigure** : extension vscode, /commands 
 
 ## 🛠️ Stack technologique
 
@@ -57,22 +74,14 @@ code mon-nouveau-projet
 
 ### 🏗️ Structure 
 ```
-mon-projet/
+mon-nouveau-projet/
+├── .devcontainer/        # Config devcontainer
+├── .github/              # Config CI/CD (test/build lib / deploy mkdocs)
 ├── data/
 │   ├── raw/              # Données brutes (gitignorées)
-│   ├── processed/        # Datasets traités
-│   └── external/         # Références externes
-├── models/               # Modèles entraînés
-├── logs/                 # Logs d'application
-├── reports/              # Rapports générés
-├── notebooks/
-│   ├── exploratory/      # Notebooks d'exploration
-│   ├── preprocessing/    # Préparation des données
-│   ├── modeling/         # Développement de modèles
-│   └── reporting/        # Rapports finaux
-└── scripts/              # Automation setup
-    ├── setup.sh          # Linux/macOS
-    └── setup.ps1         # Windows
+│   └── processed/        # Datasets traités
+├── notebooks/            # Notebooks python REPL 
+└── src/                  # Libs python
 ```
 
 ### 🎯 DevContainer Optimisé
