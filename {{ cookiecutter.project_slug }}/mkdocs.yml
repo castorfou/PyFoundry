@@ -58,7 +58,7 @@ markdown_extensions:
 
 plugins:
   - search
-  - awesome-nav
+  - awesome-pages
   - git-revision-date-localized:
       enable_creation_date: true
       type: timeago
