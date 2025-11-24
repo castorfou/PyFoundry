@@ -2,7 +2,7 @@ name: 📚 Deploy Documentation
 
 on:
   push:
-    branches: [main 24-update-mkdocs-and-cicd-broken]
+    branches: [main]
     paths: 
       - 'docs/**'
       - 'mkdocs.yml'
@@ -36,7 +36,7 @@ jobs:
       - name: 📦 Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocstrings[python] mkdocs-include-markdown-plugin mkdocs-awesome-nav pymdown-extensions
+          pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocstrings[python] mkdocs-include-markdown-plugin mkdocs-awesome-pages-plugin pymdown-extensions
 
       - name: 🏗️ Build MkDocs site
         run: mkdocs build --strict

@@ -41,7 +41,7 @@ dev = [
     "click==8.2.1", # https://github.com/mkdocs/mkdocs/issues/4032
     "mkdocstrings[python]",
     "mkdocs-include-markdown-plugin",
-    "mkdocs-awesome-nav",
+    "mkdocs-awesome-pages-plugin",
     "pymdown-extensions"
 ]
 
