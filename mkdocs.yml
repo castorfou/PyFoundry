@@ -40,6 +40,7 @@ nav:
     - Test: dev/testing.md
     - Déploiement: dev/deployment.md
     - Claude code: dev/claude-code.md
+    - Outils Documentation: dev/documentation_tools.md
 
 markdown_extensions:
   - admonition

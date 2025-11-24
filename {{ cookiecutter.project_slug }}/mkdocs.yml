@@ -9,6 +9,7 @@ exclude_docs: |
 
 theme:
   name: material
+  language: fr
   palette:
     - scheme: default
       primary: blue
@@ -30,6 +31,8 @@ theme:
     - search.highlight
     - search.share
     - toc.follow
+    - content.code.annotate
+    - content.code.copy
 
 nav:
   - Accueil: index.md
@@ -37,6 +40,7 @@ nav:
     - user/README.md
   - Documentation Développeur:
     - dev/README.md
+    - Outils Documentation: dev/documentation_tools.md
 
 markdown_extensions:
   - admonition
@@ -49,9 +53,26 @@ markdown_extensions:
       permalink: true
   - attr_list
   - md_in_html
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __spam
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.emoji
+  - pymdownx.magiclink
 
 plugins:
   - search
+  - awesome-nav
   - git-revision-date-localized:
       enable_creation_date: true
       type: timeago
+
+extra_javaxcript:
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - overrides.css/custom-table-header.css
