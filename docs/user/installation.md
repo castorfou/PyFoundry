@@ -27,21 +27,21 @@ mamba create -y -n pyfoundry -c conda-forge python=3.11
 # Activer l'environnement
 mamba activate pyfoundry
 
-# Installer cruft et autres outils utiles
-mamba install cruft mkdocs-material --yes
+# Installer cruft et tout ce dont on a besoin pour developper/documenter PyFoundry
+mamba install cruft --yes
+pip install -e ".[all]"
 
 # Vérification de l'installation
-cruft --version
+cruft --help
 ```
 
 !!! warning "Installation obligatoire"
-    **Cruft doit être installé et accessible** avant de pouvoir utiliser le template. Vérifiez avec `cruft --version`.
+    **Cruft doit être installé et accessible** avant de pouvoir utiliser le template. Vérifiez avec `cruft --help`.
 
 ### Vérification rapide
 ```bash
 # Vérifier que cruft est installé
-cruft --version
-# Devrait afficher : cruft, version X.X.X
+cruft --help
 
 # Vérifier que Python est accessible
 python --version
