@@ -49,3 +49,22 @@ Cette page détaille la stack technique utilisée pour la documentation du proje
 *   **Usage** : Ensemble d'extensions pour le parseur Python-Markdown, ajoutant des fonctionnalités riches à la syntaxe Markdown standard (admonitions, onglets, touches clavier, etc.).
 *   **Exemple** : Utilisation de `!!! note` pour créer des encadrés d'information colorés.
 *   **Documentation** : [https://facelessuser.github.io/pymdown-extensions/](https://facelessuser.github.io/pymdown-extensions/)
+
+## Extensions Markdown Configurées
+
+Voici le détail des extensions activées dans `mkdocs.yml` :
+
+*   **admonition** : Permet de créer des blocs d'avertissement ou de note (ex: `!!! note "Titre"`).
+*   **codehilite** : Ajoute la coloration syntaxique aux blocs de code en utilisant Pygments.
+*   **pymdownx.details** : Permet de créer des blocs dépliables/repliables (ex: `??? note "Détails"`).
+*   **pymdownx.superfences** : Permet d'imbriquer des blocs de code et d'autres éléments complexes dans des listes ou des admonitions.
+*   **pymdownx.tabbed** : Crée des onglets de contenu. Configuré avec `alternate_style: true` pour un style visuel alternatif.
+*   **toc** : Génère automatiquement la table des matières. Configuré avec `permalink: true` pour ajouter des liens ancrés sur chaque titre.
+*   **attr_list** : Permet d'ajouter des attributs HTML (classes, IDs) aux éléments Markdown (ex: `{: .my-class }`).
+*   **md_in_html** : Permet d'utiliser de la syntaxe Markdown à l'intérieur de balises HTML brutes.
+*   **pymdownx.highlight** : Gestion avancée de la coloration syntaxique. Configuré avec `anchor_linenums: true` (liens sur les numéros de ligne), `line_spans: __spam` (optimisation), et `pygments_lang_class: true`.
+*   **pymdownx.inlinehilite** : Permet la coloration syntaxique pour le code en ligne (ex: `#!python print("hello")`).
+*   **pymdownx.snippets** : Permet d'inclure des extraits de code provenant d'autres fichiers.
+*   **pymdownx.arithmatex** : Support pour le rendu de formules mathématiques (LaTeX). Configuré avec `generic: true` pour une compatibilité large.
+*   **pymdownx.emoji** : Permet d'utiliser des emojis via des codes courts (ex: `:smile:`).
+*   **pymdownx.magiclink** : Convertit automatiquement les URL et liens bruts en liens cliquables.
