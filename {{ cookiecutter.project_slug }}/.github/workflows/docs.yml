@@ -7,11 +7,15 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
       - '.github/workflows/docs.yml'
+      - 'pyproject.toml'
+      - 'README.md'
   pull_request:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
       - '.github/workflows/docs.yml'
+      - 'pyproject.toml'
+      - 'README.md'
   workflow_dispatch: # Allow manual trigger
 
 permissions:
