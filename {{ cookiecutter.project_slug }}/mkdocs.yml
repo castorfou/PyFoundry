@@ -34,14 +34,6 @@ theme:
     - content.code.annotate
     - content.code.copy
 
-nav:
-  - Accueil: index.md
-  - Documentation Utilisateur:
-    - user/README.md
-  - Documentation Développeur:
-    - dev/README.md
-    - Outils Documentation: dev/documentation_tools.md
-
 markdown_extensions:
   - admonition
   - codehilite
