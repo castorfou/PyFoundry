@@ -2,7 +2,6 @@
 site/
 
 # Testing generated projects
-test-project/
 mon-projet-data-science/
 
 # Python environments
@@ -12,3 +11,8 @@ __pycache__/
 *.pyc
 .coverage
 coverage.xml
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
