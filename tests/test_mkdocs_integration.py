@@ -88,9 +88,14 @@ def test_mkdocs_navigation_structure(cookies, minimal_template_context):
     content = mkdocs_yml.read_text()
 
     # Vérifier la présence de sections navigation
-    assert "nav:" in content
+    # assert "nav:" in content
     # La navigation devrait avoir une structure basique
-    assert "user" in content.lower() or "dev" in content.lower()
+    # assert "user" in content.lower() or "dev" in content.lower()
+    
+    # Avec awesome-pages, la navigation est gérée par des fichiers .pages
+    assert (result.project_path / "docs" / ".pages").exists()
+    assert (result.project_path / "docs" / "user" / ".pages").exists()
+    assert (result.project_path / "docs" / "dev" / ".pages").exists()
 
 
 def test_github_workflows_docs_created(cookies, minimal_template_context):
