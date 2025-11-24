@@ -2,7 +2,7 @@ name: 📚 Deploy Documentation
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
@@ -44,18 +44,18 @@ jobs:
         run: uv run mkdocs build --strict
 
       - name: 📋 Setup Pages
-        if: {% raw %}github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'{% endraw %}
+        if: {% raw %}github.ref == 'refs/heads/main'{% endraw %}
         uses: actions/configure-pages@v4
 
       - name: 📤 Upload artifact
-        if: {% raw %}github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'{% endraw %}
+        if: {% raw %}github.ref == 'refs/heads/main'{% endraw %}
         uses: actions/upload-pages-artifact@v3
         with:
           path: './site'
 
   deploy:
     name: 🚀 Deploy to GitHub Pages
-    if: {% raw %}github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'{% endraw %}
+    if: {% raw %}github.ref == 'refs/heads/main'{% endraw %}
     environment:
       name: github-pages
       url: {% raw %}${{ steps.deployment.outputs.page_url }}{% endraw %}
