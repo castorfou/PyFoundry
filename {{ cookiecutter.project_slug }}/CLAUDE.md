@@ -131,7 +131,7 @@ uv run mkdocs build --strict
 ### Déploiement automatique
 
 La documentation est automatiquement construite et déployée sur GitHub Pages via la workflow `.github/workflows/docs.yml` :
-- Déclenché à chaque push sur `main`/`master` modifiant `docs/` ou `mkdocs.yml`
+- Déclenché à chaque push sur `main` modifiant `docs/` ou `mkdocs.yml`
 - Disponible à l'URL : https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}
 
 ### Bonnes pratiques de rédaction

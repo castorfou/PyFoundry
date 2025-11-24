@@ -4,7 +4,7 @@ on:
   push:
     branches: [ '**' ]  # Toutes les branches pour feedback immédiat
   pull_request:
-    branches: [ master, main ]
+    branches: [ main ]
 
 env:
   PYTHONUNBUFFERED: "1"
