@@ -72,6 +72,8 @@ Cette documentation est générée avec l'IA (Claude Code). Pour maintenir une d
 ```bash
 # Prévisualiser la documentation localement
 mkdocs serve
+# ou sur un autre port que 8000
+mkdocs serve -a localhost:8001
 
 # Construire la documentation pour la production
 mkdocs build --strict
