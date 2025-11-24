@@ -35,7 +35,7 @@ Cette page détaille la stack technique utilisée pour la documentation du proje
 ## MkDocs Include Markdown Plugin
 
 *   **Usage** : Permet d'inclure le contenu d'un fichier Markdown dans un autre. Très utile pour réutiliser le `README.md` racine dans la documentation sans duplication.
-*   **Exemple** : `{% include "../README.md" %}` pour insérer le contenu d'un fichier externe.
+*   **Exemple** : `{% raw %}{% include "../README.md" %}{% endraw %}` pour insérer le contenu d'un fichier externe.
 *   **Documentation** : [https://github.com/twardoch/mkdocs-include-markdown-plugin](https://github.com/twardoch/mkdocs-include-markdown-plugin)
 
 ## MkDocs Awesome Nav
