@@ -40,6 +40,7 @@ nav:
     - user/README.md
   - Documentation Développeur:
     - dev/README.md
+    - Outils Documentation: dev/documentation_tools.md
 
 markdown_extensions:
   - admonition
