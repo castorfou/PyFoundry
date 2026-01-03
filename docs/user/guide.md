@@ -68,6 +68,7 @@ cruft create https://github.com/castorfou/PyFoundry.git \
 ### Fonctionnalités incluses
 
 #### Extensions VS Code intégrées
+
 - **Python** : pylance, python debugger
 - **Jupyter** : support notebooks complet avec renderers
 - **Qualité** : ruff, mypy integration  
@@ -86,6 +87,7 @@ ENVIRONMENT="development"           # Environnement de dev
 ### Configuration Ruff (Linting & Formatage)
 
 Ruff remplace plusieurs outils traditionnels :
+
 - **Linting** (pylint, flake8)
 - **Formatage** (black)
 - **Import sorting** (isort)
@@ -116,6 +118,7 @@ def legacy_function(data):  # ⚠️ Permis mais warning
 ```
 
 #### Support bibliothèques Data Science
+
 - Types automatiquement ignorés pour `matplotlib`, `seaborn`, `sklearn`
 - Notebooks exempts de vérification stricte
 - Configuration adaptable selon maturité du projet
@@ -125,16 +128,19 @@ def legacy_function(data):  # ⚠️ Permis mais warning
 Les hooks s'exécutent automatiquement avant chaque commit :
 
 #### Hooks standards
+
 - **Formatage** : suppression espaces, fins de ligne correctes
 - **Validation** : syntaxe YAML/TOML/JSON
 - **Sécurité** : détection fichiers volumineux, conflits Git
 
 #### Hooks qualité Python
+
 - **Ruff lint** : correction automatique des erreurs
 - **Ruff format** : formatage uniforme du code
 - **MyPy** : vérification types sur `src/` uniquement
 
 #### Hooks sécurité
+
 - **detect-secrets** : détection tokens/mots de passe dans le code
 
 ### Utilisation quotidienne
