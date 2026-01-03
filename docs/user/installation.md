@@ -52,7 +52,7 @@ python --version
 
 ### Méthode interactive
 ```bash
-cruft create https://github.com/username/PyFoundry.git
+cruft create https://github.com/castorfou/PyFoundry.git
 ```
 
 Vous serez invité à renseigner :
