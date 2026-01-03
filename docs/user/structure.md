@@ -22,6 +22,7 @@ mon-projet-data-science/
 
 ### `.devcontainer/`
 Configuration pour VS Code Dev Containers. Garantit un environnement de développement reproductible avec :
+
 - **`devcontainer.json`** : Configuration principale du container
 - **`postCreateCommand.sh`** : Script de configuration automatique
 - Python {{ cookiecutter.python_version }}
@@ -34,6 +35,7 @@ Configuration pour VS Code Dev Containers. Garantit un environnement de dévelop
 
 ### `.venv/` (généré)
 Environnement virtuel Python créé automatiquement par le devcontainer :
+
 - Contient toutes les dépendances du projet
 - Isolé des autres projets
 - Activé automatiquement dans VS Code et les terminaux
@@ -65,12 +67,12 @@ src/
 Stockage des données avec séparation claire :
 
 - **`raw/`** : Données d'origine, **ne jamais modifier**
-  - Versionnées avec Git LFS si nécessaire
-  - Formats : CSV, JSON, Parquet, etc.
+    - Versionnées avec Git LFS si nécessaire
+    - Formats : CSV, JSON, Parquet, etc.
   
 - **`processed/`** : Données transformées et nettoyées
-  - Générées par vos scripts de traitement
-  - Ignorées par Git (sauf si petites et importantes)
+    - Générées par vos scripts de traitement
+    - Ignorées par Git (sauf si petites et importantes)
 
 !!! warning "Données sensibles"
     Ne commitez jamais de données personnelles ou sensibles. Utilisez `.gitignore` et des fichiers de configuration pour les chemins externes.
@@ -93,12 +95,14 @@ notebooks/
 
 #### `pyproject.toml`
 Configuration centralisée pour :
+
 - Métadonnées du projet (nom, version, description)
 - Dépendances Python (runtime et développement)
 - Configuration des outils (ruff, pytest, etc.)
 
 #### `README.md`
 Documentation générée dynamiquement avec :
+
 - Description du projet
 - Instructions d'installation
 - Structure du projet
@@ -106,6 +110,7 @@ Documentation générée dynamiquement avec :
 
 #### `.gitignore`
 Ignore automatiquement :
+
 - Fichiers Python temporaires (`__pycache__/`, `*.pyc`)
 - Environnements virtuels
 - Notebooks checkpoints
@@ -137,12 +142,14 @@ uv add --dev pytest black isort mypy
 
 ### Modifier la structure
 La structure est flexible. Vous pouvez :
+
 - Ajouter des dossiers dans `src/`
 - Créer des sous-modules spécialisés
 - Adapter selon votre domaine (NLP, CV, etc.)
 
 ### Configuration personnalisée
 Modifiez `pyproject.toml` pour :
+
 - Ajuster les versions Python supportées
 - Configurer les outils de développement
 - Définir des scripts personnalisés

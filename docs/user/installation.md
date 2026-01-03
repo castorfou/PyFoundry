@@ -56,6 +56,7 @@ cruft create https://github.com/username/PyFoundry.git
 ```
 
 Vous serez invité à renseigner :
+
 - **project_name** : Nom affiché du projet (ex: "Analyse des Ventes")
 - **project_slug** : Nom technique (généré automatiquement)
 - **description** : Description courte du projet
@@ -64,7 +65,7 @@ Vous serez invité à renseigner :
 
 ### Méthode avec paramètres
 ```bash
-cruft create https://github.com/username/PyFoundry.git \
+cruft create https://github.com/castorfou/PyFoundry.git \
   --extra-context '{
     "project_name": "Analyse des Ventes",
     "description": "Analyse des données de vente trimestrielles",
@@ -75,7 +76,7 @@ cruft create https://github.com/username/PyFoundry.git \
 
 ### Méthode avec valeurs par défaut
 ```bash
-cruft create https://github.com/username/PyFoundry.git --no-input
+cruft create https://github.com/castorfou/PyFoundry.git --no-input
 ```
 
 ## Démarrage du projet
