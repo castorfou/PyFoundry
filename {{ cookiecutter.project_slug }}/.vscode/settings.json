@@ -1,5 +1,6 @@
 {
     "terminal.integrated.shellIntegration.enabled": true,
+    "python.defaultInterpreterPath": "/home/vscode/.venv/bin/python",
     "python.terminal.activateEnvironment": true,    
     "files.exclude": {
         "**/*.egg-info": true
