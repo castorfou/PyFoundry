@@ -15,27 +15,14 @@ update_system() {
     export DEBIAN_FRONTEND=noninteractive
     # Empêcher tzdata de poser des questions et utiliser la timezone UTC par défaut
     export TZ="Etc/UTC"
-    # S'assurer que /usr/share/zoneinfo/Etc/UTC est un fichier local (pas un lien cross-device)
-    if [ -L "/usr/share/zoneinfo/${TZ}" ] || [ ! -f "/usr/share/zoneinfo/${TZ}" ]; then
-        if [ -f "/usr/share/zoneinfo/UTC" ]; then
-            sudo rm -f "/usr/share/zoneinfo/${TZ}"
-            sudo cp "/usr/share/zoneinfo/UTC" "/usr/share/zoneinfo/${TZ}" || true
-        fi
-    fi
-    # Copier le fichier de timezone plutôt que créer un lien symbolique
-    if [ -f "/usr/share/zoneinfo/${TZ}" ]; then
-        sudo cp "/usr/share/zoneinfo/${TZ}" /etc/localtime || true
-    fi    
 
+    echo "Configuration de la source APT Yarn..."
     sudo mkdir -p /etc/apt/keyrings
-
     if [ ! -f /etc/apt/keyrings/yarn.gpg ]; then
         echo "Installation de la clé GPG Yarn..."
         curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg \
             | sudo gpg --dearmor -o /etc/apt/keyrings/yarn.gpg
     fi
-
-    echo "Configuration de la source APT Yarn..."
     echo "deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian stable main" \
         | sudo tee /etc/apt/sources.list.d/yarn.list > /dev/null
 
