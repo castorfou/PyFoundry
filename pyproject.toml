@@ -188,6 +188,5 @@ disallow_untyped_defs = false
 
 [[tool.cruft]]
 skip = [
-    ".devcontainer/resources/.p10k.zsh",
     "**/.devcontainer/resources/.p10k.zsh"
 ]
