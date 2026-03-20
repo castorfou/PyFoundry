@@ -208,6 +208,15 @@ config_zsh() {
     echo "Configuration de zsh..."
     # Ajouter des configurations zsh spécifiques si nécessaire
 
+    local p10k_source=".devcontainer/resources/.p10k.zsh"
+    if [ -f "$p10k_source" ]; then
+        echo "Copie du thème Powerlevel10k vers $HOME/.p10k.zsh..."
+        cp "$p10k_source" "$HOME/.p10k.zsh"
+        chmod 0644 "$HOME/.p10k.zsh"
+    else
+        echo "⚠️  Thème Powerlevel10k introuvable : $p10k_source"
+    fi
+
     cd ~
     rm -rf .oh-my-zsh
 
