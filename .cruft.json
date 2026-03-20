@@ -1,0 +1,18 @@
+{
+  "template": "git@github.com:castorfou/PyFoundry.git",
+  "commit": "065a15cbc037f7723727a3e6f6ea224dc70c5067",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "PyFoundry",
+      "project_slug": "pyfoundry",
+      "description": "Template Cookiecutter de qualité industrielle pour projets Data Science Python",
+      "python_version": "3.11",
+      "github_username": "castorfou",
+      "use_node": "y",
+      "_template": "git@github.com:castorfou/PyFoundry.git",
+      "_commit": "065a15cbc037f7723727a3e6f6ea224dc70c5067"
+    }
+  },
+  "directory": null
+}
