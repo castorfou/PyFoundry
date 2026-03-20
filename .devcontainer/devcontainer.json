@@ -1,23 +1,23 @@
 {
-    "name": "{{ cookiecutter.project_name }} - Dev Environment",
-	"workspaceFolder": "/workspaces/{{ cookiecutter.project_slug }}",
+    "name": "PyFoundry - Dev Environment",
+	"workspaceFolder": "/workspaces/PyFoundry",
     "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
     "runArgs": [
         "--network=host",
         "--label", "com.centurylinklabs.watchtower.enable=false",
-        "--env", "CONTAINER_NAME=vscode-dev-container_{{ cookiecutter.project_slug }}"
+        "--env", "CONTAINER_NAME=vscode-dev-container_PyFoundry"
     ],
     
     // Variables d'environnement
     "containerEnv": {
-        "PROJECT_NAME": "{{ cookiecutter.project_name }}",
-        "PROJECT_SLUG": "{{ cookiecutter.project_slug }}",
-        "GITHUB_USERNAME": "{{ cookiecutter.github_username }}",
-        "PYTHON_VERSION": "{{ cookiecutter.python_version }}",
-        "PYTHONPATH": "/workspaces/{{ cookiecutter.project_slug }}/src",
+        "PROJECT_NAME": "PyFoundry",
+        "PROJECT_SLUG": "PyFoundry",
+        "GITHUB_USERNAME": "castorfou",
+        "PYTHON_VERSION": "3.11",
+        "PYTHONPATH": "/workspaces/PyFoundry/src",
         "UV_VENV_CLEAR": "1",
         "UV_LINK_MODE": "copy",
-		"UV_PYTHON": "/home/vscode/.venv/bin/python",        
+        "UV_PYTHON": "/home/vscode/.venv/bin/python",
         "TZ": "${localEnv:TZ}"
     },
     
@@ -45,11 +45,11 @@
                 "anthropic.claude-code",
 				"catppuccin.catppuccin-vsc-icons",
 				"catppuccin.catppuccin-vsc",
-				"pomdtr.excalidraw-editor"
+				"pomdtr.excalidraw-editor"                
             ],
             "settings": {
                 // Configuration Python
-                "python.defaultInterpreterPath": "/home/vscode/.venv/bin/python",            
+                "python.defaultInterpreterPath": "/home/vscode/.venv/bin/python",
                 "python.analysis.autoImportCompletions": true,
                 "python.analysis.typeCheckingMode": "basic",
 				"terminal.integrated.env.linux": {
@@ -87,12 +87,7 @@
         "ghcr.io/devcontainers/features/github-cli:1": {},
         "ghcr.io/devcontainers/features/git:1": {
             "ppa": true
-        }{% if cookiecutter.use_node == "y" %},
-        "ghcr.io/devcontainers/features/node:1": {
-            "nodeGypDependencies": true,
-            "version": "lts",
-			"installYarnUsingApt": false            
-        }{% endif %}
+        }
     },
     
     // Montages pour hériter de la config git du host et de la timezone
@@ -104,7 +99,7 @@
        
     // Configuration du shell et de l'environnement
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
-    "postStartCommand": "echo '🚀 {{ cookiecutter.project_name }} - Environnement prêt!'",
+    "postStartCommand": "echo '🚀 PyFoundry - Environnement prêt!'",
     
     // Utilisateur non-root pour la sécurité
     "remoteUser": "vscode",

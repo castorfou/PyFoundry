@@ -1,12 +1,12 @@
 #!/bin/bash
 # =============================================================================
-# {{ cookiecutter.project_name }} - Configuration de l'environnement de développement
+# PyFoundry - Configuration de l'environnement de développement
 # =============================================================================
 set -e
 
-PYTHON_VERSION="{{ cookiecutter.python_version }}"
+PYTHON_VERSION="3.11"
 
-echo "🚀 Configuration de l'environnement {{ cookiecutter.project_name }}"
+echo "🚀 Configuration de l'environnement PyFoundry"
 echo "=================================================================="
 
 # Mise à jour du système
@@ -86,43 +86,6 @@ create_python_environment() {
 
 }
 
-{% if cookiecutter.use_node == "y" %}
-# Configuration Node.js et npm
-setup_node() {
-    echo "Configuration Node.js..."
-    
-    # Vérification de l'installation de Node.js
-    if command -v node &> /dev/null; then
-        echo "✅ Node.js disponible ($(node --version))"
-        echo "✅ npm disponible ($(npm --version))"
-        
-        # Création d'un package.json basique s'il n'existe pas
-        if [ ! -f "package.json" ]; then
-            echo "Création du fichier package.json..."
-            cat > package.json << EOF
-{
-  "name": "{{ cookiecutter.project_slug }}",
-  "version": "1.0.0",
-  "description": "{{ cookiecutter.description }}",
-  "scripts": {
-    "dev": "echo 'Add your development scripts here'",
-    "build": "echo 'Add your build scripts here'"
-  },
-  "keywords": ["data-science", "python", "node"],
-  "author": "{{ cookiecutter.github_username }}",
-  "license": "MIT",
-  "devDependencies": {}
-}
-EOF
-            echo "✅ package.json créé"
-        fi
-        
-        echo "Configuration npm terminée"
-    else
-        echo "⚠️  Node.js non disponible - vérifiez la configuration devcontainer"
-    fi
-}
-{% endif %}
 
 # Configuration Git
 setup_git() {
@@ -191,13 +154,13 @@ setup_github() {
 
     
     # Configuration du remote GitHub si username fourni
-    if [ "{{ cookiecutter.github_username }}" != "votre-username" ]; then
+    if [ "castorfou" != "votre-username" ]; then
 
         # choisir le protocole: SSH si possible, sinon HTTPS
         if ssh -o BatchMode=yes -T git@github.com 2>&1 | grep -iq "successfully authenticated"; then
-            remote_url="git@github.com:{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
+            remote_url="git@github.com:castorfou/PyFoundry.git"
         else
-            remote_url="https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
+            remote_url="https://github.com/castorfou/PyFoundry.git"
         fi
 
         echo "Configuration du remote GitHub : $remote_url"
@@ -236,6 +199,8 @@ setup_github() {
         
         echo "✅ Remote GitHub configuré"
     fi
+    
+    echo "Configuration Git terminée"
 }
 
 # config zsh
@@ -271,8 +236,7 @@ config_zsh() {
 update_system
 ensure_uv
 create_python_environment
-{% if cookiecutter.use_node == "y" %}setup_node
-{% endif %}setup_git
+setup_git
 setup_github
 setup_pre-commit
 config_zsh
@@ -281,5 +245,4 @@ echo ""
 echo "=================================================================="
 echo "✅ Configuration terminée !"
 echo "Dépôt Git initialisé avec pre-commit hooks"
-{% if cookiecutter.use_node == "y" %}echo "Node.js et npm configurés pour le développement frontend"
-{% endif %}echo "Redémarrez le terminal pour activer l'environnement"
+echo "Redémarrez le terminal pour activer l'environnement"

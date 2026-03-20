@@ -1,9 +1,15 @@
-site_name: PyFoundry Template
+site_name: PyFoundry
 site_description: Template Cookiecutter de qualité industrielle pour projets Data Science Python
-site_url: https://guillaume.github.io/PyFoundry
+site_url: https://castorfou.github.io/PyFoundry
+use_directory_urls: true
+
+# Exclude internal directories from documentation
+exclude_docs: |
+  claude/
 
 theme:
   name: material
+  language: fr
   palette:
     - scheme: default
       primary: blue

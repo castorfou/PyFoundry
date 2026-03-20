@@ -1,0 +1,18 @@
+{
+  "template": "git@github.com:castorfou/PyFoundry.git",
+  "commit": "3d93b334708c63e59721e0d3492fb1b0796c36f4",
+  "checkout": "32-creer-pyfoundry-avec-pyfoundry",
+  "context": {
+    "cookiecutter": {
+      "project_name": "PyFoundry",
+      "project_slug": "PyFoundry",
+      "description": "Template Cookiecutter de qualité industrielle pour projets Data Science Python",
+      "python_version": "3.11",
+      "github_username": "castorfou",
+      "use_node": "y",
+      "_template": "git@github.com:castorfou/PyFoundry.git",
+      "_commit": "3d93b334708c63e59721e0d3492fb1b0796c36f4"
+    }
+  },
+  "directory": null
+}
