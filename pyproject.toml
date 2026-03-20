@@ -186,8 +186,8 @@ module = "tests.*"
 disallow_untyped_defs = false
 
 
-[tool.cruft]
+[[tool.cruft]]
 skip = [
     ".devcontainer/resources/.p10k.zsh",
-    "{{ cookiecutter.project_slug }}/.devcontainer/resources/.p10k.zsh"
+    "**/.devcontainer/resources/.p10k.zsh"
 ]
