@@ -2,6 +2,7 @@
     "terminal.integrated.shellIntegration.enabled": true,
     "python.terminal.activateEnvironment": false,
     "files.exclude": {
-        "**/*.egg-info": true
+        "**/*.egg-info": true,
+        "site": true,
     }
 }
