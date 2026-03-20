@@ -60,22 +60,10 @@ Documentation = "https://castorfou.github.io/PyFoundry"
 Repository = "https://github.com/castorfou/PyFoundry.git"
 Issues = "https://github.com/castorfou/PyFoundry/issues"
 
-[project.scripts]
-PyFoundry_setup = "scripts.setup:main"
-
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-dir]
-"" = "src"
-
-# Configuration uv pour la reproductibilité
-[dependency-groups]
-dev = ["pytest",]
 
 # Configuration Ruff - Linter et formateur Python moderne
 [tool.ruff]
