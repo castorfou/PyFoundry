@@ -58,7 +58,7 @@ ensure_uv() {
         echo "✅ uv disponible ($(uv --version))"
         return 0
     fi
-    
+
     echo "❌ Échec d'installation d'uv"
     echo "   Vérifiez votre connexion Docker/ghcr.io (docker login ghcr.io)"
     exit 1
@@ -94,7 +94,7 @@ setup_git() {
         echo "Initialisation du dépôt Git..."
         git init
         git branch -M main
-        
+
         # Configuration de l'utilisateur si non défini (pour éviter l'échec du commit)
         if [ -z "$(git config --global user.email)" ]; then
             echo "Configuration d'un utilisateur Git par défaut..."
@@ -150,9 +150,9 @@ setup_pre-commit() {
 # Configuration GitHub
 setup_github() {
     echo "Configuration GitHub..."
-    
 
-    
+
+
     # Configuration du remote GitHub si username fourni
     if [ "castorfou" != "votre-username" ]; then
 
@@ -165,13 +165,13 @@ setup_github() {
 
         echo "Configuration du remote GitHub : $remote_url"
         git remote get-url origin >/dev/null 2>&1 || git remote add origin "$remote_url"
-        
+
         # Configuration de l'upstream pour la branche main
         git branch --set-upstream-to=origin/main main 2>/dev/null || true
-        
+
         # Configuration automatique des upstream pour futures branches (local au projet)
         git config push.autoSetupRemote true
-        
+
         # Configuration de l'authentification GitHub avec gh CLI
         if command -v gh &> /dev/null; then
             echo "Configuration de l'authentification GitHub..."
@@ -184,7 +184,7 @@ setup_github() {
                 echo "   → Entrez manuellement l'URL et le code dans votre navigateur host."
                 echo ""
                 gh auth login --git-protocol https --web
-                
+
                 # Configuration du credential helper après authentification (local au projet)
                 if gh auth status &>/dev/null; then
                     echo "Configuration du credential helper Git..."
@@ -196,10 +196,10 @@ setup_github() {
                 echo "✅ Déjà authentifié sur GitHub"
             fi
         fi
-        
+
         echo "✅ Remote GitHub configuré"
     fi
-    
+
     echo "Configuration Git terminée"
 }
 
@@ -219,6 +219,7 @@ config_zsh() {
         -p python \
         -p history \
         -p 'history-substring-search' \
+        -p 'virtualenv' \
         -p https://github.com/zsh-users/zsh-autosuggestions \
         -p https://github.com/zsh-users/zsh-completions
 
