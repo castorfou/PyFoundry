@@ -40,9 +40,16 @@ doc = [
     "pymdown-extensions"
 ]
 
-all = [
+dev = [
     "PyFoundry[test]",
     "PyFoundry[doc]",
+    "ruff",
+    "mypy",
+    "pre-commit",
+]
+
+all = [
+    "PyFoundry[dev]",
 ]
 
 [tool.setuptools]
