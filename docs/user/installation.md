@@ -104,3 +104,9 @@ Si le template PyFoundry est mis à jour, vous pouvez synchroniser votre projet 
 ```bash
 cruft update
 ```
+
+Pour synchroniser en allant chercher une branche
+
+```bash
+cruft update -c <nom de la branche>
+```
