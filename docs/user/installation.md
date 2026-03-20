@@ -105,8 +105,11 @@ Si le template PyFoundry est mis à jour, vous pouvez synchroniser votre projet 
 cruft update
 ```
 
-Pour synchroniser en allant chercher une branche
+Pour synchroniser en allant chercher une branche. Surtout pour le projet PyFoundry, sinon pas de raison de faire cela.
 
 ```bash
 cruft update -c <nom de la branche>
 ```
+
+!!! note "dans le cas d'un update depuis branche"
+    Au Pull Request, ne pas squash les commits sinon le commit mentionne dans `cruft.json` pourrait avoir disparu ...
