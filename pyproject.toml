@@ -29,7 +29,7 @@ test = [
     "pytest-cookies",
     "pytest-cov",
 ]
-doc = [    
+doc = [
     "mkdocs>=1.5.0",
     "mkdocs-material>=9.4.0",
     "mkdocs-git-revision-date-localized-plugin>=1.2.0",
@@ -106,7 +106,7 @@ line-length = 88
 # Fichiers à exclure
 extend-exclude = [
     "data/*",
-    "models/*", 
+    "models/*",
     "logs/*",
     ".jupyter/*",
 ]
@@ -153,7 +153,7 @@ warn_unreachable = true
 
 # Configuration stricte progressive
 disallow_any_generics = false        # Autorisé au début
-disallow_untyped_calls = false       # Autorisé au début  
+disallow_untyped_calls = false       # Autorisé au début
 disallow_untyped_defs = false        # Autorisé au début
 disallow_incomplete_defs = true      # Fonctions partiellement typées interdites
 disallow_untyped_decorators = false  # Autorisé au début
@@ -168,7 +168,7 @@ follow_imports = "normal"
 [[tool.mypy.overrides]]
 module = [
     "matplotlib.*",
-    "seaborn.*", 
+    "seaborn.*",
     "sklearn.*",
     "scipy.*",
     "plotly.*",
@@ -181,6 +181,12 @@ module = "notebooks.*"
 ignore_errors = true
 
 # Configuration tests
-[[tool.mypy.overrides]] 
+[[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
+
+
+[tool.cruft]
+skip = [
+    "{{ cookiecutter.project_slug }}/.devcontainer/resources/.p10k.zsh",
+]
