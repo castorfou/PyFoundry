@@ -93,12 +93,9 @@ jobs:
           echo "🤖 Generated with [Claude Code](https://claude.ai/code)" >> release_notes.md
 
       - name: 🚀 Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.validate-tag.outputs.version }}
-          release_name: ${{ needs.validate-tag.outputs.version }}
+          name: ${{ needs.validate-tag.outputs.version }}
           body_path: release_notes.md
           draft: false
           prerelease: ${{ needs.validate-tag.outputs.is-prerelease }}
