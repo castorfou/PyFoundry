@@ -5,7 +5,7 @@
   "context": {
     "cookiecutter": {
       "project_name": "PyFoundry",
-      "project_slug": "pyfoundry",
+      "project_slug": "PyFoundry",
       "description": "Template Cookiecutter de qualité industrielle pour projets Data Science Python",
       "python_version": "3.11",
       "github_username": "castorfou",

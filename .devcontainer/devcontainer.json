@@ -1,6 +1,6 @@
 {
     "name": "PyFoundry - Dev Environment",
-	"workspaceFolder": "/workspaces/pyfoundry",
+	"workspaceFolder": "/workspaces/PyFoundry",
     "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
     "runArgs": [
         "--network=host",
