@@ -1,6 +1,6 @@
 {
   "template": "git@github.com:castorfou/PyFoundry.git",
-  "commit": "56ff20b77515b089eda04c409ff44396bea386a2",
+  "commit": "3d93b334708c63e59721e0d3492fb1b0796c36f4",
   "checkout": "32-creer-pyfoundry-avec-pyfoundry",
   "context": {
     "cookiecutter": {
@@ -11,7 +11,7 @@
       "github_username": "castorfou",
       "use_node": "y",
       "_template": "git@github.com:castorfou/PyFoundry.git",
-      "_commit": "56ff20b77515b089eda04c409ff44396bea386a2"
+      "_commit": "3d93b334708c63e59721e0d3492fb1b0796c36f4"
     }
   },
   "directory": null
