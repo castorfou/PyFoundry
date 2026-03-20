@@ -74,6 +74,22 @@ build-backend = "setuptools.build_meta"
 
 # Configuration Ruff - Linter et formateur Python moderne
 [tool.ruff]
+# Longueur de ligne (cohérent avec black)
+line-length = 88
+
+# Fichiers à exclure
+extend-exclude = [
+    "data/*",
+    "models/*",
+    "logs/*",
+    ".jupyter/*",
+    "[{][{]*",  # Répertoire template Cookiecutter ex: {{ cookiecutter.project_slug }}
+]
+
+# Version Python cible
+target-version = "py311"
+
+[tool.ruff.lint]
 # Règles activées
 extend-select = [
     "E",      # pycodestyle errors
@@ -96,23 +112,8 @@ extend-select = [
 ignore = [
     "E501",   # Line too long (black/ruff format s'en occupe)
     "B905",   # zip() sans strict= (Python 3.10+)
-    "PD901",  # Avoid `df` as variable name (commun en DS)
     "RET504", # Assign + return -> return direct (parfois moins lisible)
 ]
-
-# Longueur de ligne (cohérent avec black)
-line-length = 88
-
-# Fichiers à exclure
-extend-exclude = [
-    "data/*",
-    "models/*",
-    "logs/*",
-    ".jupyter/*",
-]
-
-# Version Python cible
-target-version = "py311"
 
 [tool.ruff.format]
 # Style de formatage

@@ -84,14 +84,6 @@ def test_mkdocs_navigation_structure(cookies, minimal_template_context):
     """Test que mkdocs.yml a une navigation user/dev."""
     result = cookies.bake(extra_context=minimal_template_context)
 
-    mkdocs_yml = result.project_path / "mkdocs.yml"
-    content = mkdocs_yml.read_text()
-
-    # Vérifier la présence de sections navigation
-    # assert "nav:" in content
-    # La navigation devrait avoir une structure basique
-    # assert "user" in content.lower() or "dev" in content.lower()
-    
     # Avec awesome-pages, la navigation est gérée par des fichiers .pages
     assert (result.project_path / "docs" / ".pages").exists()
     assert (result.project_path / "docs" / "user" / ".pages").exists()
@@ -174,7 +166,7 @@ def test_mkdocs_can_build(cookies, minimal_template_context):
             cwd=result.project_path,
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=30,
         )
 
         # Si mkdocs ou les plugins ne sont pas installés, on skip
@@ -182,7 +174,9 @@ def test_mkdocs_can_build(cookies, minimal_template_context):
             pytest.skip("mkdocs plugins not installed in test environment")
 
         # Si mkdocs est installé, le build doit réussir
-        assert build_result.returncode == 0, f"mkdocs build failed: {build_result.stderr}"
+        assert build_result.returncode == 0, (
+            f"mkdocs build failed: {build_result.stderr}"
+        )
 
         # Vérifier que le site est généré
         site_dir = result.project_path / "site"
@@ -201,7 +195,7 @@ def test_project_name_in_mkdocs_yml(cookies):
         "description": "An awesome data science project",
         "python_version": "3.11",
         "github_username": "testuser",
-        "use_node": "n"
+        "use_node": "n",
     }
 
     result = cookies.bake(extra_context=context)

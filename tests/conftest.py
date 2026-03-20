@@ -8,11 +8,11 @@ def default_template_context():
     """Contexte par défaut pour la génération du template."""
     return {
         "project_name": "Test Project",
-        "project_slug": "test-project", 
+        "project_slug": "test-project",
         "description": "A test project for PyFoundry template",
         "python_version": "3.11",
         "github_username": "test-user",
-        "use_node": "n"
+        "use_node": "n",
     }
 
 
@@ -25,7 +25,7 @@ def minimal_template_context():
         "description": "Minimal test project",
         "python_version": "3.11",
         "github_username": "test-user",
-        "use_node": "n"
+        "use_node": "n",
     }
 
 
@@ -34,9 +34,9 @@ def node_template_context():
     """Contexte avec Node.js activé."""
     return {
         "project_name": "Node Test Project",
-        "project_slug": "node-test-project", 
+        "project_slug": "node-test-project",
         "description": "A test project with Node.js support",
         "python_version": "3.11",
         "github_username": "test-user",
-        "use_node": "y"
+        "use_node": "y",
     }
