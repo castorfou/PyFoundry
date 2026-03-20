@@ -59,22 +59,22 @@ jobs:
         id: generate-notes
         run: |
           VERSION=${{ needs.validate-tag.outputs.version }}
-          
+
           # Get the previous tag for changelog
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^)
-          
+
           # Generate changelog
           echo "## Changes since $PREVIOUS_TAG" > release_notes.md
           echo "" >> release_notes.md
-          
+
           # Get commits since last tag
           git log --pretty=format:"- %s" $PREVIOUS_TAG..HEAD >> release_notes.md
-          
+
           # Add template info
           echo "" >> release_notes.md
           echo "## Template Features" >> release_notes.md
           echo "" >> release_notes.md
-          echo "✅ **Dev Environment**: VS Code devcontainer with Python ${{ matrix.python-version || '3.11+' }}" >> release_notes.md
+          echo "✅ **Dev Environment**: VS Code devcontainer with Python 3.11+" >> release_notes.md
           echo "✅ **Dependencies**: uv for fast package management" >> release_notes.md
           echo "✅ **Code Quality**: Ruff + MyPy + pre-commit hooks" >> release_notes.md
           echo "✅ **Testing**: pytest framework ready" >> release_notes.md
@@ -109,24 +109,24 @@ jobs:
           script: |
             const version = "${{ needs.validate-tag.outputs.version }}";
             const isPrerelease = "${{ needs.validate-tag.outputs.is-prerelease }}" === "true";
-            
+
             const releaseType = isPrerelease ? "Pre-release" : "Stable release";
-            
+
             const output = `## 🚀 ${releaseType} ${version} Published!
-            
+
             ✅ All tests passed
             ✅ Release notes generated automatically
             ✅ GitHub release created
-            
+
             **Template ready for use:**
             \`\`\`bash
             cruft create https://github.com/castorfou/PyFoundry.git --checkout ${version}
             \`\`\`
-            
+
             📚 [View Release](https://github.com/castorfou/PyFoundry/releases/tag/${version})
             📖 [Documentation](https://castorfou.github.io/PyFoundry/)
             `;
-            
+
             // Create a commit comment on the tag commit
             github.rest.repos.createCommitComment({
               owner: context.repo.owner,

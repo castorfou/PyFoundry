@@ -41,7 +41,7 @@ jobs:
     - name: 🧪 Run tests
       run: |
         if [ -f tests/test_*.py ] || [ -d tests/ ]; then
-          uv run pytest tests/ -v --cov=src --cov-report=term-missing --cov-report=xml
+          uv run pytest tests/ -v --cov=. --cov-report=term-missing --cov-report=xml
         else
           echo "No tests found. Creating placeholder test structure..."
           mkdir -p tests
