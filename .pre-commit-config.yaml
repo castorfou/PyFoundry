@@ -66,11 +66,12 @@ fail_fast: false                    # Continue même si un hook échoue
 # Fichiers et répertoires exclus
 exclude: |
   (?x)^(
-      data/.*|              # Données
-      models/.*|            # Modèles ML
-      logs/.*|              # Logs
-      \.jupyter/.*|         # Config Jupyter
-      notebooks/.*\.ipynb$  # Notebooks Jupyter (traités par ruff)
+      data/.*|                                    # Données
+      models/.*|                                  # Modèles ML
+      logs/.*|                                    # Logs
+      \.jupyter/.*|                               # Config Jupyter
+      notebooks/.*\.ipynb$|                       # Notebooks Jupyter (traités par ruff)
+      \{\{\ cookiecutter\.project_slug\ \}\}/.*   # Fichiers du template Cookiecutter (syntaxe Jinja)
   )$
 
 # Configuration spécifique CI
