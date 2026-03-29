@@ -251,6 +251,83 @@ gh pr view <numéro>
 
 ---
 
+## 🤖 Support Claude Code
+
+PyFoundry intègre le support natif de Claude Code, l'assistant IA d'Anthropic pour le développement.
+
+### Extension VS Code installée
+
+L'extension **Claude Code** (`anthropic.claude-code`) est automatiquement installée dans votre devcontainer, prête à l'emploi.
+
+### Fichiers Claude Code générés
+
+Chaque projet créé inclut :
+
+- **`CLAUDE.md`** : Documentation projet pour Claude Code
+  - Description du projet et objectifs
+  - Stack technique détaillée
+  - Structure du projet
+  - Conventions de code
+  - Commandes utiles
+
+- **`.claude/commands/`** : Commandes slash pré-configurées
+  - `/fix-issue` : Workflow complet pour résoudre une issue GitHub (TDD, tests, doc, CI/CD)
+  - `/stocke-memoire` : Sauvegarde des apprentissages dans docs/claude/memory/
+
+### Utilisation avec Claude Code
+
+```bash
+# Ouvrir le projet dans VS Code avec Claude Code
+code mon-projet-data-science
+
+# Claude Code lit automatiquement CLAUDE.md pour comprendre :
+# - L'architecture du projet
+# - Les outils et dépendances utilisés
+# - Les conventions de code à respecter
+# - Les commandes disponibles
+```
+
+### Personnalisation CLAUDE.md
+
+Le fichier `CLAUDE.md` est généré avec vos paramètres de projet. Vous pouvez l'enrichir avec :
+
+- Instructions spécifiques à votre domaine
+- Règles métier importantes
+- Patterns de code à suivre
+- Documentation d'APIs utilisées
+
+### Commandes slash incluses
+
+#### `/fix-issue {numéro}`
+Workflow TDD complet pour résoudre une issue GitHub :
+1. Récupère les détails de l'issue
+2. Crée une branche depuis l'issue
+3. Implémente en TDD (tests RED puis code)
+4. Vérifie qualité (tests, lint, typecheck)
+5. Met à jour la documentation
+6. Commit et push
+7. Vérifie la CI/CD
+8. Crée la pull request
+
+#### `/stocke-memoire`
+Sauvegarde tes apprentissages et décisions importantes dans `docs/claude/memory/` avec horodatage.
+
+### Création de commandes personnalisées
+
+Créez des fichiers `.md` dans `.claude/commands/` :
+
+```markdown
+# Exemple : .claude/commands/test.md
+Lance la suite de tests complète avec coverage :
+\`\`\`bash
+pytest --cov=src --cov-report=html
+\`\`\`
+```
+
+Puis utilisez `/test` dans Claude Code pour exécuter cette commande.
+
+
+
 ## Docker
 
 Le Dev Container tourne dans Docker.
