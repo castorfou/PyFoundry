@@ -12,7 +12,7 @@ Voici les types de guides disponibles :
 - Création d'un nouveau projet
 - Liaison pour un projet pré-existant
 
-### Guide d'utilisation
+### Guide d'[utilisation](usage.md)
 - Mise à jour vers la dernière version du template (cruft)
 - Mkdocs : lancement, navigation, formats
 - Modification env python (uv)
@@ -22,10 +22,10 @@ Voici les types de guides disponibles :
 - Autres fonctionnalités
 - Options du template : gpu, docker-in-docker, claude code
 
-### Guide de dépannage
+### Guide de [dépannage](troubleshooting.md)
 - Problèmes courants et solutions
 
-### Conventions
+### [Conventions](conventions.md)
 - Structure du projet
 - Imports python et tests
 - Qualité de code

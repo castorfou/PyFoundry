@@ -2,6 +2,6 @@
 
 ## 📚 Documentation
 
-- 👤 **Guide Utilisateur** : [user](/user)
-- 🛠️ **Guide Développeur** : [dev](/dev)
-- 📋 **Cheatsheets** : [cheatsheets](/cheatsheets)
+- 👤 **Guide Utilisateur** : [user](user)
+- 🛠️ **Guide Développeur** : [dev](dev)
+- 📋 **Cheatsheets** : [cheatsheets](cheatsheets)
