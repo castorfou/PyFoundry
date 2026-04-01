@@ -84,10 +84,10 @@ def test_mkdocs_navigation_structure(cookies, minimal_template_context):
     """Test que mkdocs.yml a une navigation user/dev."""
     result = cookies.bake(extra_context=minimal_template_context)
 
-    # Avec awesome-pages, la navigation est gérée par des fichiers .pages
-    assert (result.project_path / "docs" / ".pages").exists()
-    assert (result.project_path / "docs" / "user" / ".pages").exists()
-    assert (result.project_path / "docs" / "dev" / ".pages").exists()
+    # Avec awesome-nav, la navigation est gérée par des fichiers .nav.yml
+    assert (result.project_path / "docs" / ".nav.yml").exists()
+    assert (result.project_path / "docs" / "user" / ".nav.yml").exists()
+    assert (result.project_path / "docs" / "dev" / ".nav.yml").exists()
 
 
 def test_github_workflows_docs_created(cookies, minimal_template_context):

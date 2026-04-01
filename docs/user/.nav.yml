@@ -1,0 +1,6 @@
+nav:
+  - Contenu: README.md
+  - Guide de démarrage: getting_started.md
+  - Guide d'utilisation: usage.md
+  - Guide de dépannage: troubleshooting.md
+  - Conventions: conventions.md

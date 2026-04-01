@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+AAAGITLAB - {{ cookiecutter.project_slug }}
+
 # Distribution / packaging
 .Python
 build/
@@ -152,4 +154,3 @@ data/processed/*
 
 # VS Code local settings
 .vscode/settings.local.json
-

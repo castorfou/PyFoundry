@@ -1,6 +1,7 @@
 site_name: PyFoundry
-site_description: Template Cookiecutter de qualité industrielle pour projets Data Science Python
+site_description: Un template Cookiecutter pour démarrer rapidement des projets de Data Science en Python avec un environnement reproductible et des outils de qualité de code automatisés.
 site_url: https://castorfou.github.io/PyFoundry
+repo_url: https://github.com/castorfou/PyFoundry
 use_directory_urls: true
 
 # Exclude internal directories from documentation
@@ -38,7 +39,11 @@ markdown_extensions:
   - admonition
   - codehilite
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - toc:
@@ -58,13 +63,16 @@ markdown_extensions:
 
 plugins:
   - search
-  - awesome-pages
+  - awesome-nav
+  - include-markdown
   - git-revision-date-localized:
       enable_creation_date: true
       type: timeago
+      fallback_to_build_date: true
 
 extra_javascript:
-  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  - javascripts/toc-collapse.js
 
 extra_css:
   - overrides.css/custom-table-header.css
+  - overrides.css/toc-collapse.css

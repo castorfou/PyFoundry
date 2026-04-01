@@ -1,0 +1,7 @@
+nav:
+  - Contenu: README.md
+  - Architecture: architecture.md
+  - Contribution: contributing.md
+  - Qualité Code: qualite_code.md
+  - Test: testing.md
+  - Déploiement: deployment.md

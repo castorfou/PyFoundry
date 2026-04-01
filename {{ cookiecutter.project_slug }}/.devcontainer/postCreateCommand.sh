@@ -238,6 +238,18 @@ setup_github() {
     fi
 }
 
+# Helper: update MkDocs repo_url from Git remote
+run_mkdocs_repo_url_update() {
+    if [ -f "${WORKSPACE_FOLDER}/.devcontainer/scripts/update_mkdocs_repo_url.sh" ]; then
+        chmod +x "${WORKSPACE_FOLDER}/.devcontainer/scripts/update_mkdocs_repo_url.sh" || true
+        ( cd "${WORKSPACE_FOLDER}" && ./.devcontainer/scripts/update_mkdocs_repo_url.sh ) \
+            || echo "[postCreate] update_mkdocs_repo_url.sh exited with non-zero status"
+        echo "✅ mkdocs_repo_url configurée"
+    else
+        echo "[postCreate] ${WORKSPACE_FOLDER}/.devcontainer/scripts/update_mkdocs_repo_url.sh not found"
+    fi
+}
+
 # config zsh
 config_zsh() {
     echo "Configuration de zsh..."
@@ -286,6 +298,7 @@ create_python_environment
 setup_github
 setup_pre-commit
 config_zsh
+run_mkdocs_repo_url_update
 
 echo ""
 echo "=================================================================="

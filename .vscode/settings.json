@@ -1,9 +1,17 @@
 {
-    "terminal.integrated.shellIntegration.enabled": true,
-    "python.terminal.activateEnvironment": false,
-    "terminal.integrated.defaultProfile.linux": "zsh",
-    "files.exclude": {
-        "**/*.egg-info": true,
-        "site": true
-    }
+     "files.exclude": {
+          "**/*.egg-info": true,
+          "**/.*_cache": true,
+          "site": true
+     },
+     "terminal.integrated.defaultProfile.linux": "zsh",
+     "python.terminal.activateEnvironment": false,
+     "python.terminal.activateEnvInCurrentTerminal": false,
+     "editor.formatOnSave": true,
+     "editor.tabSize": 4,
+     "editor.rulers": [
+          100
+     ],
+     "terminal.integrated.shellIntegration.enabled": false,
+     "terminal.integrated.suggest.cdPath": "off"
 }

@@ -7,7 +7,7 @@
         "--label", "com.centurylinklabs.watchtower.enable=false",
         "--env", "CONTAINER_NAME=vscode-dev-container_PyFoundry"
     ],
-    
+
     // Variables d'environnement
     "containerEnv": {
         "PROJECT_NAME": "PyFoundry",
@@ -20,7 +20,7 @@
         "UV_PYTHON": "/home/vscode/.venv/bin/python",
         "TZ": "${localEnv:TZ}"
     },
-    
+
     "customizations": {
         "vscode": {
             "extensions": [
@@ -34,7 +34,6 @@
                 "ms-python.python",
                 "github.vscode-github-actions",
                 "mikoz.black-py",
-                "vscode-icons-team.vscode-icons",
                 "mongodb.mongodb-vscode",
                 "yzhang.markdown-all-in-one",
                 "ukoloff.win-ca",
@@ -42,10 +41,11 @@
                 "GitHub.copilot-chat",
                 "dbaeumer.vscode-eslint",
                 "ms-python.autopep8",
+				"xelad0m.jupyter-toc",
                 "anthropic.claude-code",
 				"catppuccin.catppuccin-vsc-icons",
 				"catppuccin.catppuccin-vsc",
-				"pomdtr.excalidraw-editor"                
+				"pomdtr.excalidraw-editor"
             ],
             "settings": {
                 // Configuration Python
@@ -56,11 +56,11 @@
 					"VIRTUAL_ENV": "/home/vscode/.venv",
 					"PATH": "/home/vscode/.venv/bin:${env:PATH}"
 				},
-                                
+
                 // Configuration générale
                 "editor.minimap.enabled": true,
                 "editor.rulers": [100],
-                
+
                 // Exclusions pour améliorer les performances
                 "files.exclude": {
                     "**/__pycache__": true,
@@ -76,11 +76,11 @@
                     "**/node_modules": true
                 },
                 // Désactive l'auto-forward automatique (empêche VS Code de créer des listeners qui peuvent bloquer des ports)
-                "remote.autoForwardPorts": false                
+                "remote.autoForwardPorts": false
             }
         }
     },
-    
+
     // Features devcontainer
     "features": {
         "ghcr.io/va-h/devcontainers-features/uv:1": {},
@@ -89,21 +89,21 @@
             "ppa": true
         }
     },
-    
+
     // Montages pour hériter de la config git du host et de la timezone
     "mounts": [
         "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached,readonly",
         "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
         "source=/etc/localtime,target=/etc/localtime,type=bind,consistency=cached,readonly"
     ],
-       
+
     // Configuration du shell et de l'environnement
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
     "postStartCommand": "echo '🚀 PyFoundry - Environnement prêt!'",
-    
+
     // Utilisateur non-root pour la sécurité
     "remoteUser": "vscode",
-    
+
     // Optimisations de performance
     "shutdownAction": "none"
 }
