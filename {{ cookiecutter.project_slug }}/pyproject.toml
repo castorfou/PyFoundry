@@ -41,8 +41,10 @@ dev = [
     "click==8.2.1", # https://github.com/mkdocs/mkdocs/issues/4032
     "mkdocstrings[python]",
     "mkdocs-include-markdown-plugin",
-    "mkdocs-awesome-pages-plugin",
-    "pymdown-extensions"
+    "mkdocs-awesome-nav",
+    "pymdown-extensions",
+    "mkdocs-rtd-dropdown",
+    "nbdev>=2.4.6"    
 ]
 
 [project.urls]
@@ -139,6 +141,12 @@ classmethod-decorators = ["classmethod", "pydantic.validator"]
 python_version = "{{ cookiecutter.python_version }}"
 platform = "linux"
 
+# Chemins à analyser : exclure src/ car déjà dans sys.path via editable install
+files = ["tests"]
+
+# Ne pas chercher de namespace packages pour éviter la détection en double
+namespace_packages = false
+
 # Niveau de vérification
 warn_return_any = true
 warn_unused_configs = true
@@ -178,5 +186,13 @@ ignore_errors = true
 
 # Configuration tests
 [[tool.mypy.overrides]] 
-module = "tests.*"
+module = [
+    "tests.*",
+    "pytest",
+]
+ignore_missing_imports = true
 disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+pythonpath = "."
+testpaths = ["tests"]
