@@ -242,23 +242,18 @@ def test_claude_code_extension_in_devcontainer(cookies, minimal_template_context
 
 
 def test_claude_memory_directory_structure(cookies, minimal_template_context):
-    """Test que la structure docs/claude/memory/ est créée."""
+    """Test que CLAUDE.md référence docs/claude/memory/ comme répertoire de mémoire."""
     result = cookies.bake(extra_context=minimal_template_context)
 
-    docs_dir = result.project_path / "docs"
-    claude_docs_dir = result.project_path / "docs" / "claude"
-    memory_dir = result.project_path / "docs" / "claude" / "memory"
+    # docs/claude/memory/ est un répertoire runtime géré par Claude Code,
+    # il n'est pas pré-créé par le template. On vérifie que CLAUDE.md le documente.
+    claude_md = result.project_path / "CLAUDE.md"
+    assert claude_md.exists(), "CLAUDE.md should be created"
 
-    # Vérifier que la structure existe
-    assert docs_dir.exists(), "docs/ directory should be created"
-    assert claude_docs_dir.exists(), "docs/claude/ directory should be created"
-    assert memory_dir.exists(), "docs/claude/memory/ directory should be created"
-
-    # Vérifier que le README est présent
-    memory_readme = memory_dir / "README.md"
-    assert memory_readme.exists(), "docs/claude/memory/README.md should be created"
-
-    # Vérifier le contenu du README
-    readme_content = memory_readme.read_text()
-    assert "Mémoire Claude Code" in readme_content
-    assert "YYMMDD-HHMM" in readme_content
+    content = claude_md.read_text()
+    assert "docs/claude/memory" in content, (
+        "CLAUDE.md should document the docs/claude/memory/ directory"
+    )
+    assert "stocke-memoire" in content or "mémoire" in content.lower(), (
+        "CLAUDE.md should mention memory usage"
+    )
