@@ -1,7 +1,7 @@
 {
   "template": "git@github.com:castorfou/PyFoundry.git",
-  "commit": "d741a09f53f6d76fd8c3a074f29bbe79cb176635",
-  "checkout": "43-doc-refactoring-de-la-doc-comme-sur-vscode-exploration_template",
+  "commit": "bf9c331dd34b5e68b69c90a6a9dd0013ddee3f63",
+  "checkout": null,
   "context": {
     "cookiecutter": {
       "project_name": "PyFoundry",
@@ -14,7 +14,7 @@
         ".devcontainer/resources/.p10k.zsh"
       ],
       "_template": "git@github.com:castorfou/PyFoundry.git",
-      "_commit": "d741a09f53f6d76fd8c3a074f29bbe79cb176635"
+      "_commit": "bf9c331dd34b5e68b69c90a6a9dd0013ddee3f63"
     }
   },
   "directory": null
