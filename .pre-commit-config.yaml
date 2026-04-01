@@ -39,7 +39,7 @@ repos:
       # Formatage avec ruff (remplace black)
       - id: ruff-format
         name: ruff (format)
-        types_or: [python, pyi, jupyter]
+        types_or: [python, pyi]
 
   # MyPy - Vérification de types statique
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -68,6 +68,14 @@ repos:
               \{\{\ cookiecutter.project_slug\ \}\}/.*|
               \.devcontainer/devcontainer\.json
           )$
+
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 26.3.1
+    hooks:
+    - id: black-jupyter
+      language_version: python3
+      files: \.ipynb$
+      args: [--line-length=140]
 
 # Configuration globale
 default_stages: [pre-commit]

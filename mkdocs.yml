@@ -71,7 +71,6 @@ plugins:
       fallback_to_build_date: true
 
 extra_javascript:
-  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
   - javascripts/toc-collapse.js
 
 extra_css:

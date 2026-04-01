@@ -1,4 +1,4 @@
-# Outils de Documentation
+
 
 Cette page détaille la stack technique utilisée pour la documentation du projet, ainsi que les différents packages Python impliqués.
 
@@ -49,6 +49,7 @@ Cette page détaille la stack technique utilisée pour la documentation du proje
 *   **Usage** : Ensemble d'extensions pour le parseur Python-Markdown, ajoutant des fonctionnalités riches à la syntaxe Markdown standard (admonitions, onglets, touches clavier, etc.).
 *   **Exemple** : Utilisation de `!!! note` pour créer des encadrés d'information colorés.
 *   **Documentation** : [https://facelessuser.github.io/pymdown-extensions/](https://facelessuser.github.io/pymdown-extensions/)
+*   **adminition documentation** : [Supported types (note, warning, ...)](https://squidfunk.github.io/mkdocs-material/reference/admonitions/#supported-types)
 
 ## Extensions Markdown Configurées
 
@@ -68,3 +69,58 @@ Voici le détail des extensions activées dans `mkdocs.yml` :
 *   **pymdownx.arithmatex** : Support pour le rendu de formules mathématiques (LaTeX). Configuré avec `generic: true` pour une compatibilité large.
 *   **pymdownx.emoji** : Permet d'utiliser des emojis via des codes courts (ex: `:smile:`).
 *   **pymdownx.magiclink** : Convertit automatiquement les URL et liens bruts en liens cliquables.
+
+## Doc et CICD
+
+On a 3 activités automatisés en CICD:
+
+- build --strict: à chaque commit on fait un `mkdocs build --strict`, permet de capter les erreurs de strcture au plus tôt
+- deploy automatisé vers pages: à chaque commit sur branch main
+- deploy manuel vers pages: à chaque commit sur branch, on peut déclencher manuellement la publication de la doc depuis le pipeline gitlab
+
+## Liens relatifs
+
+Il est possible de faire des liens vers d'autres pages de la doc.
+
+Il faut faire des liens relatifs.
+
+Par exemple si je pars de la page `/docs/dev/documentation_tools.md`
+
+Je peux pointer vers la page `/docs/user/README.md`, section "Contenu suggéré" avec
+
+```markdown
+[lien vers user README.md section Contenu suggéré](../user/README.md#contenu-suggéré)
+```
+
+
+
+## lancement sur un autre port
+
+```bash
+mkdocs serve -a localhost:8010
+```
+
+## markdown
+
+### annotations
+
+![alt text](img/annotations.png)
+
+donne
+
+```bash
+uv add --active pandas # (1)
+```
+
+1.  le `--active` est essentiel pour utiliser l'env actif, sinon creation d'un nouveau venv
+
+
+### mermaid
+
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
