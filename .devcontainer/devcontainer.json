@@ -14,6 +14,7 @@
         "PROJECT_SLUG": "PyFoundry",
         "GITHUB_USERNAME": "castorfou",
         "PYTHON_VERSION": "3.11",
+        "WORKSPACE_FOLDER": "/workspaces/PyFoundry",
         "PYTHONPATH": "/workspaces/PyFoundry/src",
         "UV_VENV_CLEAR": "1",
         "UV_LINK_MODE": "copy",
