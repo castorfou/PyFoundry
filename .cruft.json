@@ -1,6 +1,6 @@
 {
   "template": "git@github.com:castorfou/PyFoundry.git",
-  "commit": "1528ae4972b2dc4115b05cb93b86b31bcef54aa4",
+  "commit": "c33ad72116c504764583923131da05a99d47401c",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -14,7 +14,7 @@
         ".devcontainer/resources/.p10k.zsh"
       ],
       "_template": "git@github.com:castorfou/PyFoundry.git",
-      "_commit": "1528ae4972b2dc4115b05cb93b86b31bcef54aa4"
+      "_commit": "c33ad72116c504764583923131da05a99d47401c"
     }
   },
   "directory": null
