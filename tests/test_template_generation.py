@@ -143,6 +143,35 @@ def test_node_enabled_when_requested(cookies, node_template_context):
     assert "package-lock.json" in gitignore_content
 
 
+def test_docker_in_docker_disabled_by_default(cookies, default_template_context):
+    """Test que Docker-in-Docker n'est pas activé par défaut."""
+    result = cookies.bake(extra_context=default_template_context)
+
+    devcontainer_content = (
+        result.project_path / ".devcontainer" / "devcontainer.json"
+    ).read_text()
+    assert "docker-in-docker" not in devcontainer_content
+    assert "docker.sock" not in devcontainer_content
+
+
+def test_docker_in_docker_enabled_when_requested(
+    cookies, docker_in_docker_template_context
+):
+    """Test que Docker-in-Docker est correctement configuré quand docker_in_docker=yes."""
+    result = cookies.bake(extra_context=docker_in_docker_template_context)
+
+    devcontainer_content = (
+        result.project_path / ".devcontainer" / "devcontainer.json"
+    ).read_text()
+
+    # Vérifier la feature DinD
+    assert "ghcr.io/devcontainers/features/docker-in-docker:2" in devcontainer_content
+    assert '"moby": false' in devcontainer_content
+
+    # Vérifier le montage du socket Docker
+    assert "docker.sock" in devcontainer_content
+
+
 def test_timezone_configuration(cookies, default_template_context):
     """Test que la timezone du host est bien héritée par le devcontainer."""
     result = cookies.bake(extra_context=default_template_context)

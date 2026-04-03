@@ -40,3 +40,17 @@ def node_template_context():
         "github_username": "test-user",
         "use_node": "y",
     }
+
+
+@pytest.fixture
+def docker_in_docker_template_context():
+    """Contexte avec Docker-in-Docker activé."""
+    return {
+        "project_name": "DinD Test Project",
+        "project_slug": "dind-test-project",
+        "description": "A test project with Docker-in-Docker support",
+        "python_version": "3.11",
+        "github_username": "test-user",
+        "use_node": "n",
+        "docker_in_docker": "yes",
+    }
