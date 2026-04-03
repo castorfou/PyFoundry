@@ -44,7 +44,7 @@ PyFoundry/                                    # Dépôt du template
     "description": "Description courte",
     "python_version": "Version Python",
     "use_node": "Support Node.js (y/n)",
-    "setup_git": "Configuration Git (y/n)"
+    "docker_in_docker": "Docker dans le Dev Container (y/n)"
 }
 ```
 

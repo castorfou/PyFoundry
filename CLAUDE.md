@@ -53,7 +53,8 @@ PyFoundry/
     "description": "Description courte",
     "python_version": "3.11",
     "github_username": "castorfou",
-    "use_node": "n"
+    "use_node": "n",
+    "docker_in_docker": "n"
 }
 ```
 
@@ -151,13 +152,13 @@ uv run --active mkdocs build --strict
 ### R1.1 — Lancer pytest
 
 ```bash
-eval "$(conda shell.bash hook)" && conda activate pyfoundry && pytest tests -v
+source /home/vscode/.venv/bin/activate && pytest tests -v
 ```
 
 ### R1.2 — Lancer ruff
 
 ```bash
-eval "$(conda shell.bash hook)" && conda activate pyfoundry && ruff check tests/ docs/ --fix
+ruff check tests/ docs/ --fix
 ```
 
 ### R1.3 — Tester localement le projet généré

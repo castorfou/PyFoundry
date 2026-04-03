@@ -174,16 +174,55 @@ cd mon-projet-data-science
 # Valider les changements
 ```
 
-#### 2. Ajout de variables Cookiecutter
+#### 2. Ajout d'une option Cookiecutter
+
+Ajouter une option conditionnelle (type `y/n`) suit toujours le même patron. Exemple : ajout de `docker_in_docker`.
+
+**Checklist complète :**
+
+1. **`cookiecutter.json`** — déclarer la variable avec sa valeur par défaut :
 ```json
 {
-    "project_name": "Mon Projet Data Science",
-    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
-    "description": "Description du projet",
-    "python_version": "3.11",
-    "nouvelle_variable": "valeur_par_defaut"
+    "use_node": "n",
+    "docker_in_docker": "n"
 }
 ```
+
+2. **Fichiers du template** — utiliser la condition Jinja2 dans chaque fichier concerné :
+```
+{% if cookiecutter.docker_in_docker == "y" %}
+... contenu conditionnel ...
+{% endif %}
+```
+Fichiers typiquement concernés : `.devcontainer/devcontainer.json`, `.devcontainer/postCreateCommand.sh`, `.gitignore`.
+
+3. **Tests** — ajouter une fixture et deux tests dans `tests/conftest.py` et `tests/test_template_generation.py` :
+    - `test_docker_in_docker_disabled_by_default` : vérifie que la feature est absente par défaut
+    - `test_docker_in_docker_enabled_when_requested` : vérifie que la feature est présente quand activée
+
+4. **Documentation utilisateur** — mettre à jour :
+    - `docs/user/getting_started.md` : tableau des options
+    - `docs/user/usage.md` : section "Options du template" et exemple `cruft update --variables-to-update`
+
+5. **Documentation développeur** — mettre à jour :
+    - `docs/dev/architecture.md` : tableau des variables Cookiecutter
+    - `docs/dev/contributing.md` (ce fichier) si le patron est nouveau
+
+6. **`CLAUDE.md`** — mettre à jour la liste des variables Cookiecutter.
+
+!!! tip "Tester avec cookiecutter (non commité)"
+    `cookiecutter` lit le filesystem et voit les fichiers non commités, contrairement à `cruft` qui n'utilise que Git :
+    ```bash
+    cd ~/temp && rm -rf mon-projet-data-science
+    cookiecutter /workspaces/PyFoundry --no-input --extra-context '{"docker_in_docker": "y"}'
+    ```
+
+!!! warning "Activer une option sur un projet existant"
+    Un projet généré avant l'ajout de l'option n'a pas la variable dans son `.cruft.json`.
+    Utiliser `--variables-to-update` pour l'activer lors de la prochaine mise à jour :
+    ```bash
+    cruft update --variables-to-update '{"docker_in_docker": "y"}'
+    ```
 
 #### 3. Documentation
 ```bash
