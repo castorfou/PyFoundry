@@ -94,6 +94,9 @@
             "nodeGypDependencies": true,
             "version": "lts",
             "installYarnUsingApt": false
+        }{% endif %}{% if cookiecutter.docker_in_docker == "y" %},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "moby": false
         }{% endif %}
     },
     // Montages pour hériter de la config git du host et de la timezone
@@ -101,7 +104,8 @@
         "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached,readonly",
         "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
         "source=${localEnv:HOME}/.cache/uv,target=/home/vscode/.cache/uv,type=bind,consistency=cached",
-        "source=/etc/localtime,target=/etc/localtime,type=bind,consistency=cached,readonly"
+        "source=/etc/localtime,target=/etc/localtime,type=bind,consistency=cached,readonly"{% if cookiecutter.docker_in_docker == "y" %},
+        "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"{% endif %}
     ],
     // Configuration du shell et de l'environnement
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",

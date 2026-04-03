@@ -52,6 +52,7 @@ L'assistant pose des questions pour personnaliser le projet :
 | `python_version`  | Version Python du conteneur                                     | "3.11"                           |
 | `github_username` | Votre nom d'utilisateur GitHub (pour configuration automatique) | "castorfou"                      |
 | `use_node`        | Installer Node.js/npm pour des outils web                       | "n"                              |
+| `docker_in_docker` | Activer Docker dans le Dev Container (accès au daemon Docker de l'hôte) | "n"               |
 
 ### Ouvrir dans le Dev Container
 

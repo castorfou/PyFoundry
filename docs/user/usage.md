@@ -36,11 +36,11 @@ Si les mêmes lignes ont été modifiées dans le projet et dans le template, Cr
 
 ### Activer une option ajoutée après la création du projet
 
-Quand le template ajoute une option (par exemple `install_claude_code`), le projet existant n'a pas cette variable dans `.cruft.json`. Deux possibilités :
+Quand le template ajoute une nouvelle option (par exemple `docker_in_docker`), le projet existant n'a pas cette variable dans `.cruft.json`. Deux possibilités :
 
 ```bash
 # Directement dans la commande
-cruft update --variables-to-update '{ "install_claude_code": "yes" }'
+cruft update --variables-to-update '{ "docker_in_docker": "y" }'
 
 # Ou : modifier .cruft.json manuellement, puis
 cruft update --variables-to-update-file .cruft.json
@@ -330,11 +330,9 @@ Puis utilisez `/test` dans Claude Code pour exécuter cette commande.
 
 ## Docker
 
-Le Dev Container tourne dans Docker.
+Le Dev Container tourne dans Docker. Avec l'option `docker_in_docker`, il est possible d'utiliser Docker à l'intérieur du conteneur (ex. : builder des images, lancer des conteneurs de test).
 
-Pas encore d'integration docker-in-docker
-
-https://github.com/castorfou/PyFoundry/issues/44
+La feature `docker-in-docker:2` installe un daemon Docker interne et configure automatiquement un proxy socat vers le socket de l'hôte (`/var/run/docker-host.sock`). Aucune configuration manuelle de permissions n'est nécessaire.
 
 ---
 
@@ -379,3 +377,26 @@ Le script `scripts/update_mkdocs_repo_url.sh` met à jour automatiquement le cha
 ## Options du template
 
 Options choisies à la création du projet (`cruft create`). Elles modifient la configuration du Dev Container.
+
+| Option             | Description                                                    | Défaut |
+| ------------------ | -------------------------------------------------------------- | ------ |
+| `use_node`         | Installer Node.js/npm (extensions VS Code, outils web)         | `"n"`  |
+| `docker_in_docker` | Activer Docker dans le Dev Container (accès au daemon de l'hôte) | `"n"` |
+
+### `docker_in_docker`
+
+Active la feature `docker-in-docker:2` et monte le socket Docker de l'hôte vers `/var/run/docker-host.sock`. Un proxy socat est configuré automatiquement par la feature — aucune configuration manuelle de permissions n'est nécessaire.
+
+```bash
+# Créer un projet avec Docker-in-Docker activé
+cruft create https://github.com/castorfou/PyFoundry.git --extra-context '{"docker_in_docker": "y"}'
+```
+
+### `use_node`
+
+Installe Node.js LTS et npm dans le Dev Container. Génère aussi un `package.json` basique.
+
+```bash
+# Créer un projet avec Node.js activé
+cruft create https://github.com/castorfou/PyFoundry.git --extra-context '{"use_node": "y"}'
+```
