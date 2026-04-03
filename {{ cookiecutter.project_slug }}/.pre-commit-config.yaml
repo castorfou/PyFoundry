@@ -36,10 +36,10 @@ repos:
         args: [--fix, --exit-non-zero-on-fix]
         types_or: [python, pyi, jupyter]
         
-      # Formatage avec ruff (remplace black)  
+      # Formatage avec ruff (remplace black)
       - id: ruff-format
         name: ruff (format)
-        types_or: [python, pyi]
+        types_or: [python, pyi, jupyter]
 
   # MyPy - Vérification de types statique
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -64,18 +64,11 @@ repos:
           (?x)^(
               data/.*|
               models/.*|
+              notebooks/.*|
               \.cruft\.json|
               \{\{\ cookiecutter.project_slug\ \}\}/.*|
               \.devcontainer/devcontainer\.json
           )$
-
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.3.1
-    hooks:
-    - id: black-jupyter
-      language_version: python3
-      files: \.ipynb$
-      args: [--line-length=140]
 
 # Configuration globale
 default_stages: [pre-commit]
@@ -89,7 +82,6 @@ exclude: |
       \{\{\ cookiecutter.project_slug\ \}\}/.*|  # Template output directory (Jinja placeholders)
       logs/.*|              # Logs
       \.jupyter/.*|         # Config Jupyter
-      notebooks/.*\.ipynb$  # Notebooks Jupyter (traités par ruff)
   )$
 
 # Configuration spécifique CI
