@@ -21,6 +21,7 @@ classifiers = [
 dependencies = [
     "cookiecutter",
     "cruft",
+    "ipykernel>=7.2.0",
 ]
 
 [project.optional-dependencies]

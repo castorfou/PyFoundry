@@ -5,7 +5,7 @@
 ### Pré-requis
 - Python 3.11+
 - [uv](https://github.com/astral-sh/uv)
-- [cruft](https://cruft.github.io/cruft/) 
+- [cruft](https://cruft.github.io/cruft/)
 - Git
 
 ### Setup initial
@@ -213,7 +213,7 @@ Format : `type(scope): description`
 **Exemples** :
 ```bash
 feat(devcontainer): ajouter support pour uv
-fix(template): corriger chemin dans .gitignore  
+fix(template): corriger chemin dans .gitignore
 docs(user): améliorer guide installation
 chore(deps): mettre à jour mkdocs-material
 ```
@@ -288,7 +288,7 @@ pytest tests/ -v
 def test_nouvelle_fonctionnalite(cookies, default_template_context):
     """Test de la nouvelle fonctionnalité."""
     result = cookies.bake(extra_context=default_template_context)
-    
+
     # Vérifier le projet généré
     assert result.exit_code == 0
     assert (result.project_path / "nouveau_fichier.txt").exists()
@@ -296,14 +296,14 @@ def test_nouvelle_fonctionnalite(cookies, default_template_context):
 
 **Ajouter un test de validation** :
 ```python
-# Dans tests/test_configurations.py  
+# Dans tests/test_configurations.py
 def test_nouvelle_config_valid(cookies, minimal_template_context):
     """Test que nouvelle_config.yml est valide."""
     result = cookies.bake(extra_context=minimal_template_context)
-    
+
     config_path = result.project_path / "nouvelle_config.yml"
     assert config_path.exists()
-    
+
     content = yaml.safe_load(config_path.read_text())
     assert "expected_key" in content
 ```
@@ -494,7 +494,7 @@ python -m json.tool cookiecutter.json
 cruft create . --no-input --verbose
 ```
 
-### Erreurs de devcontainer  
+### Erreurs de devcontainer
 ```bash
 # Valider le JSON
 python -m json.tool "{{ cookiecutter.project_slug }}/.devcontainer/devcontainer.json"
