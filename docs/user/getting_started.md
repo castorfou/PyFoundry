@@ -21,12 +21,13 @@ mamba install -c conda-forge cruft
 
 ### Dossiers et fichiers montés par le Dev Container
 
-Le conteneur monte des chemins de la machine hôte pour partager la configuration Git, SSH. **Ils doivent exister sur l'hôte avant le premier lancement**, sinon devcontainer refusera de démarrer.
+Le conteneur monte des chemins de la machine hôte pour partager la configuration Git, SSH et le cache uv. **Ils doivent exister sur l'hôte avant le premier lancement**, sinon devcontainer refusera de démarrer.
 
 | Chemin hôte    | Type    | Rôle                      |
 | -------------- | ------- | ------------------------- |
 | `~/.ssh`       | Dossier | Clés SSH pour Git         |
 | `~/.gitconfig` | Fichier | Configuration Git globale |
+| `~/.cache/uv ` | Dossier | Cache UV                  |
 
 
 ---
