@@ -23,10 +23,10 @@ mamba install -c conda-forge cruft
 
 Le conteneur monte des chemins de la machine hôte pour partager la configuration Git, SSH. **Ils doivent exister sur l'hôte avant le premier lancement**, sinon devcontainer refusera de démarrer.
 
-| Chemin hôte      | Type    | Rôle                                  |
-| ---------------- | ------- | ------------------------------------- |
-| `~/.ssh`         | Dossier | Clés SSH pour Git                     |
-| `~/.gitconfig`   | Fichier | Configuration Git globale             |
+| Chemin hôte    | Type    | Rôle                      |
+| -------------- | ------- | ------------------------- |
+| `~/.ssh`       | Dossier | Clés SSH pour Git         |
+| `~/.gitconfig` | Fichier | Configuration Git globale |
 
 
 ---
@@ -43,14 +43,14 @@ cruft create https://github.com/castorfou/PyFoundry.git
 
 L'assistant pose des questions pour personnaliser le projet :
 
-| Option                 | Description                                     | Défaut                           |
-| ---------------------- | ----------------------------------------------- | -------------------------------- |
-| `project_name`         | Nom lisible du projet                           | "Mon Projet Data Science"        |
-| `project_slug`         | Identifiant technique (minuscules, tirets)      | Généré depuis `project_name`     |
-| `description`          | Courte description                              | "Description de votre projet..." |
-| `python_version`       | Version Python du conteneur                     | "3.11"                           |
-| `github_username`       | Votre nom d'utilisateur GitHub (pour configuration automatique)                     | "castorfou"                           |
-| `use_node`       | Installer Node.js/npm pour des outils web                     | "n"                           |
+| Option            | Description                                                     | Défaut                           |
+| ----------------- | --------------------------------------------------------------- | -------------------------------- |
+| `project_name`    | Nom lisible du projet                                           | "Mon Projet Data Science"        |
+| `project_slug`    | Identifiant technique (minuscules, tirets)                      | Généré depuis `project_name`     |
+| `description`     | Courte description                                              | "Description de votre projet..." |
+| `python_version`  | Version Python du conteneur                                     | "3.11"                           |
+| `github_username` | Votre nom d'utilisateur GitHub (pour configuration automatique) | "castorfou"                      |
+| `use_node`        | Installer Node.js/npm pour des outils web                       | "n"                              |
 
 ### Ouvrir dans le Dev Container
 
@@ -122,7 +122,7 @@ Un projet Python existe déjà mais n'a pas été créé avec ce template. Il es
 
 ### Principe
 
-Deux étapes : `cruft link` enregistre la liaison avec le template, puis `cookiecutter` génère le squelette par-dessus le projet existant. Un travail de merge manuel est ensuite nécessaire pour réconcilier les fichiers.
+Deux étapes : `cruft link` enregistre la liaison avec le template, puis `cruft update` génère le squelette par-dessus le projet existant. Un travail de merge manuel est ensuite nécessaire pour réconcilier les fichiers.
 
 ### Procédure
 
@@ -132,7 +132,9 @@ Travailler sur une branche dédiée. Le dépôt Git doit être propre (aucun fic
 git checkout -b chore/adopt-template
 ```
 
-Créer la liaison :
+Il y a ensuite 3 étapes.
+
+**1. Créer la liaison :**
 
 ```bash
 cruft link https://github.com/castorfou/PyFoundry.git
@@ -140,17 +142,21 @@ cruft link https://github.com/castorfou/PyFoundry.git
 
 Répondre aux questions (nom du projet, slug, options). Cela crée le fichier `.cruft.json` qui permet à `cruft update` de fonctionner par la suite.
 
-Générer le squelette du template par-dessus le projet :
+**2. Modifier le fichier `.cruft.json` :**
+
+Dans la 3e ligne, remplacer `  "commit": "<commit_ID>",` par `  "commit": "d85a7f28e5fa23ab9044148766da0044f77425bc",`
+
+??? note "pourquoi `d85a7f28e5fa23ab9044148766da0044f77425bc` ?"
+    Il faut indiquer à cruft que nous partons du tout premier commit de PyFoundry. Et qu'iul faut donc appliquer l'integralite des modifications du projet PyFoundry à notre projet cible. Et quel est le commit_ID de ce 1er commit ? `d85a7f28e5fa23ab9044148766da0044f77425bc`
+    Pour trouver ce commit :
+    ```bash
+    git clone --bare https://github.com/castorfou/PyFoundry.git /tmp/pyfoundry && \n git -C /tmp/pyfoundry log --reverse --format="%H" | head -1\n
+    ```
+
+**3. Appliquer le squelette du template sur le projet :**
 
 ```bash
-cookiecutter https://github.com/castorfou/PyFoundry.git \
-  --overwrite-if-exists \
-  --output-dir .. \
-  --no-input \
-  project_name="Mon Projet" \
-  project_slug="mon-projet" \
-  description="Description du projet" \
-  python_version="3.11"
+cruft update
 ```
 
 ### Après la génération
