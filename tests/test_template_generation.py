@@ -168,8 +168,8 @@ def test_docker_in_docker_enabled_when_requested(
     assert "ghcr.io/devcontainers/features/docker-in-docker:2" in devcontainer_content
     assert '"moby": false' in devcontainer_content
 
-    # Vérifier le montage du socket Docker
-    assert "docker.sock" in devcontainer_content
+    # Vérifier le montage du socket Docker (vers docker-host.sock pour socat proxy)
+    assert "docker-host.sock" in devcontainer_content
 
 
 def test_timezone_configuration(cookies, default_template_context):

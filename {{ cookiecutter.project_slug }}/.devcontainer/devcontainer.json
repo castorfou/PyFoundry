@@ -105,7 +105,7 @@
         "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
         "source=${localEnv:HOME}/.cache/uv,target=/home/vscode/.cache/uv,type=bind,consistency=cached",
         "source=/etc/localtime,target=/etc/localtime,type=bind,consistency=cached,readonly"{% if cookiecutter.docker_in_docker == "y" %},
-        "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock"{% endif %}
+        "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"{% endif %}
     ],
     // Configuration du shell et de l'environnement
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
