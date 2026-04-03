@@ -5,7 +5,7 @@
     "python_version": "3.11",
     "github_username": "castorfou",
     "use_node": "n",
-    "docker_in_docker": "no",
+    "docker_in_docker": "n",
     "_copy_without_render": [
         ".devcontainer/resources/.p10k.zsh"
     ]

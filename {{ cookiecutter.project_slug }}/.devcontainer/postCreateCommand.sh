@@ -86,6 +86,23 @@ create_python_environment() {
 
 }
 
+{% if cookiecutter.docker_in_docker == "y" %}
+# Configuration des permissions Docker socket (GID mismatch hôte/conteneur)
+setup_docker_socket() {
+    echo "Configuration des permissions Docker socket..."
+    if [ -S /var/run/docker.sock ]; then
+        SOCKET_GID=$(stat -c '%g' /var/run/docker.sock)
+        echo "GID du socket Docker (hôte) : $SOCKET_GID"
+        sudo groupmod -g "$SOCKET_GID" docker 2>/dev/null || \
+            sudo groupadd -g "$SOCKET_GID" docker 2>/dev/null || true
+        sudo usermod -aG docker vscode 2>/dev/null || true
+        echo "✅ Permissions Docker socket configurées (GID: $SOCKET_GID)"
+    else
+        echo "⚠️  /var/run/docker.sock non trouvé"
+    fi
+}
+{% endif %}
+
 {% if cookiecutter.use_node == "y" %}
 # Configuration Node.js et npm
 setup_node() {
@@ -294,6 +311,7 @@ update_system
 ensure_uv
 create_python_environment
 {% if cookiecutter.use_node == "y" %}setup_node
+{% endif %}{% if cookiecutter.docker_in_docker == "y" %}setup_docker_socket
 {% endif %}setup_git
 setup_github
 setup_pre-commit
@@ -305,4 +323,5 @@ echo "=================================================================="
 echo "✅ Configuration terminée !"
 echo "Dépôt Git initialisé avec pre-commit hooks"
 {% if cookiecutter.use_node == "y" %}echo "Node.js et npm configurés pour le développement frontend"
+{% endif %}{% if cookiecutter.docker_in_docker == "y" %}echo "Docker-in-Docker activé (socket /var/run/docker.sock monté)"
 {% endif %}echo "Redémarrez le terminal pour activer l'environnement"

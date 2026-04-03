@@ -52,5 +52,5 @@ def docker_in_docker_template_context():
         "python_version": "3.11",
         "github_username": "test-user",
         "use_node": "n",
-        "docker_in_docker": "yes",
+        "docker_in_docker": "y",
     }
