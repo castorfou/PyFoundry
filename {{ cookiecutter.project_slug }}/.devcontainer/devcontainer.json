@@ -51,6 +51,7 @@
             "settings": {
                 // Configuration Python
                 "python.defaultInterpreterPath": "/home/vscode/.venv/bin/python",
+                "python.venvPath": "/home/vscode",
                 "python.analysis.autoImportCompletions": true,
                 "python.analysis.typeCheckingMode": "basic",
                 "terminal.integrated.env.linux": {
