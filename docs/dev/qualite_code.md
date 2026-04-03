@@ -4,7 +4,7 @@
 
 Système complet d'assurance qualité **zero-config** avec :
 - Configuration automatique des outils de qualité
-- Intégration Git/GitHub seamless  
+- Intégration Git/GitHub seamless
 - Pre-commit hooks optimisés pour la performance
 - Workflow entièrement automatisé
 
@@ -88,7 +88,7 @@ repos:
 [tool.ruff]
 extend-select = [
     "E", "W",    # pycodestyle
-    "F",         # pyflakes  
+    "F",         # pyflakes
     "I",         # isort
     "UP",        # pyupgrade
     "B",         # bugbear
@@ -106,7 +106,7 @@ ignore = [
 ```toml
 [tool.ruff.lint.per-file-ignores]
 "notebooks/*.py" = ["E402", "F401", "F841"]  # Notebooks plus permissifs
-"scripts/*.py" = ["T201"]                    # print() OK dans scripts  
+"scripts/*.py" = ["T201"]                    # print() OK dans scripts
 "tests/*.py" = ["S101", "PLR2004"]          # assert OK en tests
 ```
 
@@ -119,7 +119,7 @@ ignore = [
 disallow_incomplete_defs = true      # Pas de fonction partiellement typée
 warn_return_any = true              # Warning sur Any
 
-# Permissif pour commencer  
+# Permissif pour commencer
 disallow_untyped_defs = false       # Fonction non-typées OK
 disallow_untyped_calls = false      # Appels non-typés OK
 ```
@@ -202,7 +202,7 @@ Solution : Supprimer `--baseline` argument, utiliser uniquement exclusions.
 ```bash
 # Dans projet généré :
 ruff check .                 # → 0 erreurs
-ruff format . --check        # → Déjà formaté  
+ruff format . --check        # → Déjà formaté
 mypy src/                    # → 0 erreurs (sur code minimal)
 pre-commit run --all-files   # → All passed, 0 warnings
 ```

@@ -40,7 +40,7 @@ PyFoundry/                                    # Dépôt du template
 ```json
 {
     "project_name": "Nom affiché",
-    "project_slug": "nom-technique", 
+    "project_slug": "nom-technique",
     "description": "Description courte",
     "python_version": "Version Python",
     "use_node": "Support Node.js (y/n)",
@@ -150,7 +150,7 @@ Le devcontainer hérite automatiquement de la timezone du système hôte :
 # Plutôt que de demander tous les paramètres
 cookiecutter.json = {
     "database_host": "localhost",
-    "database_port": "5432", 
+    "database_port": "5432",
     "database_name": "mydb",
     "database_user": "user"
 }
@@ -174,7 +174,7 @@ cookiecutter.json = {
 # Structure modulaire pour futures extensions
 {{ cookiecutter.project_slug }}/
 ├── .devcontainer/           # Module: Environnement
-├── .github/workflows/       # Module: CI/CD  
+├── .github/workflows/       # Module: CI/CD
 ├── .pre-commit-config.yaml  # Module: Qualité
 ├── tests/                   # Module: Tests
 └── pyproject.toml           # Configuration centrale
@@ -231,7 +231,7 @@ services:
 - **Tests de régression** : Non-breaking changes
 
 ### Versioning sémantique
-- **MAJOR** : Breaking changes dans l'API du template  
+- **MAJOR** : Breaking changes dans l'API du template
 - **MINOR** : Nouvelles fonctionnalités backward-compatible
 - **PATCH** : Bug fixes et améliorations mineures
 
