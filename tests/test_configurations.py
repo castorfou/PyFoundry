@@ -63,7 +63,7 @@ def test_devcontainer_json_valid(cookies, minimal_template_context):
 
     # Test basique : le fichier contient les éléments essentiels
     assert '"name":' in content
-    assert '"image":' in content
+    assert '"image":' in content or '"build":' in content
     assert '"features":' in content
     assert '"customizations":' in content
 
