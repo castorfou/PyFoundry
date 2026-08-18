@@ -22,7 +22,8 @@
         "UV_VENV_CLEAR": "1",
         "UV_LINK_MODE": "copy",
         "UV_PYTHON": "/home/vscode/.venv/bin/python",
-        "TZ": "${localEnv:TZ}"
+        "TZ": "${localEnv:TZ}",
+        "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"
     },
     "customizations": {
         "vscode": {
