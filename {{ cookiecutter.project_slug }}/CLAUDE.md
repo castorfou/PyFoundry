@@ -19,7 +19,8 @@
 ```
 .
 ├── .claude/                # Configuration Claude Code
-│   └── commands/          # Commandes slash personnalisées
+│   ├── commands/          # Commandes slash personnalisées
+│   └── settings.json      # Plugins activés (mattpocock-skills)
 ├── .devcontainer/          # Configuration du dev container
 ├── .github/workflows/      # CI/CD GitHub Actions
 ├── data/
@@ -243,6 +244,20 @@ Ce dossier sert à conserver une trace des décisions importantes, apprentissage
   - Contexte métier important
 
 Cette mémoire aide Claude Code à maintenir la cohérence du projet au fil du temps.
+
+### Skills Matt Pocock
+
+Le plugin [mattpocock-skills](https://github.com/mattpocock/skills) est activé dans `.claude/settings.json`. À l'ouverture du projet, Claude Code propose de l'installer ; il se met ensuite à jour tout seul.
+
+Avant d'utiliser les skills d'ingénierie, lance une fois `/setup-matt-pocock-skills`. Il demande où sont suivies les issues, quels labels de triage utiliser et où ranger la documentation du domaine, puis écrit ces réponses dans `docs/agents/` et dans ce fichier.
+
+Skills les plus utiles :
+
+- `/grill-me`, `/grill-with-docs` : Claude te pose des questions pour clarifier un besoin avant d'écrire du code
+- `/to-spec`, `/to-tickets` : transformer une discussion en spécification, puis en issues
+- `/tdd` : boucle RED → GREEN → REFACTOR
+- `/triage` : trier les issues GitHub à l'aide des labels
+- `/diagnosing-bugs` : enquêter méthodiquement sur un bug
 
 ## Workflow de Développement
 

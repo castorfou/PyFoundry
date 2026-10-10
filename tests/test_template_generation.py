@@ -1,5 +1,10 @@
 """Tests de génération du template PyFoundry."""
 
+import json
+
+
+MATTPOCOCK_PLUGIN = "mattpocock-skills@claude-plugins-official"
+
 
 def test_template_generates_successfully(cookies, default_template_context):
     """Test que le template se génère sans erreur."""
@@ -255,6 +260,39 @@ def test_claude_directory_structure(cookies, minimal_template_context):
 
     assert fix_issue_cmd.exists(), "/fix-issue command should be created"
     assert stocke_memoire_cmd.exists(), "/stocke-memoire command should be created"
+
+
+def test_claude_settings_json_created(cookies, minimal_template_context):
+    """Test que .claude/settings.json est créé et contient du JSON valide."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    settings_path = result.project_path / ".claude" / "settings.json"
+    assert settings_path.exists(), ".claude/settings.json should be created"
+
+    settings = json.loads(settings_path.read_text())
+    assert isinstance(settings, dict), ".claude/settings.json should be a JSON object"
+
+
+def test_mattpocock_skills_plugin_enabled(cookies, minimal_template_context):
+    """Test que le plugin mattpocock-skills est activé dans .claude/settings.json."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    settings_path = result.project_path / ".claude" / "settings.json"
+    settings = json.loads(settings_path.read_text())
+
+    assert settings.get("enabledPlugins", {}).get(MATTPOCOCK_PLUGIN) is True, (
+        f"{MATTPOCOCK_PLUGIN} should be enabled in .claude/settings.json"
+    )
+
+
+def test_claude_md_mentions_mattpocock_skills(cookies, minimal_template_context):
+    """Test que CLAUDE.md explique l'étape /setup-matt-pocock-skills."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    content = (result.project_path / "CLAUDE.md").read_text()
+    assert "setup-matt-pocock-skills" in content, (
+        "CLAUDE.md should document the /setup-matt-pocock-skills step"
+    )
 
 
 def test_claude_code_extension_in_devcontainer(cookies, minimal_template_context):
