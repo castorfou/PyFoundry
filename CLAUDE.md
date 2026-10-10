@@ -63,7 +63,8 @@ PyFoundry/
 ```
 mon-projet-data-science/
 ├── .claude/
-│   └── commands/                  # Commandes slash (fix-issue, stocke-memoire)
+│   ├── commands/                  # Commandes slash (fix-issue, stocke-memoire)
+│   └── settings.json              # Plugins activés (mattpocock-skills)
 ├── .devcontainer/                  # Environnement de dev reproductible
 ├── .github/workflows/              # CI/CD du projet généré
 ├── data/
@@ -72,6 +73,7 @@ mon-projet-data-science/
 ├── docs/                           # Documentation MkDocs du projet
 │   ├── user/
 │   ├── dev/
+│   ├── agents/                    # Config pré-remplie des skills Matt Pocock
 │   └── claude/memory/             # Mémoire Claude Code
 ├── notebooks/
 ├── src/
@@ -180,6 +182,10 @@ Puis "Rebuild and Reopen in Container" depuis VS Code.
 
 Pour tester des modifications non commitées, utiliser `cookiecutter` directement.
 
+### R1.5 — Aligner le template et le projet généré
+
+Ce dépôt contient le template lui-même et le squelette du projet généré, sous `{{ cookiecutter.project_slug }}/`. Pour chaque modification de l'un, vérifier si l'autre demande la même modification, et les garder alignés quand c'est pertinent. Après une modification du squelette, valider le projet rendu (R1.3, ou `cookiecutter` pour des fichiers non commités, voir R1.4).
+
 ## Conventions & Style de Code
 
 - **Source de vérité unique** : `pyproject.toml` pour toutes les configurations.
@@ -206,6 +212,20 @@ Pour tester des modifications non commitées, utiliser `cookiecutter` directemen
 | `test-template.yml` | Push toutes branches, PR main | Lint ruff + tests pytest |
 | `docs.yml` | Push main (docs/ ou mkdocs.yml) | Déploiement GitHub Pages |
 | `release.yml` | Tag `v*` | Release GitHub + tests |
+
+## Agent skills
+
+### Issue tracker
+
+Les issues sont suivies dans GitHub Issues (`castorfou/PyFoundry`), via la CLI `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Labels par défaut : `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Contexte unique : `CONTEXT.md` et `docs/adr/` à la racine, créés au besoin. See `docs/agents/domain.md`.
 
 ## Ressources
 

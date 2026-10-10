@@ -117,6 +117,20 @@ Le devcontainer hérite automatiquement de la timezone du système hôte :
 - **Montage /etc/timezone** : Configuration système Linux
 - **Montage /etc/localtime** : Fichier de timezone binaire utilisé par le système
 
+### Configuration Claude Code
+
+Le projet généré contient un dossier `.claude/` :
+
+- `commands/` : commandes slash du projet (`fix-issue`, `stocke-memoire`)
+- `settings.json` : active le plugin `mattpocock-skills@claude-plugins-official` via la clé `enabledPlugins`. Comme le dit la [doc Claude Code](https://code.claude.com/docs/en/plugins/install#choose-an-install-scope), ce réglage active le plugin pour le dépôt mais ne le télécharge pas : chaque utilisateur l'installe une fois via `/plugins` (la CLI `claude` n'est pas présente dans le conteneur, donc `postCreateCommand.sh` ne peut pas s'en charger).
+
+La configuration que lisent ces skills est pré-remplie, ce qui évite de lancer `/setup-matt-pocock-skills` :
+
+- `docs/agents/issue-tracker.md` : issues GitHub dans `{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}`
+- `docs/agents/triage-labels.md` : les 5 labels de triage par défaut
+- `docs/agents/domain.md` : documentation du domaine à contexte unique
+- section `## Agent skills` du `CLAUDE.md` généré, qui pointe vers ces trois fichiers
+
 ## Choix technologiques
 
 ### uv vs pip/poetry/pipenv

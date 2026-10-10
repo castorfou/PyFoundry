@@ -1,5 +1,10 @@
 """Tests de génération du template PyFoundry."""
 
+import json
+
+
+MATTPOCOCK_PLUGIN = "mattpocock-skills@claude-plugins-official"
+
 
 def test_template_generates_successfully(cookies, default_template_context):
     """Test que le template se génère sans erreur."""
@@ -255,6 +260,87 @@ def test_claude_directory_structure(cookies, minimal_template_context):
 
     assert fix_issue_cmd.exists(), "/fix-issue command should be created"
     assert stocke_memoire_cmd.exists(), "/stocke-memoire command should be created"
+
+
+def test_claude_settings_json_created(cookies, minimal_template_context):
+    """Test que .claude/settings.json est créé et contient du JSON valide."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    settings_path = result.project_path / ".claude" / "settings.json"
+    assert settings_path.exists(), ".claude/settings.json should be created"
+
+    settings = json.loads(settings_path.read_text())
+    assert isinstance(settings, dict), ".claude/settings.json should be a JSON object"
+
+
+def test_mattpocock_skills_plugin_enabled(cookies, minimal_template_context):
+    """Test que le plugin mattpocock-skills est activé dans .claude/settings.json."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    settings_path = result.project_path / ".claude" / "settings.json"
+    settings = json.loads(settings_path.read_text())
+
+    assert settings.get("enabledPlugins", {}).get(MATTPOCOCK_PLUGIN) is True, (
+        f"{MATTPOCOCK_PLUGIN} should be enabled in .claude/settings.json"
+    )
+
+
+def test_claude_md_mentions_mattpocock_skills(cookies, minimal_template_context):
+    """Test que CLAUDE.md explique l'étape /setup-matt-pocock-skills."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    content = (result.project_path / "CLAUDE.md").read_text()
+    assert "setup-matt-pocock-skills" in content, (
+        "CLAUDE.md should document the /setup-matt-pocock-skills step"
+    )
+
+
+def test_agent_skills_docs_created(cookies, minimal_template_context):
+    """Test que docs/agents/ est pré-rempli pour les skills Matt Pocock."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    agents_dir = result.project_path / "docs" / "agents"
+    for name in ("issue-tracker.md", "triage-labels.md", "domain.md"):
+        assert (agents_dir / name).exists(), f"docs/agents/{name} should be created"
+
+
+def test_agent_skills_issue_tracker_points_to_github_repo(
+    cookies, default_template_context
+):
+    """Test que l'issue tracker pré-rempli pointe vers le dépôt GitHub du projet."""
+    result = cookies.bake(extra_context=default_template_context)
+
+    content = (result.project_path / "docs" / "agents" / "issue-tracker.md").read_text()
+    repo = (
+        f"{default_template_context['github_username']}/"
+        f"{default_template_context['project_slug']}"
+    )
+    assert repo in content, f"issue-tracker.md should reference {repo}"
+
+
+def test_claude_md_has_agent_skills_section(cookies, minimal_template_context):
+    """Test que CLAUDE.md contient la section ## Agent skills pré-remplie."""
+    result = cookies.bake(extra_context=minimal_template_context)
+
+    content = (result.project_path / "CLAUDE.md").read_text()
+    assert "## Agent skills" in content, "CLAUDE.md should have an Agent skills section"
+    for name in ("issue-tracker.md", "triage-labels.md", "domain.md"):
+        assert f"docs/agents/{name}" in content, f"CLAUDE.md should point to {name}"
+
+
+def test_claude_cheatsheet_documents_mattpocock_install(
+    cookies, default_template_context
+):
+    """Test que la cheatsheet Claude du projet généré explique l'installation."""
+    result = cookies.bake(extra_context=default_template_context)
+
+    content = (result.project_path / "docs" / "cheatsheets" / "claude.md").read_text()
+    assert "Install for this project" in content, (
+        "claude.md cheatsheet should document the mattpocock-skills install"
+    )
+    assert "test-user/test-project" in content, (
+        "claude.md cheatsheet should reference the generated GitHub repo"
+    )
 
 
 def test_claude_code_extension_in_devcontainer(cookies, minimal_template_context):

@@ -19,7 +19,8 @@
 ```
 .
 ├── .claude/                # Configuration Claude Code
-│   └── commands/          # Commandes slash personnalisées
+│   ├── commands/          # Commandes slash personnalisées
+│   └── settings.json      # Plugins activés (mattpocock-skills)
 ├── .devcontainer/          # Configuration du dev container
 ├── .github/workflows/      # CI/CD GitHub Actions
 ├── data/
@@ -29,6 +30,7 @@
 │   ├── index.md           # Page d'accueil de la documentation
 │   ├── user/              # Documentation utilisateur
 │   ├── dev/               # Documentation développeur
+│   ├── agents/            # Config des skills Matt Pocock (issues, labels, domaine)
 │   └── claude/
 │       └── memory/        # Mémoire projet (décisions, apprentissages)
 ├── notebooks/             # Notebooks Jupyter pour l'exploration
@@ -244,6 +246,20 @@ Ce dossier sert à conserver une trace des décisions importantes, apprentissage
 
 Cette mémoire aide Claude Code à maintenir la cohérence du projet au fil du temps.
 
+### Skills Matt Pocock
+
+Le plugin [mattpocock-skills](https://github.com/mattpocock/skills) est activé dans `.claude/settings.json`. Ce réglage active le plugin pour le dépôt mais ne le télécharge pas : chaque utilisateur doit l'installer une fois sur sa machine. Dans VS Code : `/plugins` → onglet **Plugins** → rechercher `mattpocock-skills` → **Install** → **Install for this project**.
+
+La configuration attendue par les skills d'ingénierie est déjà pré-remplie (voir [Agent skills](#agent-skills)) : issues sur GitHub, labels de triage par défaut, documentation du domaine à contexte unique. Pour changer ces choix (par exemple passer à GitLab), modifie directement `docs/agents/*.md` ou relance `/setup-matt-pocock-skills`.
+
+Skills les plus utiles :
+
+- `/grill-me`, `/grill-with-docs` : Claude te pose des questions pour clarifier un besoin avant d'écrire du code
+- `/to-spec`, `/to-tickets` : transformer une discussion en spécification, puis en issues
+- `/tdd` : boucle RED → GREEN → REFACTOR
+- `/triage` : trier les issues GitHub à l'aide des labels
+- `/diagnosing-bugs` : enquêter méthodiquement sur un bug
+
 ## Workflow de Développement
 
 ### Cycle typique de développement avec Claude Code
@@ -302,6 +318,20 @@ uv run mkdocs serve
 # Construire la documentation
 uv run mkdocs build --strict
 ```
+
+## Agent skills
+
+### Issue tracker
+
+Les issues sont suivies dans GitHub Issues (`{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}`), via la CLI `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Labels par défaut : `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Contexte unique : `CONTEXT.md` et `docs/adr/` à la racine, créés au besoin. See `docs/agents/domain.md`.
 
 ## Ressources
 - Dépôt GitHub: https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}

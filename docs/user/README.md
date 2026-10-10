@@ -17,7 +17,7 @@ Voici les types de guides disponibles :
 - Mkdocs : lancement, navigation, formats
 - Modification env python (uv)
 - Installation applications dans devcontainer (apt)
-- Gitlab : CI/CD et CLI
+- GitHub : CI/CD et CLI
 - Docker
 - Autres fonctionnalités
 - Options du template : gpu, docker-in-docker, claude code
