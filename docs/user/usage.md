@@ -217,7 +217,7 @@ Le projet inclut un repertoire `.github/workflows` pré-configuré. Dès le prem
 
 Le pipeline est visible sous **Actions** sur la page du projet GitHub.
 
-### CLI GitLab (`gh`)
+### CLI GitHub (`gh`)
 
 `gh` est installé dans le conteneur. Commandes utiles au quotidien :
 
