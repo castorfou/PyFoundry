@@ -27,3 +27,37 @@ ssh -L 0.0.0.0:11434:localhost:8000 f279814@CARISSEXPLOREI40 -N
 ## passage à la ligne dans claude code
 
 Se fait avec `Alt-Entrée`
+
+## skills Matt Pocock
+
+Le plugin [mattpocock-skills](https://github.com/mattpocock/skills) est activé dans `.claude/settings.json`, aussi bien dans PyFoundry que dans les projets générés :
+
+```json
+{
+  "enabledPlugins": {
+    "mattpocock-skills@claude-plugins-official": true
+  }
+}
+```
+
+Ce réglage active le plugin pour le dépôt mais ne le télécharge pas : chaque utilisateur doit l'installer une fois sur sa machine. Dans VS Code : `/plugins` → onglet **Plugins** → rechercher `mattpocock-skills` → **Install** → **Install for this project**.
+
+### configuration
+
+Les skills d'ingénierie lisent leur configuration dans `docs/agents/` (suivi des issues, labels de triage, documentation du domaine), référencée par la section `## Agent skills` du `CLAUDE.md`.
+
+Dans un projet généré par PyFoundry, cette configuration est déjà pré-remplie : issues dans GitHub (`<github_username>/<project_slug>`), labels par défaut, contexte unique. Pour la changer, modifie `docs/agents/*.md` ou relance :
+
+```text
+/setup-matt-pocock-skills
+```
+
+### skills principaux
+
+| Skill | Usage |
+|-------|-------|
+| `/grill-me`, `/grill-with-docs` | Claude pose des questions pour clarifier un besoin avant de coder |
+| `/to-spec`, `/to-tickets` | transformer une discussion en spécification, puis en issues |
+| `/tdd` | boucle RED → GREEN → REFACTOR |
+| `/triage` | trier les issues GitHub à l'aide des labels |
+| `/diagnosing-bugs` | enquêter méthodiquement sur un bug |

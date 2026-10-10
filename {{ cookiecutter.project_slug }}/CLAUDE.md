@@ -30,6 +30,7 @@
 │   ├── index.md           # Page d'accueil de la documentation
 │   ├── user/              # Documentation utilisateur
 │   ├── dev/               # Documentation développeur
+│   ├── agents/            # Config des skills Matt Pocock (issues, labels, domaine)
 │   └── claude/
 │       └── memory/        # Mémoire projet (décisions, apprentissages)
 ├── notebooks/             # Notebooks Jupyter pour l'exploration
@@ -247,9 +248,9 @@ Cette mémoire aide Claude Code à maintenir la cohérence du projet au fil du t
 
 ### Skills Matt Pocock
 
-Le plugin [mattpocock-skills](https://github.com/mattpocock/skills) est activé dans `.claude/settings.json`. À l'ouverture du projet, Claude Code propose de l'installer ; il se met ensuite à jour tout seul.
+Le plugin [mattpocock-skills](https://github.com/mattpocock/skills) est activé dans `.claude/settings.json`. Ce réglage active le plugin pour le dépôt mais ne le télécharge pas : chaque utilisateur doit l'installer une fois sur sa machine. Dans VS Code : `/plugins` → onglet **Plugins** → rechercher `mattpocock-skills` → **Install** → **Install for this project**.
 
-Avant d'utiliser les skills d'ingénierie, lance une fois `/setup-matt-pocock-skills`. Il demande où sont suivies les issues, quels labels de triage utiliser et où ranger la documentation du domaine, puis écrit ces réponses dans `docs/agents/` et dans ce fichier.
+La configuration attendue par les skills d'ingénierie est déjà pré-remplie (voir [Agent skills](#agent-skills)) : issues sur GitHub, labels de triage par défaut, documentation du domaine à contexte unique. Pour changer ces choix (par exemple passer à GitLab), modifie directement `docs/agents/*.md` ou relance `/setup-matt-pocock-skills`.
 
 Skills les plus utiles :
 
@@ -317,6 +318,20 @@ uv run mkdocs serve
 # Construire la documentation
 uv run mkdocs build --strict
 ```
+
+## Agent skills
+
+### Issue tracker
+
+Les issues sont suivies dans GitHub Issues (`{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}`), via la CLI `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Labels par défaut : `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Contexte unique : `CONTEXT.md` et `docs/adr/` à la racine, créés au besoin. See `docs/agents/domain.md`.
 
 ## Ressources
 - Dépôt GitHub: https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}

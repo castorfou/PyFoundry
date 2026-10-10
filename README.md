@@ -49,6 +49,7 @@ cruft update
 - **Mise à jour facile** : Template évolutif avec cruft
 - **Prise en compte du GPU** : [config](/user/installation/#options-de-configuration)
 - **Docker in docker** : [config](/user/installation/#options-de-configuration)
+- **Skills Matt Pocock pour Claude Code** : plugin activé par défaut ([cheatsheet](/cheatsheets/claude/#skills-matt-pocock))
 - **Claude code local llm** : [lancement](/cheatsheets/claude/#lancement-avec-un-modele-local)
 - **Excalidraw** : pour dessiner des schémas
 - **Thème vscode Catpuccin**

@@ -66,7 +66,7 @@ Le premier build prend quelques minutes. Le script `postCreateCommand.sh` :
 
 - crée l'environnement Python dans `/home/vscode/.venv` via `uv`
 - installe toutes les dépendances du projet en les récupérant depuis `pyproject.toml`
-- configure `pre-commit`, `zsh`, `glab`, Git
+- configure `pre-commit`, `zsh`, `gh` (GitHub CLI), Git
 - initialise le dépôt Git local avec un premier commit
 
 ### Vérifier que tout fonctionne
@@ -79,6 +79,14 @@ uv run --active mkdocs build
 ```
 
 Les deux commandes doivent passer sans erreur.
+
+### Activer les skills Claude Code
+
+Le plugin `mattpocock-skills` est activé dans `.claude/settings.json`, mais Claude Code ne le télécharge pas tout seul. Installe-le une fois dans le panneau Claude Code de VS Code : `/plugins` → onglet **Plugins** → rechercher `mattpocock-skills` → **Install** → **Install for this project**.
+
+Rien d'autre à faire : la configuration attendue par les skills est déjà pré-remplie dans `docs/agents/` et dans la section `## Agent skills` du `CLAUDE.md` (issues sur GitHub, labels de triage par défaut). Pour changer ces choix, par exemple passer à GitLab, modifie `docs/agents/*.md` ou lance `/setup-matt-pocock-skills`.
+
+Voir la [cheatsheet Claude](../cheatsheets/claude.md#skills-matt-pocock) pour la liste des skills.
 
 ### Integration github automatique
 
