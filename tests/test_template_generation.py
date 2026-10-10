@@ -328,6 +328,21 @@ def test_claude_md_has_agent_skills_section(cookies, minimal_template_context):
         assert f"docs/agents/{name}" in content, f"CLAUDE.md should point to {name}"
 
 
+def test_claude_cheatsheet_documents_mattpocock_install(
+    cookies, default_template_context
+):
+    """Test que la cheatsheet Claude du projet généré explique l'installation."""
+    result = cookies.bake(extra_context=default_template_context)
+
+    content = (result.project_path / "docs" / "cheatsheets" / "claude.md").read_text()
+    assert "Install for this project" in content, (
+        "claude.md cheatsheet should document the mattpocock-skills install"
+    )
+    assert "test-user/test-project" in content, (
+        "claude.md cheatsheet should reference the generated GitHub repo"
+    )
+
+
 def test_claude_code_extension_in_devcontainer(cookies, minimal_template_context):
     """Test que l'extension Claude Code est configurée dans le devcontainer."""
     result = cookies.bake(extra_context=minimal_template_context)
