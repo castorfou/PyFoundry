@@ -28,6 +28,9 @@ update_system() {
 
     sudo apt-get update -qq
 
+    # xclip : accès au presse-papiers (tests de config git, cf. issue #64)
+    sudo apt-get install -y -qq xclip
+
     # Options dpkg pour éviter les prompts de configuration
     sudo apt-get -y -qq -o Dpkg::Options::="--force-confdef" \
         -o Dpkg::Options::="--force-confnew" upgrade || {
