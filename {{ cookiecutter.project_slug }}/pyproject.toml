@@ -20,7 +20,7 @@ classifiers = [
 
 dependencies = [
     "ipykernel",
-    "ipywidgets", 
+    "ipywidgets",
     "python-dotenv",
     "gitpython",
     "pandas",
@@ -44,7 +44,7 @@ dev = [
     "mkdocs-awesome-nav",
     "pymdown-extensions",
     "mkdocs-rtd-dropdown",
-    "nbdev>=2.4.6"    
+    "nbdev>=2.4.6"
 ]
 
 [project.urls]
@@ -104,7 +104,7 @@ line-length = 88
 # Fichiers à exclure
 extend-exclude = [
     "data/*",
-    "models/*", 
+    "models/*",
     "logs/*",
     ".jupyter/*",
 ]
@@ -157,7 +157,7 @@ warn_unreachable = true
 
 # Configuration stricte progressive
 disallow_any_generics = false        # Autorisé au début
-disallow_untyped_calls = false       # Autorisé au début  
+disallow_untyped_calls = false       # Autorisé au début
 disallow_untyped_defs = false        # Autorisé au début
 disallow_incomplete_defs = true      # Fonctions partiellement typées interdites
 disallow_untyped_decorators = false  # Autorisé au début
@@ -172,7 +172,7 @@ follow_imports = "normal"
 [[tool.mypy.overrides]]
 module = [
     "matplotlib.*",
-    "seaborn.*", 
+    "seaborn.*",
     "sklearn.*",
     "scipy.*",
     "plotly.*",
@@ -185,7 +185,7 @@ module = "notebooks.*"
 ignore_errors = true
 
 # Configuration tests
-[[tool.mypy.overrides]] 
+[[tool.mypy.overrides]]
 module = [
     "tests.*",
     "pytest",

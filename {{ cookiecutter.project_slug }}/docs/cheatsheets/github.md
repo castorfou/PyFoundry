@@ -56,7 +56,7 @@ Full example session:
 ? Upload your SSH public key to your GitHub account? /home/vscode/.ssh/id_rsa.pub
 ? How would you like to authenticate GitHub CLI? Login with a web browser
 ! First copy your one-time code: F8B2-D97A
-Press Enter to open https://github.com/login/device in your browser... 
+Press Enter to open https://github.com/login/device in your browser...
 ✓ Logged in as <USER>
 ```
 
