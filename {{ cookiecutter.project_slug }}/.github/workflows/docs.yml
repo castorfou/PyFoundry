@@ -16,7 +16,7 @@ on:
       - '.github/workflows/docs.yml'
       - 'pyproject.toml'
       - 'README.md'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch: # Déploiement manuel, depuis n'importe quelle branche
 
 permissions:
   contents: read
@@ -53,18 +53,18 @@ jobs:
         run: uv run mkdocs build --strict
 
       - name: 📋 Setup Pages
-        if: {% raw %}github.ref == 'refs/heads/main'{% endraw %}
+        if: {% raw %}github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'{% endraw %}
         uses: actions/configure-pages@v4
 
       - name: 📤 Upload artifact
-        if: {% raw %}github.ref == 'refs/heads/main'{% endraw %}
+        if: {% raw %}github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'{% endraw %}
         uses: actions/upload-pages-artifact@v3
         with:
           path: './site'
 
   deploy:
     name: 🚀 Deploy to GitHub Pages
-    if: {% raw %}github.ref == 'refs/heads/main'{% endraw %}
+    if: {% raw %}github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'{% endraw %}
     environment:
       name: github-pages
       url: {% raw %}${{ steps.deployment.outputs.page_url }}{% endraw %}

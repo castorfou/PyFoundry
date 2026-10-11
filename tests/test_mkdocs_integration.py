@@ -1,8 +1,14 @@
 """Tests pour l'intégration de MkDocs dans le projet généré."""
 
+import re
 import subprocess
+from pathlib import Path
+from typing import Any
 
 import pytest
+import yaml
+
+from tests.devcontainer_utils import REPO_ROOT
 
 
 def test_mkdocs_yml_created(cookies, minimal_template_context):
@@ -163,6 +169,7 @@ def test_mkdocs_can_build(cookies, minimal_template_context):
     try:
         build_result = subprocess.run(
             ["mkdocs", "build", "--strict"],
+            check=False,
             cwd=result.project_path,
             capture_output=True,
             text=True,
@@ -205,3 +212,79 @@ def test_project_name_in_mkdocs_yml(cookies):
 
     # Le nom du projet devrait apparaître dans site_name
     assert "My Awesome Project" in content or "my-awesome-project" in content
+
+
+# Déploiement manuel GitHub Pages depuis une branche (issue #63)
+
+FEATURE_BRANCH = "refs/heads/feature-x"
+MAIN_BRANCH = "refs/heads/main"
+PULL_REQUEST_REF = "refs/pull/1/merge"
+DEPLOY_STEPS = ["📋 Setup Pages", "📤 Upload artifact"]
+
+
+@pytest.fixture(params=["repo", "generated"])
+def docs_workflow(
+    request: pytest.FixtureRequest,
+    cookies: Any,
+    minimal_template_context: dict[str, str],
+) -> dict[Any, Any]:
+    """Workflow docs.yml du dépôt PyFoundry ou d'un projet généré."""
+    if request.param == "repo":
+        root = REPO_ROOT
+    else:
+        result = cookies.bake(extra_context=minimal_template_context)
+        assert result.exit_code == 0
+        root = Path(result.project_path)
+    path = root / ".github" / "workflows" / "docs.yml"
+    workflow: dict[Any, Any] = yaml.safe_load(path.read_text())
+    return workflow
+
+
+def evaluate_if(condition: str | None, event_name: str, ref: str) -> bool:
+    """Évalue une expression `if` GitHub Actions simple (==, ||, &&)."""
+    if condition is None:
+        return True
+    context = {"github.event_name": event_name, "github.ref": ref}
+    expression = re.sub(
+        r"github\.[a-z_]+",
+        lambda match: repr(context[match.group(0)]),
+        condition.replace("${{", "").replace("}}", ""),
+    )
+    expression = expression.replace("||", " or ").replace("&&", " and ")
+    return bool(eval(expression, {"__builtins__": {}}))
+
+
+def deploy_conditions(workflow: dict[Any, Any]) -> dict[str, str | None]:
+    """Conditions des étapes de publication et du job deploy."""
+    steps = {
+        step["name"]: step.get("if") for step in workflow["jobs"]["build"]["steps"]
+    }
+    conditions = {name: steps[name] for name in DEPLOY_STEPS}
+    conditions["deploy"] = workflow["jobs"]["deploy"].get("if")
+    return conditions
+
+
+def test_docs_workflow_can_be_triggered_manually(docs_workflow):
+    triggers = docs_workflow.get("on", docs_workflow.get(True))
+
+    assert "workflow_dispatch" in triggers
+
+
+@pytest.mark.parametrize(
+    ("event_name", "ref", "deployed"),
+    [
+        ("push", MAIN_BRANCH, True),
+        ("workflow_dispatch", MAIN_BRANCH, True),
+        ("workflow_dispatch", FEATURE_BRANCH, True),
+        ("pull_request", PULL_REQUEST_REF, False),
+    ],
+)
+def test_docs_workflow_deploys_only_from_main_or_manual_run(
+    docs_workflow, event_name, ref, deployed
+):
+    conditions = deploy_conditions(docs_workflow)
+
+    assert {
+        name: evaluate_if(condition, event_name, ref)
+        for name, condition in conditions.items()
+    } == dict.fromkeys(conditions, deployed)

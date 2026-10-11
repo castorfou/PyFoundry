@@ -220,6 +220,60 @@ La configuration MkDocs du projet active :
 - **Mode clair / sombre** : bascule dans le header
 - **Dates Git** : chaque page affiche la date de dernière modification (depuis l'historique Git)
 
+### Publier la doc d'une branche sur GitHub Pages
+
+À chaque push sur `main`, la doc est publiée automatiquement. Pour publier celle d'une autre branche, par exemple pour relire un chantier en cours dans son rendu final, on lance le workflow à la main. Il faut d'abord l'autoriser, une seule fois par projet.
+
+#### Autoriser les branches (une fois par projet)
+
+Quand GitHub Pages utilise la source « GitHub Actions », GitHub crée l'environnement `github-pages`. Par défaut, cet environnement n'accepte que les déploiements depuis la branche par défaut. Ce réglage appartient au dépôt GitHub et ne figure dans aucun fichier du projet : il faut l'ouvrir aux autres branches.
+
+=== "Interface GitHub"
+
+    1. Sur la page du projet : **Settings → Environments → github-pages**.
+    2. Dans **Deployment branches and tags**, cliquez sur **Add deployment branch or tag rule**.
+    3. Gardez **Ref type : Branch**, saisissez le motif `*`, puis **Add rule**.
+
+=== "CLI `gh`"
+
+    ```bash
+    # Autoriser toutes les branches à déployer sur GitHub Pages
+    gh api -X POST "repos/{owner}/{repo}/environments/github-pages/deployment-branch-policies" -f name='*'
+
+    # Vérifier : la liste doit contenir *
+    gh api "repos/{owner}/{repo}/environments/github-pages/deployment-branch-policies" --jq '.branch_policies[].name'
+    ```
+
+    Copiez ces commandes telles quelles, sans remplacer `{owner}` ni `{repo}` : lancées depuis le dossier du projet, `gh` les remplace lui-même par le propriétaire et le nom du dépôt courant. Une réponse `Not Found (HTTP 404)` signale le plus souvent un propriétaire ou un nom de dépôt mal saisi.
+
+!!! tip "Limiter les branches autorisées"
+    Le motif `*` autorise toutes les branches. Pour n'en autoriser qu'une partie, utilisez un motif plus restreint, par exemple `docs/*`. Dans tous les cas, seules les personnes ayant les droits d'écriture sur le dépôt peuvent lancer le workflow.
+
+#### Publier une branche
+
+=== "Interface GitHub"
+
+    **Actions → 📚 Deploy Documentation → Run workflow**, choisissez la branche dans **Use workflow from**, puis **Run workflow**.
+
+=== "CLI `gh`"
+
+    ```bash
+    gh workflow run docs.yml --ref ma-branche
+    gh run watch   # suivre l'exécution
+    ```
+
+La doc publiée est visible à l'adresse habituelle du projet, `https://<utilisateur>.github.io/<projet>`.
+
+!!! warning "Une seule doc en ligne à la fois"
+    GitHub Pages n'héberge qu'un site par dépôt : la doc de la branche remplace celle de `main`. Elle y reste jusqu'au prochain déploiement depuis `main`, automatique au prochain push touchant `docs/` ou `mkdocs.yml`, ou manuel :
+
+    ```bash
+    gh workflow run docs.yml --ref main
+    ```
+
+!!! note "Projets créés avant PyFoundry 0.4.0"
+    Le déploiement depuis une branche demande la version à jour de `.github/workflows/docs.yml`. Récupérez-la avec `cruft update` (voir [Mise à jour vers la dernière version du template](#mise-a-jour-vers-la-derniere-version-du-template)).
+
 ---
 
 ## Environnement Python avec `uv`
@@ -310,7 +364,7 @@ Puis reconstruire le conteneur (`Ctrl+Shift+P` → `Dev Containers: Rebuild Cont
 
 Le projet inclut un repertoire `.github/workflows` pré-configuré. Dès le premier `git push`, GitHub déclenche un pipeline :
 
-- 📚 Deploy Documentation : (docs.yml) — build MkDocs strict et déploiement automatique sur GitHub Pages à chaque push sur main touchant docs/ ou mkdocs.yml.
+- 📚 Deploy Documentation : (docs.yml) — build MkDocs strict et déploiement automatique sur GitHub Pages à chaque push sur main touchant docs/ ou mkdocs.yml. Peut aussi être lancé à la main pour publier la doc d'une autre branche (voir [Publier la doc d'une branche sur GitHub Pages](#publier-la-doc-dune-branche-sur-github-pages)).
 - 🚀 Release Automation : (release.yml) — déclenché sur un tag v*.*.* : réexécute les tests, génère des release notes automatiques depuis le git log, et publie une GitHub Release (stable ou pre-release selon le format du tag).
 - 🧪 Test Template : (test-template.yml) — déclenché sur toutes les branches : lint ruff, pre-commit hooks, génération du projet via cruft et validation sur Python 3.11 et 3.12.
 

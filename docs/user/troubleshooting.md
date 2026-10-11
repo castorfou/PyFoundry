@@ -368,6 +368,16 @@ Le script `scripts/update_mkdocs_repo_url.sh` s'exécute au démarrage du conten
 ./scripts/update_mkdocs_repo_url.sh
 ```
 
+### Déploiement refusé : `not allowed to deploy to github-pages`
+
+Le workflow lancé à la main depuis une branche échoue au job `deploy` avec :
+
+```
+Branch "ma-branche" is not allowed to deploy to github-pages due to environment protection rules.
+```
+
+L'environnement `github-pages` du dépôt n'autorise que la branche par défaut. Ajoutez une règle de branche, une fois par projet : voir [Publier la doc d'une branche sur GitHub Pages](usage.md#autoriser-les-branches-une-fois-par-projet).
+
 ### Le serveur local ne détecte pas les changements
 
 `mkdocs serve` recharge automatiquement sur modification d'un `.md`. Si ça ne fonctionne pas :

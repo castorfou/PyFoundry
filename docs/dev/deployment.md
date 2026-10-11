@@ -183,6 +183,18 @@ gh api repos/:owner/PyFoundry \
 gh workflow run docs.yml
 ```
 
+### Publier la doc d'une branche
+
+Le workflow `docs.yml` lancé à la main (`workflow_dispatch`) publie la doc de la branche choisie :
+
+```bash
+gh workflow run docs.yml --ref ma-branche
+```
+
+Les étapes de publication (`Setup Pages`, `Upload artifact`, job `deploy`) tournent sur `main` ou sur un lancement manuel, jamais sur une pull request. Le dépôt PyFoundry et le projet généré partagent ce comportement, vérifié par `tests/test_mkdocs_integration.py`.
+
+L'environnement GitHub `github-pages` doit autoriser la branche. Sinon le job `deploy` échoue avec `not allowed to deploy to github-pages due to environment protection rules`. La procédure (une fois par dépôt) est décrite dans le [guide d'utilisation](../user/usage.md#publier-la-doc-dune-branche-sur-github-pages).
+
 ## Ressources
 
 - [GitHub CLI Manual](https://cli.github.com/manual/)
