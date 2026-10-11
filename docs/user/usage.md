@@ -48,7 +48,7 @@ cruft update --variables-to-update-file .cruft.json
 
 ### Passer au HOME persistant
 
-Le template stocke désormais le HOME du conteneur (`/home/vscode`) sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Il survit aux rebuilds : connexion Claude Code, connexion `gh`, historique du shell, `~/.gitconfig`.
+Le template stocke désormais le HOME du conteneur (`/home/vscode`) sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Il survit aux rebuilds : connexion Claude Code, historique du shell, `~/.gitconfig`. La connexion `gh` est stockée à part, dans `~/.config/gh-devcontainers` sur l'hôte, partagé par tous les devcontainers.
 
 Cette section concerne les projets générés avant ce changement. Si `cruft diff` montre l'ajout de la ligne `target=/home/vscode` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
 
@@ -302,9 +302,11 @@ Le pipeline est visible sous **Actions** sur la page du projet GitHub.
 # vérifier l'état de l'authentification
 gh auth status
 
-# le cas échéant
-gh auth login
+# le cas échéant, depuis un terminal VS Code (le navigateur de l'hôte s'ouvre)
+gh auth login --web
 ```
+
+L'authentification est stockée dans `~/.config/gh`, partagé par tous les devcontainers PyFoundry : une seule connexion suffit pour tous vos projets.
 
 Et quand l'authentification est active :
 

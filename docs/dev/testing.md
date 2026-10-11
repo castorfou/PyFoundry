@@ -140,6 +140,17 @@ cookiecutter /workspaces/PyFoundry --no-input
 cd mon-projet-data-science && git init -q && git add -A && pre-commit run --all-files
 ```
 
+### Tester l'authentification GitHub
+
+`tests/test_github_auth.py` couvre le dépôt et les projets générés (défaut et `docker_in_docker=y`) :
+
+- le montage `~/.config/gh-devcontainers` → `/home/vscode/.config/gh` ; `initializeCommand` crée la source en `700` et crée `.config` dans le HOME persistant ;
+- `postCreateCommand.sh` ne contient pas `gh auth login`, et `config_zsh` ajoute le hook `gh_login.sh` à `.zshrc` ;
+- `setup_gh_credential_helper` est exécuté dans un dépôt temporaire, avec un faux `gh` puis sans `gh` ;
+- `gh_login.sh` est exécuté avec un faux `gh` qui journalise ses appels (`FAKE_GH_LOG`) et un marqueur dans `tmp_path` (`GH_LOGIN_MARKER`). Le test vérifie que le script reste silencieux si un token existe, sans appel à `gh auth status` ; qu'il lance un login `--web` une seule fois par conteneur ; qu'il sort en `0` quand le login échoue ou que `gh` est absent.
+
+Le parcours réel se vérifie sur l'hôte : générer un projet, le rebuild, ouvrir un terminal (le navigateur de l'hôte s'ouvre), puis rebuild à nouveau : `gh auth status` doit rester connecté.
+
 ### Tester le HOME persistant
 
 Les tests automatisés couvrent la configuration :
@@ -150,7 +161,7 @@ Les tests automatisés couvrent la configuration :
 Le comportement réel ne se vérifie que sur l'hôte. Après un rebuild du conteneur :
 
 ```bash
-mount | grep /home/vscode   # HOME, .ssh (ro), .cache/pre-commit, .cache/uv
+mount | grep /home/vscode   # HOME, .ssh (ro), .cache/pre-commit, .config/gh, .cache/uv
 echo $VIRTUAL_ENV           # /tmp/venv
 ```
 

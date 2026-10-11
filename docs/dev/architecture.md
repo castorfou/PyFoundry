@@ -126,22 +126,31 @@ Le HOME du conteneur (`/home/vscode`) est un bind mount d'un dossier de l'hôte 
 "mounts": [
     "source=${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId},target=/home/vscode,type=bind",
     "source=${localEnv:HOME}/.cache/pre-commit-devcontainers,target=/home/vscode/.cache/pre-commit,type=bind",
+    "source=${localEnv:HOME}/.config/gh-devcontainers,target=/home/vscode/.config/gh,type=bind",
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
     "source=${localEnv:HOME}/.cache/uv,target=/home/vscode/.cache/uv,type=bind,consistency=cached"
 ]
 ```
 
-La connexion Claude Code (`~/.claude`, `~/.claude.json`), la connexion `gh`, l'historique du shell et `~/.vscode-server` survivent ainsi aux rebuilds. Les caches pre-commit et uv sont partagés entre tous les devcontainers de l'hôte.
+La connexion Claude Code (`~/.claude`, `~/.claude.json`), l'historique du shell et `~/.vscode-server` survivent ainsi aux rebuilds. Les caches pre-commit et uv, ainsi que la config `gh` (connexion GitHub), sont partagés entre tous les devcontainers de l'hôte. Voir [Authentification GitHub](#authentification-github).
 
 Trois mécanismes complètent le montage :
 
-- **`initializeCommand`**, exécuté sur l'hôte avant le montage, crée les dossiers sources (dont `.cache` dans le HOME, pour que Docker ne crée pas les points de montage imbriqués en root) puis lance `.devcontainer/scripts/check_mounts.sh --host`. Ce script lit les `mounts` de `devcontainer.json`, résout `${localEnv:HOME}`, `${localWorkspaceFolderBasename}` et `${devcontainerId}`, signale chaque source absente avec la commande pour la créer, et contrôle les permissions de `~/.ssh`. Il sort en erreur si un montage est invalide.
+- **`initializeCommand`**, exécuté sur l'hôte avant le montage, crée les dossiers sources (dont `.cache` et `.config` dans le HOME, pour que Docker ne crée pas les points de montage imbriqués en root ; `~/.ssh` et `~/.config/gh-devcontainers` en `700`) puis lance `.devcontainer/scripts/check_mounts.sh --host`. Ce script lit les `mounts` de `devcontainer.json`, résout `${localEnv:HOME}`, `${localWorkspaceFolderBasename}` et `${devcontainerId}`, signale chaque source absente avec la commande pour la créer, et contrôle les permissions de `~/.ssh`. Il sort en erreur si un montage est invalide.
 - **`seed_home`** dans `postCreateCommand.sh` : le bind mount masque le HOME de l'image, donc `cp -rn /etc/skel/. "$HOME"` recopie `.bashrc`, `.profile`… sans écraser l'existant.
 - **Venv dans `/tmp/venv`** : il reste hors du HOME persistant et est recréé à chaque rebuild depuis `uv.lock`, ce qui évite de conserver un venv lié à une ancienne image Python.
 
 `~/.gitconfig` n'est plus monté : VS Code copie celui de l'hôte au démarrage.
 
 Le choix est détaillé dans l'ADR [0001 — HOME persistant](../adr/0001-persist-development-home.md).
+
+### Authentification GitHub
+
+`postCreateCommand.sh` ne lance pas `gh auth login`. Les commandes de cycle de vie (`postCreateCommand`, `postStartCommand`) tournent hors des terminaux VS Code, donc sans la variable `BROWSER` : `gh` ne pourrait pas ouvrir le navigateur, et le build attendrait l'utilisateur. Le conteneur n'ayant pas d'affichage graphique, la copie du code dans le presse-papiers échoue aussi, avec ou sans `xclip`.
+
+- **`setup_gh_credential_helper`** (dans `setup_github`) délègue l'authentification HTTPS de `github.com` à `gh`, en config Git locale au projet. Il est configuré même sans token, car celui-ci peut arriver plus tard ou venir d'un autre devcontainer.
+- **`.devcontainer/scripts/gh_login.sh`** est appelé par `~/.zshrc`, donc seulement dans les shells interactifs. S'il manque un token, ce que vérifie `gh auth token` sans appel réseau, il lance `gh auth login --web`. Dans un terminal VS Code, `BROWSER` ouvre la page dans le navigateur de l'hôte. Un marqueur dans `/tmp` limite la proposition à une fois par conteneur, et le script sort toujours en `0`, pour ne jamais casser le shell.
+- **`~/.config/gh`** est monté depuis `~/.config/gh-devcontainers` sur l'hôte, comme le cache pre-commit : une seule connexion pour tous les devcontainers, qui survit aux rebuilds. Sans keyring dans le conteneur, le token y est stocké en clair, d'où la création du dossier en `700`.
 
 ### Configuration Claude Code
 

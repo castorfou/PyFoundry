@@ -36,6 +36,19 @@ chmod 600 ~/.ssh/id_ed25519
 
 Les clés publiques (`*.pub`) et `known_hosts` ne sont pas contrôlées.
 
+### `gh` n'est pas authentifié, ou le navigateur ne s'ouvre pas
+
+Le build ne lance pas `gh auth login` : la connexion est proposée à l'ouverture du premier terminal zsh, une seule fois par conteneur. Si vous l'avez interrompue, ou si Claude Code signale que `gh` n'est pas connecté juste après le premier build, ouvrez un terminal VS Code et lancez :
+
+```bash
+gh auth login --web
+```
+
+- **Le navigateur ne s'ouvre pas** (`Failed opening a web browser … xdg-open`) : la commande a été lancée hors d'un terminal VS Code, par exemple par un script de build ou par l'outil Bash de Claude Code. Seuls les terminaux VS Code reçoivent la variable `BROWSER`, qui ouvre l'URL dans le navigateur de l'hôte. À défaut, ouvrez `https://github.com/login/device` à la main.
+- **`Failed to copy one-time code to clipboard`** : c'est sans conséquence, collez le code affiché à la main. Installer `xclip`, `xsel` ou `wl-clipboard` ne servirait à rien, car le conteneur n'a pas d'affichage graphique.
+
+L'authentification est partagée par tous les devcontainers PyFoundry (`~/.config/gh-devcontainers` sur l'hôte). Pour repartir de zéro, lancez `gh auth logout` dans un conteneur, ou supprimez ce dossier sur l'hôte.
+
 ### Repartir d'un HOME vierge
 
 Le HOME du conteneur est conservé sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Si une configuration y est cassée (shell, extension VS Code, connexion Claude Code), supprimez ce dossier puis reconstruisez le conteneur :

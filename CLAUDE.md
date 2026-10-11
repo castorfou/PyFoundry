@@ -28,7 +28,9 @@ PyFoundry/
 │   ├── commands/                        # Commandes slash (fix-issue, stocke-memoire)
 │   └── settings.json                    # Plugins activés (mattpocock-skills)
 ├── .devcontainer/                       # Environnement de dev pour travailler sur le template
-│   └── scripts/check_mounts.sh          # Vérification des montages (sur l'hôte, via initializeCommand)
+│   └── scripts/
+│       ├── check_mounts.sh              # Vérification des montages (sur l'hôte, via initializeCommand)
+│       └── gh_login.sh                  # Authentification gh au premier terminal zsh
 ├── .github/workflows/
 │   ├── test-template.yml                # CI : lint + tests sur toutes les branches
 │   ├── docs.yml                         # Déploiement documentation GitHub Pages
@@ -48,7 +50,8 @@ PyFoundry/
 │   ├── test_persistent_home.py          # HOME persistant, montages, venv /tmp/venv
 │   ├── test_check_mounts.py             # Script check_mounts.sh
 │   ├── test_post_create_command.py      # setup_pre-commit de postCreateCommand.sh
-│   └── test_timezone.py                 # Fuseau de l'hôte : montage, setup_timezone
+│   ├── test_timezone.py                 # Fuseau de l'hôte : montage, setup_timezone
+│   └── test_github_auth.py              # Authentification gh : montage partagé, gh_login.sh
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── cookiecutter.json                    # Variables du template
 ├── mkdocs.yml
@@ -219,6 +222,7 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 | `test_check_mounts.py` | `check_mounts.sh` : sources manquantes, résolution des variables, permissions `.ssh` |
 | `test_post_create_command.py` | `setup_pre-commit` : un rebuild ne commite que `.pre-commit-config.yaml`, jamais le travail en cours |
 | `test_timezone.py` | Fuseau de l'hôte monté sur `/etc/localtime.host` (jamais sur `/etc/localtime`, qui écraserait `Etc/UTC`), pas de `TZ` transmis (vide = UTC), `setup_timezone` relie `/etc/localtime` à la zone de même contenu |
+| `test_github_auth.py` | Config gh partagée entre devcontainers (`~/.config/gh-devcontainers`, créé en `700`), aucun `gh auth login` dans `postCreateCommand`, `setup_gh_credential_helper`, `gh_login.sh` (silencieux si authentifié, sans réseau, une seule tentative par conteneur, jamais d'échec du shell) |
 
 ### CI/CD GitHub Actions
 

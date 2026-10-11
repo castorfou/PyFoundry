@@ -184,6 +184,16 @@ setup_pre-commit() {
 }
 
 
+# Git délègue l'authentification HTTPS GitHub à gh (config locale au projet).
+# Configuré même sans token : il peut venir plus tard ou d'un autre devcontainer,
+# la config gh étant partagée.
+setup_gh_credential_helper() {
+    command -v gh &> /dev/null || return 0
+    git config credential.helper ""
+    git config credential."https://github.com".helper "!gh auth git-credential"
+    echo "✅ Credential helper Git configuré (gh)"
+}
+
 # Configuration GitHub
 setup_github() {
     echo "Configuration GitHub..."
@@ -209,28 +219,14 @@ setup_github() {
         # Configuration automatique des upstream pour futures branches (local au projet)
         git config push.autoSetupRemote true
 
-        # Configuration de l'authentification GitHub avec gh CLI
+        # Authentification GitHub : pas de login interactif ici, le navigateur ne peut pas
+        # s'ouvrir. Elle est proposée au premier terminal zsh (scripts/gh_login.sh).
         if command -v gh &> /dev/null; then
-            echo "Configuration de l'authentification GitHub..."
-            if ! gh auth status &>/dev/null; then
-                echo "🔐 Authentification GitHub requise pour push/pull"
-                echo "Lancement de l'authentification..."
-                echo ""
-                echo "ℹ️  Note : Vous devrez appuyer sur Entrée pour 'ouvrir' le navigateur."
-                echo "   Le navigateur ne s'ouvrira pas (limitation devcontainer connue)."
-                echo "   → Entrez manuellement l'URL et le code dans votre navigateur host."
-                echo ""
-                gh auth login --git-protocol https --web
-
-                # Configuration du credential helper après authentification (local au projet)
-                if gh auth status &>/dev/null; then
-                    echo "Configuration du credential helper Git..."
-                    git config credential.helper ""
-                    git config credential."https://github.com".helper "!gh auth git-credential"
-                    echo "✅ Credential helper configuré"
-                fi
-            else
+            setup_gh_credential_helper
+            if gh auth token &>/dev/null; then
                 echo "✅ Déjà authentifié sur GitHub"
+            else
+                echo "🔐 Authentification GitHub : ouvrez un terminal, elle y sera proposée"
             fi
         fi
 
@@ -287,6 +283,9 @@ config_zsh() {
     ensure_zshrc_line 'export PATH="$HOME/.local/bin:$PATH"'
 
     ensure_zshrc_line 'source /tmp/venv/bin/activate'
+
+    # Propose l'authentification gh tant qu'elle manque (terminal VS Code : $BROWSER ouvre l'hôte)
+    ensure_zshrc_line 'bash "$WORKSPACE_FOLDER/.devcontainer/scripts/gh_login.sh"'
 
     echo "✅ zsh configuré"
 }
