@@ -31,3 +31,23 @@ def mount_targets(config: dict[str, Any]) -> dict[str, str]:
         parts = dict(part.split("=", 1) for part in mount.split(",") if "=" in part)
         targets[parts["target"]] = mount
     return targets
+
+
+def nested_mountpoints(config: dict[str, Any]) -> dict[str, str]:
+    """Points de montage à créer dans la source d'un autre montage.
+
+    Pour chaque cible imbriquée dans la cible d'un autre montage (le plus
+    profond), renvoie {cible: source du parent + chemin relatif}. Si ce dossier
+    n'existe pas sur l'hôte, Docker le crée en root.
+    """
+    sources = {
+        target: mount.split("source=", 1)[1].split(",", 1)[0]
+        for target, mount in mount_targets(config).items()
+    }
+    mountpoints = {}
+    for target in sources:
+        parents = [p for p in sources if target.startswith(p.rstrip("/") + "/")]
+        if parents:
+            parent = max(parents, key=len)
+            mountpoints[target] = sources[parent] + target[len(parent) :]
+    return mountpoints

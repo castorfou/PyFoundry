@@ -79,17 +79,6 @@ def test_initialize_command_creates_private_gh_config(devcontainer_dir):
     )
 
 
-def test_initialize_command_creates_config_dir_in_persistent_home(devcontainer_dir):
-    # Sinon Docker crée /home/vscode/.config en root pour y monter .config/gh
-    config = parse_jsonc(devcontainer_dir / "devcontainer.json")
-
-    assert (
-        '"${localEnv:HOME}/.devcontainer/homes/'
-        '${localWorkspaceFolderBasename}-${devcontainerId}/.config"'
-        in config["initializeCommand"]
-    )
-
-
 def test_post_create_never_runs_gh_auth_login(devcontainer_dir):
     script = (devcontainer_dir / "postCreateCommand.sh").read_text()
 

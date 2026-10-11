@@ -13,6 +13,7 @@ import pytest
 from tests.devcontainer_utils import (
     REPO_DEVCONTAINER,
     mount_targets,
+    nested_mountpoints,
     parse_jsonc,
 )
 
@@ -75,10 +76,6 @@ def test_initialize_command_creates_mount_sources_then_checks_them(devcontainer_
     """Les sources sont créées sur l'hôte avant que Docker ne les crée en root."""
     command = parse_jsonc(devcontainer_dir / "devcontainer.json")["initializeCommand"]
 
-    assert (
-        '"${localEnv:HOME}/.devcontainer/homes/'
-        '${localWorkspaceFolderBasename}-${devcontainerId}/.cache"'
-    ) in command
     assert '"${localEnv:HOME}/.cache/pre-commit-devcontainers"' in command
     assert '"${localEnv:HOME}/.cache/uv"' in command
     assert 'mkdir -p -m 700 "${localEnv:HOME}/.ssh"' in command
@@ -88,6 +85,17 @@ def test_initialize_command_creates_mount_sources_then_checks_them(devcontainer_
         'DEVCONTAINER_ID="${devcontainerId}" '
         "bash .devcontainer/scripts/check_mounts.sh --host)"
     )
+
+
+def test_initialize_command_creates_nested_mountpoints(devcontainer_dir):
+    """Un montage imbriqué dans un autre (ex. ~/.ssh dans le HOME) a besoin d'un
+    point de montage dans la source du parent : sinon Docker le crée en root."""
+    config = parse_jsonc(devcontainer_dir / "devcontainer.json")
+    mountpoints = nested_mountpoints(config)
+
+    assert "/home/vscode/.ssh" in mountpoints
+    for target, mountpoint in mountpoints.items():
+        assert f'"{mountpoint}"' in config["initializeCommand"], target
 
 
 def test_python_tooling_points_to_tmp_venv(devcontainer_dir):
