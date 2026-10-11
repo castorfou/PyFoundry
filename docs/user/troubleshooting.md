@@ -68,6 +68,38 @@ Vous perdez alors l'historique du shell. La connexion et les conversations Claud
 
 Ce dossier n'est pas supprimé avec le projet : pensez à le retirer quand vous supprimez un projet.
 
+### `rm -rf` du HOME échoue : `Permission denied`
+
+Des dossiers du HOME appartiennent à root, par exemple `.ssh`, `.cache/uv`, `.cache/pre-commit` ou `.config/gh`. Ce sont les points de montage des dossiers montés dans le HOME : si l'un manque au démarrage, Docker le crée lui-même, en root. `initializeCommand` les crée normalement avant le démarrage ; un HOME plus ancien peut encore en contenir.
+
+`check_mounts.sh` les signale à chaque build par un `[WARN]`, sans bloquer le démarrage. Le message liste les dossiers et donne les commandes exactes. Ces dossiers sont vides et leur parent vous appartient : `rmdir` suffit, sans `sudo`.
+
+1. Fermez VS Code.
+2. Sur l'hôte, arrêtez le conteneur du projet. VS Code l'étiquette avec le dossier du projet sur l'hôte :
+
+    ```bash
+    # Sur votre machine hôte, à la racine du projet
+    docker stop $(docker ps -q --filter "label=devcontainer.local_folder=$PWD")
+    ```
+
+    Pour lister tous les devcontainers et leur dossier :
+
+    ```bash
+    docker ps --filter label=devcontainer.local_folder \
+      --format 'table {{.ID}}\t{{.Label "devcontainer.local_folder"}}\t{{.Status}}'
+    ```
+
+3. Recréez les dossiers signalés, à votre nom :
+
+    ```bash
+    cd ~/.devcontainer/homes/<projet>-<identifiant>
+    rmdir .ssh .cache/uv && mkdir .ssh .cache/uv
+    ```
+
+4. Rouvrez le projet dans VS Code.
+
+Pour supprimer directement tout le HOME, `sudo rm -rf ~/.devcontainer/homes/<projet>-*` fonctionne aussi.
+
 ### pre-commit échoue : `InvalidManifestError`
 
 ```
