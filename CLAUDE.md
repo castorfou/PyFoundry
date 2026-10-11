@@ -232,7 +232,7 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 | Workflow | Déclencheur | Rôle |
 |----------|-------------|------|
 | `test-template.yml` | Push toutes branches, PR main | Lint ruff + tests pytest |
-| `docs.yml` | Push main (docs/ ou mkdocs.yml) | Déploiement GitHub Pages |
+| `docs.yml` | Push main (docs/ ou mkdocs.yml), lancement manuel depuis n'importe quelle branche | Déploiement GitHub Pages |
 | `release.yml` | Tag `v*` | Release GitHub + tests |
 
 ## Skills Matt Pocock
