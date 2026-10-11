@@ -28,6 +28,8 @@ Le conteneur monte des chemins de la machine hôte pour conserver le HOME entre 
 | `~/.devcontainer/homes/<projet>-<identifiant>`       | `/home/vscode`                   | HOME persistant, propre au projet (survit aux rebuilds)    |
 | `~/.cache/pre-commit-devcontainers`                  | `/home/vscode/.cache/pre-commit` | Cache pre-commit, partagé entre devcontainers              |
 | `~/.config/gh-devcontainers`                         | `/home/vscode/.config/gh`        | Authentification `gh`, partagée entre devcontainers        |
+| `~/.config/claude-devcontainers`                     | `/home/vscode/.claude`           | Connexion et config Claude Code, partagées entre devcontainers |
+| `~/.devcontainer/homes/<projet>-<identifiant>/.claude-ide` | `/home/vscode/.claude/ide` | Verrous de connexion IDE de Claude Code, propres au projet |
 | `~/.ssh`                                             | `/home/vscode/.ssh` (lecture seule) | Clés SSH pour Git                                       |
 | `~/.cache/uv`                                        | `/home/vscode/.cache/uv`         | Cache uv, partagé entre devcontainers                      |
 
@@ -85,9 +87,13 @@ uv run --active mkdocs build
 
 Les deux commandes doivent passer sans erreur.
 
+### Se connecter à Claude Code
+
+Au premier lancement, le panneau Claude Code de VS Code demande de se connecter. La connexion est partagée par tous vos devcontainers PyFoundry (dossier `~/.config/claude-devcontainers` de l'hôte) : vous ne la faites qu'une fois, et elle survit aux rebuilds.
+
 ### Activer les skills Claude Code
 
-Le plugin `mattpocock-skills` est activé dans `.claude/settings.json`, mais Claude Code ne le télécharge pas tout seul. Installe-le une fois dans le panneau Claude Code de VS Code : `/plugins` → onglet **Plugins** → rechercher `mattpocock-skills` → **Install** → **Install for this project**.
+Le plugin `mattpocock-skills` est activé dans `.claude/settings.json`, mais Claude Code ne le télécharge pas tout seul. Installe-le une fois dans le panneau Claude Code de VS Code : `/plugins` → onglet **Plugins** → rechercher `mattpocock-skills` → **Install** → **Install for this project**. Les plugins téléchargés (`~/.claude/plugins`) sont partagés entre devcontainers.
 
 Rien d'autre à faire : la configuration attendue par les skills est déjà pré-remplie dans `docs/agents/` et dans la section `## Agent skills` du `CLAUDE.md` (issues sur GitHub, labels de triage par défaut). Pour changer ces choix, par exemple passer à GitLab, modifie `docs/agents/*.md` ou lance `/setup-matt-pocock-skills`.
 

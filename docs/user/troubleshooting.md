@@ -49,16 +49,22 @@ gh auth login --web
 
 L'authentification est partagée par tous les devcontainers PyFoundry (`~/.config/gh-devcontainers` sur l'hôte). Pour repartir de zéro, lancez `gh auth logout` dans un conteneur, ou supprimez ce dossier sur l'hôte.
 
+### Claude Code redemande la connexion
+
+La connexion Claude Code est partagée par tous les devcontainers PyFoundry (`~/.config/claude-devcontainers` sur l'hôte, monté sur `~/.claude`). Si le panneau redemande la connexion dans chaque projet, le projet n'a pas encore ce montage : mettez à jour le template (voir [Passer à la config Claude Code partagée](usage.md#passer-a-la-config-claude-code-partagee)).
+
+Pour repartir de zéro, lancez `/logout` dans Claude Code, ou supprimez `~/.config/claude-devcontainers/.credentials.json` sur l'hôte. Supprimer tout le dossier efface aussi les conversations et la mémoire de tous les projets.
+
 ### Repartir d'un HOME vierge
 
-Le HOME du conteneur est conservé sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Si une configuration y est cassée (shell, extension VS Code, connexion Claude Code), supprimez ce dossier puis reconstruisez le conteneur :
+Le HOME du conteneur est conservé sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Si une configuration y est cassée (shell, extension VS Code), supprimez ce dossier puis reconstruisez le conteneur :
 
 ```bash
 # Sur votre machine hôte, conteneur arrêté
 rm -rf ~/.devcontainer/homes/<projet>-*
 ```
 
-Vous perdez alors les connexions (`claude`, `gh`), l'historique du shell et la mémoire des conversations Claude Code.
+Vous perdez alors l'historique du shell. La connexion et les conversations Claude Code, comme la connexion `gh`, sont conservées : elles sont stockées hors de ce dossier.
 
 Ce dossier n'est pas supprimé avec le projet : pensez à le retirer quand vous supprimez un projet.
 

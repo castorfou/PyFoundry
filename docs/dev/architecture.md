@@ -127,16 +127,18 @@ Le HOME du conteneur (`/home/vscode`) est un bind mount d'un dossier de l'hôte 
     "source=${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId},target=/home/vscode,type=bind",
     "source=${localEnv:HOME}/.cache/pre-commit-devcontainers,target=/home/vscode/.cache/pre-commit,type=bind",
     "source=${localEnv:HOME}/.config/gh-devcontainers,target=/home/vscode/.config/gh,type=bind",
+    "source=${localEnv:HOME}/.config/claude-devcontainers,target=/home/vscode/.claude,type=bind",
+    "source=${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.claude-ide,target=/home/vscode/.claude/ide,type=bind",
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
     "source=${localEnv:HOME}/.cache/uv,target=/home/vscode/.cache/uv,type=bind,consistency=cached"
 ]
 ```
 
-La connexion Claude Code (`~/.claude`, `~/.claude.json`), l'historique du shell et `~/.vscode-server` survivent ainsi aux rebuilds. Les caches pre-commit et uv, ainsi que la config `gh` (connexion GitHub), sont partagés entre tous les devcontainers de l'hôte. Voir [Authentification GitHub](#authentification-github).
+L'historique du shell et `~/.vscode-server` survivent ainsi aux rebuilds. Les caches pre-commit et uv, la config `gh` (connexion GitHub) et la config Claude Code sont partagés entre tous les devcontainers de l'hôte. Voir [Authentification GitHub](#authentification-github) et [Config Claude Code partagée](#config-claude-code-partagee).
 
 Trois mécanismes complètent le montage :
 
-- **`initializeCommand`**, exécuté sur l'hôte avant le montage, crée les dossiers sources (dont `.cache` et `.config` dans le HOME, pour que Docker ne crée pas les points de montage imbriqués en root ; `~/.ssh` et `~/.config/gh-devcontainers` en `700`) puis lance `.devcontainer/scripts/check_mounts.sh --host`. Ce script lit les `mounts` de `devcontainer.json`, résout `${localEnv:HOME}`, `${localWorkspaceFolderBasename}` et `${devcontainerId}`, signale chaque source absente avec la commande pour la créer, et contrôle les permissions de `~/.ssh`. Il sort en erreur si un montage est invalide.
+- **`initializeCommand`**, exécuté sur l'hôte avant le montage, crée les dossiers sources (dont `.cache`, `.config` et `.claude` dans le HOME, pour que Docker ne crée pas les points de montage imbriqués en root ; `~/.ssh`, `~/.config/gh-devcontainers`, `~/.config/claude-devcontainers` et `.claude-ide` en `700`), lance `.devcontainer/scripts/migrate_claude_history.sh` (voir [Config Claude Code partagée](#config-claude-code-partagee)), puis `.devcontainer/scripts/check_mounts.sh --host`. Ce script lit les `mounts` de `devcontainer.json`, résout `${localEnv:HOME}`, `${localWorkspaceFolderBasename}` et `${devcontainerId}`, signale chaque source absente avec la commande pour la créer, et contrôle les permissions de `~/.ssh`. Il sort en erreur si un montage est invalide.
 - **`seed_home`** dans `postCreateCommand.sh` : le bind mount masque le HOME de l'image, donc `cp -rn /etc/skel/. "$HOME"` recopie `.bashrc`, `.profile`… sans écraser l'existant.
 - **Venv dans `/tmp/venv`** : il reste hors du HOME persistant et est recréé à chaque rebuild depuis `uv.lock`, ce qui évite de conserver un venv lié à une ancienne image Python.
 
@@ -151,6 +153,25 @@ Le choix est détaillé dans l'ADR [0001 — HOME persistant](../adr/0001-persis
 - **`setup_gh_credential_helper`** (dans `setup_github`) délègue l'authentification HTTPS de `github.com` à `gh`, en config Git locale au projet. Il est configuré même sans token, car celui-ci peut arriver plus tard ou venir d'un autre devcontainer.
 - **`.devcontainer/scripts/gh_login.sh`** est appelé par `~/.zshrc`, donc seulement dans les shells interactifs. S'il manque un token, ce que vérifie `gh auth token` sans appel réseau, il lance `gh auth login --web`. Dans un terminal VS Code, `BROWSER` ouvre la page dans le navigateur de l'hôte. Un marqueur dans `/tmp` limite la proposition à une fois par conteneur, et le script sort toujours en `0`, pour ne jamais casser le shell.
 - **`~/.config/gh`** est monté depuis `~/.config/gh-devcontainers` sur l'hôte, comme le cache pre-commit : une seule connexion pour tous les devcontainers, qui survit aux rebuilds. Sans keyring dans le conteneur, le token y est stocké en clair, d'où la création du dossier en `700`.
+
+### Config Claude Code partagée
+
+Le dossier de config Claude Code est partagé par tous les devcontainers, comme la config `gh` : on se connecte une fois pour tous les projets.
+
+- **`~/.claude`** est monté depuis `~/.config/claude-devcontainers` sur l'hôte, créé en `700` car il contient les tokens OAuth (`.credentials.json`).
+- **`CLAUDE_CONFIG_DIR=/home/vscode/.claude`** (`containerEnv`) y place aussi `.claude.json` (le compte), qui est sinon à la racine du HOME. L'extension VS Code respecte cette variable.
+- **Un dossier, et non des fichiers** : Claude Code réécrit `.credentials.json` et `.claude.json` par renommage atomique, ce qui casse un bind mount de fichier.
+- **`~/.claude/ide`** reste propre au projet : il est monté depuis `<HOME persistant>/.claude-ide`. Un verrou `ide/*.lock` ne contient que le PID et le port de l'IDE. Vu d'un autre conteneur, ce PID est invisible et le verrou pourrait être supprimé comme périmé.
+
+Ce qui devient commun : la connexion, les réglages utilisateur, les plugins installés et l'historique des prompts. Les conversations, la mémoire automatique et les réglages par projet restent séparés, car Claude Code les range par chemin (`/workspaces/<projet>`), comme sur l'hôte.
+
+**Migration de l'historique.** Avant ce partage, l'historique vivait dans le `~/.claude` du HOME persistant. Le nouveau montage le masque dans le conteneur. `.devcontainer/scripts/migrate_claude_history.sh`, lancé sur l'hôte par `initializeCommand`, le recopie donc dans le dossier partagé :
+
+- il copie `projects/` (conversations, mémoire automatique) et `file-history/` (checkpoints `/rewind`) sans écraser de fichier, puis ajoute `history.jsonl` à la fin de l'existant ;
+- il ne copie pas la connexion : on se reconnecte une fois ;
+- un marqueur `.migrated-to-claude-devcontainers` dans l'ancien `.claude` limite la copie à une fois par projet ;
+- il sort toujours en `0` : un échec n'empêche pas l'ouverture du conteneur, et la copie est retentée la fois suivante ;
+- il n'utilise pas `cp -n`, qui sort en erreur dès qu'il saute un fichier sur coreutils 9.2 à 9.4.
 
 ### Configuration Claude Code
 
