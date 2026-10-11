@@ -196,22 +196,68 @@ class TestHostCheck:
         assert "cannot resolve ${devcontainerId}" in result.stdout
         assert f"{workspace.name}-*" in result.stdout
 
-    def test_ssh_permissions_too_open_fail(self, workspace, host_home):
+    @staticmethod
+    def _ssh_dir(host_home: Path, files: dict[str, int], dir_mode: int = 0o700) -> Path:
         ssh = host_home / ".ssh"
-        ssh.mkdir(mode=0o755)
-        ssh.chmod(0o755)
-        write_devcontainer(
-            workspace,
-            [
-                "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,readonly"
-            ],
+        ssh.mkdir()
+        for name, mode in files.items():
+            (ssh / name).write_text("x")
+            (ssh / name).chmod(mode)
+        ssh.chmod(dir_mode)
+        return ssh
+
+    @staticmethod
+    def _ssh_mount() -> list[str]:
+        return [
+            "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,readonly"
+        ]
+
+    def test_ssh_public_files_permissions_are_not_checked(self, workspace, host_home):
+        """ssh ne vérifie ni les clés publiques ni known_hosts (cas réel : .pub en 664)."""
+        self._ssh_dir(
+            host_home,
+            {
+                "id_rsa": 0o600,
+                "id_rsa.pub": 0o664,
+                "known_hosts": 0o644,
+                "config": 0o644,
+            },
+            dir_mode=0o755,
         )
+        write_devcontainer(workspace, self._ssh_mount())
+
+        result = run_check(workspace, host_env(host_home))
+
+        assert result.returncode == 0, result.stdout
+        assert "[OK]   /home/vscode/.ssh" in result.stdout
+
+    def test_ssh_private_key_readable_by_others_fails(self, workspace, host_home):
+        ssh = self._ssh_dir(host_home, {"id_ed25519": 0o644})
+        write_devcontainer(workspace, self._ssh_mount())
 
         result = run_check(workspace, host_env(host_home))
 
         assert result.returncode == 1
         assert "[FAIL] /home/vscode/.ssh: SSH permissions too open" in result.stdout
-        assert "chmod 700 ~/.ssh" in result.stdout
+        assert f'chmod 600 "{ssh}/id_ed25519"' in result.stdout
+
+    def test_ssh_config_writable_by_others_fails(self, workspace, host_home):
+        ssh = self._ssh_dir(host_home, {"config": 0o664})
+        write_devcontainer(workspace, self._ssh_mount())
+
+        result = run_check(workspace, host_env(host_home))
+
+        assert result.returncode == 1
+        assert f'chmod 600 "{ssh}/config"' in result.stdout
+
+    def test_ssh_dir_writable_by_others_fails(self, workspace, host_home):
+        ssh = self._ssh_dir(host_home, {}, dir_mode=0o775)
+        write_devcontainer(workspace, self._ssh_mount())
+
+        result = run_check(workspace, host_env(host_home))
+
+        assert result.returncode == 1
+        assert f'chmod 700 "{ssh}"' in result.stdout
 
     def test_missing_devcontainer_json_fails(self, workspace, host_home):
         result = run_check(workspace, host_env(host_home))

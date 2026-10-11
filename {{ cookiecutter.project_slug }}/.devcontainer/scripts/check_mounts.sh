@@ -78,25 +78,28 @@ resolve_path() {
     printf '%s\n' "$path"
 }
 
-# Vérifie qu'un dossier et ses fichiers ne sont pas plus ouverts que les modes attendus
-check_permissions() {
-    local path="$1" max_dir_mode="$2" max_file_mode="$3"
-    local file mode max_mode
+# Affiche la commande de correction de chaque permission SSH refusée par le client ssh :
+# - dossier ou config modifiables par le groupe/les autres
+# - clé privée (ou autre fichier) accessible au groupe/aux autres
+# Les clés publiques et known_hosts ne sont pas vérifiés par ssh : on les ignore.
+ssh_permission_fixes() {
+    local dir="$1"
+    local file mode
 
-    [[ -d "$path" ]] || return 0
-    mode=$(stat -c '%a' "$path" 2>/dev/null) || return 0
-    [[ "$mode" -le "$max_dir_mode" ]] || return 1
+    mode=$(stat -c '%a' "$dir") || return 0
+    (( 8#$mode & 8#022 )) && echo "chmod 700 \"$dir\""
 
-    for file in "$path"/*; do
+    for file in "$dir"/*; do
         [[ -f "$file" ]] || continue
-        mode=$(stat -c '%a' "$file" 2>/dev/null) || continue
-        # Les clés publiques peuvent être lisibles par tous
-        if [[ "$file" == *.pub ]]; then
-            max_mode=644
+        case "$(basename "$file")" in
+            *.pub|known_hosts*) continue ;;
+        esac
+        mode=$(stat -c '%a' "$file") || continue
+        if [[ "$(basename "$file")" == config ]]; then
+            (( 8#$mode & 8#022 )) && echo "chmod 600 \"$file\""
         else
-            max_mode="$max_file_mode"
+            (( 8#$mode & 8#077 )) && echo "chmod 600 \"$file\""
         fi
-        [[ "$mode" -le "$max_mode" ]] || return 1
     done
     return 0
 }
@@ -149,12 +152,14 @@ while IFS=$'\t' read -r source target; do
         continue
     fi
 
-    if [[ "$target" == */.ssh ]] && ! check_permissions "$resolved" 700 600; then
-        log_fail "$target: SSH permissions too open"
-        echo "        Corrigez sur l'hôte :"
-        echo "          chmod 700 ~/.ssh"
-        echo "          chmod 600 ~/.ssh/*"
-        continue
+    if [[ "$target" == */.ssh ]]; then
+        fixes=$(ssh_permission_fixes "$resolved")
+        if [[ -n "$fixes" ]]; then
+            log_fail "$target: SSH permissions too open"
+            echo "        Corrigez sur l'hôte :"
+            echo "$fixes" | sed 's/^/          /'
+            continue
+        fi
     fi
 
     log_ok "$target"
