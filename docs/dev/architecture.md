@@ -77,7 +77,7 @@ PyFoundry/                                    # Dépôt du template
 - **Script postCreateCommand** simplifié pour la configuration
 - **Environnement virtuel `/tmp/venv`**, hors du HOME persistant, recréé à chaque rebuild
 - **Features officielles** (uv) au lieu d'installation manuelle
-- **Héritage timezone du host** via montages `/etc/timezone` et `/etc/localtime`
+- **Fuseau horaire de l'hôte** : fichier `/etc/localtime` de l'hôte monté à côté de celui du conteneur, appliqué par `setup_timezone`
 
 ### Devcontainer Features
 
@@ -98,24 +98,25 @@ PyFoundry/                                    # Dépôt du template
 
 ### Configuration de la timezone
 
-Le devcontainer hérite automatiquement de la timezone du système hôte :
+Le devcontainer reprend le fuseau horaire de l'hôte. Le fichier `/etc/localtime` de l'hôte est monté en lecture seule sur `/etc/localtime.host` :
 
 ```json
-{
-    "containerEnv": {
-        "TZ": "${localEnv:TZ}"
-    },
-    "mounts": [
-        "source=/etc/timezone,target=/etc/timezone,type=bind,consistency=cached,readonly",
-        "source=/etc/localtime,target=/etc/localtime,type=bind,consistency=cached,readonly"
-    ]
-}
+"mounts": [
+    "source=/etc/localtime,target=/etc/localtime.host,type=bind,consistency=cached,readonly"
+]
 ```
 
-**Méthodes d'héritage** :
-- **Variable d'environnement TZ** : Utilisée par les processus Python/Node.js
-- **Montage /etc/timezone** : Configuration système Linux
-- **Montage /etc/localtime** : Fichier de timezone binaire utilisé par le système
+La fonction `setup_timezone` de `postCreateCommand.sh` tourne juste après la mise à jour des paquets :
+
+1. Elle cherche dans `/usr/share/zoneinfo` (hors `posix/` et `right/`) le fichier identique à `/etc/localtime.host`.
+2. Si elle le trouve, `/etc/localtime` devient un lien vers cette zone (ex. `Europe/Paris`), dont le nom est écrit dans `/etc/timezone`. Le nom de zone sert aux bibliothèques qui le lisent (`tzlocal`, pandas), et tzdata conserve ce réglage lors de ses mises à jour.
+3. Sinon, `/etc/localtime` pointe directement vers `/etc/localtime.host` : l'heure est juste, mais la zone n'a pas de nom.
+4. Sans fichier de l'hôte, le conteneur reste en UTC.
+
+**Deux pièges évités** :
+
+- **Monter directement sur `/etc/localtime`.** Dans l'image, `/etc/localtime` est un lien vers `zoneinfo/Etc/UTC`, et Docker suit ce lien. Le fichier de l'hôte écraserait donc `Etc/UTC` : `TZ=UTC` ou `ZoneInfo("UTC")` donneraient l'heure locale, et la mise à jour de tzdata échouerait (`Invalid cross-device link`).
+- **Transmettre `TZ` avec `${localEnv:TZ}`.** Quand `TZ` n'est pas défini sur l'hôte, ce qui est le cas courant, le conteneur reçoit `TZ=` vide, que glibc interprète comme UTC. `TZ` n'est donc pas défini dans le conteneur, et `/etc/localtime` fait foi.
 
 ### HOME persistant
 

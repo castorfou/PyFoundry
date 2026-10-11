@@ -115,6 +115,23 @@ Le `.pre-commit-config.yaml` de PyFoundry exclut `{{ cookiecutter.project_slug }
 
 Si un test signale une fin de fichier incorrecte sur un fichier qui se termine par un bloc Jinja, vérifier le rendu des deux branches : un `{% if %}` faux en fin de fichier laisse souvent une ligne vide en trop. Le contrôle d'espaces Jinja (`{%- if %}`, `{%- endif %}`) règle le problème.
 
+### Tester le fuseau horaire
+
+`tests/test_timezone.py` couvre le dépôt et les projets générés (défaut et `docker_in_docker=y`) :
+
+- le `/etc/localtime` de l'hôte est monté sur `/etc/localtime.host`, jamais sur `/etc/localtime` ;
+- `TZ` n'est pas transmis par `containerEnv` ni par `remoteEnv` ;
+- `setup_timezone` est appelé juste après `update_system` ;
+- `setup_timezone` est exécuté réellement, avec un faux `sudo` et de faux dossiers `zoneinfo` et `/etc` créés dans `tmp_path` (variables `HOST_LOCALTIME`, `ZONEINFO_DIR`, `ETC_DIR`). Trois cas : zone connue, zone inconnue, fichier de l'hôte absent ou vide.
+
+Dans le conteneur, on vérifie depuis un terminal VS Code :
+
+```bash
+date                                       # heure locale de l'hôte
+TZ=UTC date                                # heure UTC
+readlink /etc/localtime; cat /etc/timezone # zone de l'hôte, ex. Europe/Paris
+```
+
 Pour vérifier avec le vrai pre-commit :
 
 ```bash

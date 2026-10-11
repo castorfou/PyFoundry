@@ -47,7 +47,8 @@ PyFoundry/
 │   ├── test_mkdocs_integration.py       # Tests MkDocs (config, build)
 │   ├── test_persistent_home.py          # HOME persistant, montages, venv /tmp/venv
 │   ├── test_check_mounts.py             # Script check_mounts.sh
-│   └── test_post_create_command.py      # setup_pre-commit de postCreateCommand.sh
+│   ├── test_post_create_command.py      # setup_pre-commit de postCreateCommand.sh
+│   └── test_timezone.py                 # Fuseau de l'hôte : montage, setup_timezone
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── cookiecutter.json                    # Variables du template
 ├── mkdocs.yml
@@ -217,6 +218,7 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 | `test_persistent_home.py` | HOME persistant, montages, `initializeCommand`, venv `/tmp/venv` et `UV_PROJECT_ENVIRONMENT` (dépôt et projet généré) |
 | `test_check_mounts.py` | `check_mounts.sh` : sources manquantes, résolution des variables, permissions `.ssh` |
 | `test_post_create_command.py` | `setup_pre-commit` : un rebuild ne commite que `.pre-commit-config.yaml`, jamais le travail en cours |
+| `test_timezone.py` | Fuseau de l'hôte monté sur `/etc/localtime.host` (jamais sur `/etc/localtime`, qui écraserait `Etc/UTC`), pas de `TZ` transmis (vide = UTC), `setup_timezone` relie `/etc/localtime` à la zone de même contenu |
 
 ### CI/CD GitHub Actions
 
