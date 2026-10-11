@@ -102,6 +102,13 @@ def test_python_tooling_points_to_tmp_venv(devcontainer_dir):
     assert terminal_env["PATH"].startswith(f"{VENV}/bin:")
 
 
+def test_uv_project_environment_points_to_tmp_venv(devcontainer_dir):
+    """Un `uv sync` sans `--active` ne doit pas créer de `.venv` à la racine (#70)."""
+    config = parse_jsonc(devcontainer_dir / "devcontainer.json")
+
+    assert config["containerEnv"]["UV_PROJECT_ENVIRONMENT"] == VENV
+
+
 def test_post_create_builds_venv_in_tmp(devcontainer_dir):
     script = (devcontainer_dir / "postCreateCommand.sh").read_text()
 
