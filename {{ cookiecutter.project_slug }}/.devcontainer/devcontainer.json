@@ -22,6 +22,7 @@
         "UV_VENV_CLEAR": "1",
         "UV_LINK_MODE": "copy",
         "UV_PYTHON": "/tmp/venv/bin/python",
+        "UV_PROJECT_ENVIRONMENT": "/tmp/venv",
         "TZ": "${localEnv:TZ}",
         "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"
     },

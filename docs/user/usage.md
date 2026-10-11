@@ -247,6 +247,7 @@ Quelques outils sont configurés dans `pyproject.toml` ou `.pre-commit-config.ya
 | **nbdev-clean**             | Nettoyage des notebooks (métadonnées, outputs)   | Chaque `git commit` |
 | **detect-secrets**          | Détection de secrets dans le code                | Chaque `git commit` |
 | **check-added-large-files** | Bloque les fichiers volumineux dans les commits  | Chaque `git commit` |
+| **no-venv-at-root**         | Bloque si un `.venv` existe (venv dans `/tmp/venv`) | Chaque `git commit` |
 
 Pour lancer manuellement :
 

@@ -2,6 +2,7 @@
 
 import json
 import re
+import shlex
 import subprocess
 import tomllib
 from pathlib import Path
@@ -9,7 +10,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from tests.devcontainer_utils import REPO_DEVCONTAINER, parse_jsonc
+from tests.devcontainer_utils import REPO_ROOT, parse_jsonc
 
 
 def test_pyproject_toml_valid(cookies, minimal_template_context):
@@ -79,20 +80,57 @@ def test_devcontainer_json_valid(cookies, minimal_template_context):
     assert "// Configuration du shell" in content
 
 
+def _project_root(source: str, cookies, context: dict[str, str]) -> Path:
+    """Racine du dépôt PyFoundry ou d'un projet généré."""
+    if source == "repo":
+        return REPO_ROOT
+    result = cookies.bake(extra_context=context)
+    assert result.exit_code == 0
+    return Path(result.project_path)
+
+
 @pytest.mark.parametrize("source", ["repo", "generated"])
 def test_devcontainer_has_no_isort_extension(cookies, minimal_template_context, source):
     """Ruff trie les imports : l'extension isort est redondante et échoue au démarrage (#70)."""
-    if source == "repo":
-        devcontainer_dir = REPO_DEVCONTAINER
-    else:
-        result = cookies.bake(extra_context=minimal_template_context)
-        assert result.exit_code == 0
-        devcontainer_dir = Path(result.project_path) / ".devcontainer"
+    root = _project_root(source, cookies, minimal_template_context)
 
-    config = parse_jsonc(devcontainer_dir / "devcontainer.json")
+    config = parse_jsonc(root / ".devcontainer" / "devcontainer.json")
     extensions = config["customizations"]["vscode"]["extensions"]
 
     assert "ms-python.isort" not in extensions
+
+
+@pytest.mark.parametrize("source", ["repo", "generated"])
+def test_precommit_rejects_venv_at_root(
+    cookies, minimal_template_context, source, tmp_path
+):
+    """Le venv vit dans /tmp/venv : un `.venv` à la racine est une erreur, signalée au commit (#70).
+
+    uv écrit `*` dans `.venv/.gitignore` : le dossier n'apparaît jamais dans `git status`.
+    """
+    root = _project_root(source, cookies, minimal_template_context)
+    config = yaml.safe_load((root / ".pre-commit-config.yaml").read_text())
+    hooks = [hook for repo in config["repos"] for hook in repo["hooks"]]
+    hook = next(hook for hook in hooks if hook["id"] == "no-venv-at-root")
+
+    assert hook["always_run"] is True
+    assert hook["pass_filenames"] is False
+
+    def run_hook() -> subprocess.CompletedProcess:
+        return subprocess.run(
+            shlex.split(hook["entry"]),
+            check=False,
+            cwd=tmp_path,
+            capture_output=True,
+            text=True,
+        )
+
+    assert run_hook().returncode == 0
+
+    (tmp_path / ".venv").mkdir()
+    result = run_hook()
+    assert result.returncode != 0
+    assert "rm -rf .venv" in result.stdout
 
 
 def test_gitignore_includes_ds_patterns(cookies, minimal_template_context):
