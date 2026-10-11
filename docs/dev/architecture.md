@@ -62,8 +62,8 @@ PyFoundry/                                    # Dépôt du template
     "customizations": {
         "vscode": {
             "settings": {
-                "python.defaultInterpreterPath": "./.venv/bin/python",
-                "python.terminal.activateEnvironment": true
+                "python.defaultInterpreterPath": "/tmp/venv/bin/python",
+                "python.venvPath": "/tmp"
             }
         }
     },
@@ -75,7 +75,7 @@ PyFoundry/                                    # Dépôt du template
 - **Image officielle Microsoft** Python 3.12 pour la compatibilité
 - **Devcontainer features** pour l'installation standardisée des outils
 - **Script postCreateCommand** simplifié pour la configuration
-- **Environnement virtuel .venv** avec version Python dynamique
+- **Environnement virtuel `/tmp/venv`**, hors du HOME persistant, recréé à chaque rebuild
 - **Features officielles** (uv) au lieu d'installation manuelle
 - **Héritage timezone du host** via montages `/etc/timezone` et `/etc/localtime`
 
@@ -116,6 +116,31 @@ Le devcontainer hérite automatiquement de la timezone du système hôte :
 - **Variable d'environnement TZ** : Utilisée par les processus Python/Node.js
 - **Montage /etc/timezone** : Configuration système Linux
 - **Montage /etc/localtime** : Fichier de timezone binaire utilisé par le système
+
+### HOME persistant
+
+Le HOME du conteneur (`/home/vscode`) est un bind mount d'un dossier de l'hôte propre au projet :
+
+```json
+"mounts": [
+    "source=${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId},target=/home/vscode,type=bind",
+    "source=${localEnv:HOME}/.cache/pre-commit-devcontainers,target=/home/vscode/.cache/pre-commit,type=bind",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
+    "source=${localEnv:HOME}/.cache/uv,target=/home/vscode/.cache/uv,type=bind,consistency=cached"
+]
+```
+
+La connexion Claude Code (`~/.claude`, `~/.claude.json`), la connexion `gh`, l'historique du shell et `~/.vscode-server` survivent ainsi aux rebuilds. Les caches pre-commit et uv sont partagés entre tous les devcontainers de l'hôte.
+
+Trois mécanismes complètent le montage :
+
+- **`initializeCommand`**, exécuté sur l'hôte avant le montage, crée les dossiers sources (dont `.cache` dans le HOME, pour que Docker ne crée pas les points de montage imbriqués en root) puis lance `.devcontainer/scripts/check_mounts.sh --host`. Ce script lit les `mounts` de `devcontainer.json`, résout `${localEnv:HOME}`, `${localWorkspaceFolderBasename}` et `${devcontainerId}`, signale chaque source absente avec la commande pour la créer, et contrôle les permissions de `~/.ssh`. Il sort en erreur si un montage est invalide.
+- **`seed_home`** dans `postCreateCommand.sh` : le bind mount masque le HOME de l'image, donc `cp -rn /etc/skel/. "$HOME"` recopie `.bashrc`, `.profile`… sans écraser l'existant.
+- **Venv dans `/tmp/venv`** : il reste hors du HOME persistant et est recréé à chaque rebuild depuis `uv.lock`, ce qui évite de conserver un venv lié à une ancienne image Python.
+
+`~/.gitconfig` n'est plus monté : VS Code copie celui de l'hôte au démarrage.
+
+Le choix est détaillé dans l'ADR [0001 — HOME persistant](../adr/0001-persist-development-home.md).
 
 ### Configuration Claude Code
 

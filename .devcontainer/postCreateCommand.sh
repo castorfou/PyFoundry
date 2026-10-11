@@ -28,6 +28,9 @@ update_system() {
 
     sudo apt-get update -qq
 
+    # xclip : accès au presse-papiers (tests de config git, cf. issue #64)
+    sudo apt-get install -y -qq xclip
+
     # Options dpkg pour éviter les prompts de configuration
     sudo apt-get -y -qq -o Dpkg::Options::="--force-confdef" \
         -o Dpkg::Options::="--force-confnew" upgrade || {
@@ -51,6 +54,15 @@ ensure_zshrc_line() {
 }
 
 
+# Le HOME est un dossier de l'hôte monté sur /home/vscode : il masque celui de l'image.
+# On recopie les fichiers par défaut (.bashrc, .profile...) sans écraser l'existant.
+seed_home() {
+    echo "Initialisation du HOME persistant..."
+    # "|| true" : certaines versions de coreutils renvoient une erreur quand des fichiers existent déjà
+    cp -rn /etc/skel/. "$HOME" || true
+    echo "✅ HOME initialisé"
+}
+
 # Vérification et installation d'uv (priorité: devcontainer feature, fallback: installation manuelle)
 ensure_uv() {
     echo "Vérification de uv..."
@@ -68,15 +80,16 @@ ensure_uv() {
 create_python_environment() {
     echo "Configuration de l'environnement Python $PYTHON_VERSION ..."
 
-    echo "Création de l'environnement virtuel dans /home/vscode/.venv"
-    VENV_HOME="/home/vscode/.venv"
+    echo "Création de l'environnement virtuel dans /tmp/venv"
+    # Hors du HOME persistant : le venv est recréé à chaque rebuild
+    VENV_HOME="/tmp/venv"
     if [ -d "$VENV_HOME" ]; then
         echo "Un venv existe déjà à $VENV_HOME, je l'utilise."
     else
         uv venv "$VENV_HOME" --python $PYTHON_VERSION
     fi
 
-    # Activer l'environnement créé dans $HOME/.venv
+    # Activer l'environnement créé dans /tmp/venv
     source "$VENV_HOME/bin/activate"
     echo "Installation des dépendances..."
     # Utiliser --active pour cibler l'environnement virtuel activé (hors du dossier projet)
@@ -249,13 +262,14 @@ config_zsh() {
 
     ensure_zshrc_line 'export PATH="$HOME/.local/bin:$PATH"'
 
-    ensure_zshrc_line 'source /home/vscode/.venv/bin/activate'
+    ensure_zshrc_line 'source /tmp/venv/bin/activate'
 
     echo "✅ zsh configuré"
 }
 
 
 # Exécution des étapes
+seed_home
 update_system
 ensure_uv
 create_python_environment

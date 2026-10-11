@@ -26,7 +26,9 @@ Respectez cette structure. Les outils (Ruff, MyPy, pytest, MkDocs) sont configur
 
 ## Python et imports
 
-L'environnement Python est dans `/home/vscode/.venv`. Il est activé automatiquement dans chaque terminal.
+L'environnement Python est dans `/tmp/venv`. Il est activé automatiquement dans chaque terminal.
+
+Ce venv n'est pas conservé : il est recréé à chaque rebuild par `postCreateCommand.sh`, à partir de `pyproject.toml` et `uv.lock`. Tout package doit donc être déclaré avec `uv add --active` : un `uv pip install` à la main disparaît au prochain rebuild.
 
 Les imports partent de la racine du projet (grâce à `pythonpath = "."` dans `pyproject.toml`) :
 

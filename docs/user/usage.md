@@ -46,6 +46,82 @@ cruft update --variables-to-update '{ "docker_in_docker": "y" }'
 cruft update --variables-to-update-file .cruft.json
 ```
 
+### Passer au HOME persistant
+
+Le template stocke désormais le HOME du conteneur (`/home/vscode`) sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Il survit aux rebuilds : connexion Claude Code, connexion `gh`, historique du shell, `~/.gitconfig`.
+
+Cette section concerne les projets générés avant ce changement. Si `cruft diff` montre l'ajout de la ligne `target=/home/vscode` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
+
+Le **premier** rebuild après la mise à jour démarre avec un HOME vide. Sans précaution, vous perdez la connexion Claude Code et `gh`, l'historique et la mémoire des conversations Claude Code, et l'historique du shell. Pour les conserver, sauvegardez le HOME de l'ancien conteneur **avant** le rebuild.
+
+Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : les variables définies à l'étape 1 servent jusqu'à la fin.
+
+1. Placez-vous à la racine du projet et définissez les variables. `CONTAINER_ID` est retrouvé à partir du dossier du projet :
+
+
+
+    ```bash
+    # cd ~/chemin/vers/<projet>                 # racine du projet sur l'hôte
+    export PROJET=$(basename "$PWD")
+    export CONTAINER_ID=$(docker ps -aq --filter "label=devcontainer.local_folder=$PWD")
+    export BACKUP=/tmp/$PROJET-home-backup
+    echo "projet=$PROJET conteneur=$CONTAINER_ID"   # un seul identifiant attendu
+    ```
+
+    Si `CONTAINER_ID` est vide ou contient plusieurs identifiants, repérez le bon conteneur (colonne de droite : dossier du projet) et définissez-le à la main :
+
+    ```bash
+    docker ps -a --format '{{.ID}}  {{.Label "devcontainer.local_folder"}}'
+    export CONTAINER_ID=<ID>
+    ```
+
+2. Repérez ce que vous voulez garder. La commande suivante liste les dossiers et fichiers du HOME modifiés depuis 30 jours, du plus récent au plus ancien, sur deux niveaux (`.config/gh`, `.claude/projects`…). Les points de montage (`.ssh`, `.cache/uv`…) sont exclus : ils sont déjà sur l'hôte. Le conteneur doit être démarré : sinon lancez d'abord `docker start "$CONTAINER_ID"`.
+
+    ```bash
+    docker exec "$CONTAINER_ID" sh -c '
+        prune=$(awk "\$2 ~ \"^/home/vscode/\" { printf \"-path %s -prune -o \", \$2 }" /proc/self/mounts)
+        find /home/vscode -mindepth 1 $prune -type f -mtime -30 -printf "%TY-%Tm-%Td %TH:%TM %P\n"
+    ' | sort -r | awk '{ split($3, p, "/"); k = p[1]; if (p[2] != "" && p[3] != "") k = k "/" p[2]
+                         if (!(k in vu)) { vu[k] = 1; print $1, $2, k } }'
+    ```
+
+    Changez `-mtime -30` pour remonter plus ou moins loin (en jours).
+
+    Copiez ensuite dans `$BACKUP` uniquement ce que vous voulez garder. Ne copiez pas tout `/home/vscode` : `docker cp` copierait aussi le contenu des montages, dont le cache `uv` qui pèse plusieurs Go.
+
+    ```bash
+    for item in .claude .claude.json .zsh_history .config/gh; do   # ajoutez vos propres dossiers
+        mkdir -p "$BACKUP/$(dirname "$item")"
+        docker cp "$CONTAINER_ID:/home/vscode/$item" "$BACKUP/$item" || echo "absent : $item"
+    done
+    ```
+
+    `/tmp` est vidé au redémarrage de l'hôte : enchaînez les étapes suivantes sans redémarrer.
+
+    Le reste du HOME est recréé au rebuild (`.oh-my-zsh`, `.vscode-server`, caches…) ou fourni par l'hôte (`.ssh`, `.gitconfig` copié par VS Code). Ne copiez pas `.zshrc` : il active l'ancien venv `/home/vscode/.venv`. Si vous y aviez ajouté des lignes personnelles (alias, exports), recopiez-les à la main.
+
+3. Appliquez la mise à jour du template, comme décrit dans [Appliquer la mise à jour](#appliquer-la-mise-a-jour) : `cruft update`, résolution des éventuels fichiers `.rej`, puis commit.
+
+    ```bash
+    cruft update
+    git add . && git commit -m "chore: update template (HOME persistant)"
+    ```
+
+4. Reconstruisez le conteneur (`Ctrl+Shift+P` → `Dev Containers: Rebuild Container`). Le dossier `~/.devcontainer/homes/$PROJET-<identifiant>` est créé sur l'hôte.
+
+5. Recopiez la sauvegarde dans le nouveau HOME :
+
+    ```bash
+    export NEW_HOME=$(ls -d ~/.devcontainer/homes/"$PROJET"-*)
+    echo "$NEW_HOME"                          # un seul dossier attendu
+    cp -a "$BACKUP/." "$NEW_HOME/"
+    ```
+
+6. Rechargez la fenêtre VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`), puis vérifiez que `claude` et `gh auth status` sont toujours connectés. Vous pouvez ensuite supprimer la sauvegarde : `rm -rf "$BACKUP"`.
+
+!!! info "Le venv n'est plus dans le HOME"
+    L'environnement Python passe de `/home/vscode/.venv` à `/tmp/venv`. Il n'est pas conservé : il est recréé à chaque rebuild par `postCreateCommand.sh`. Il n'y a rien à migrer.
+
 ---
 
 ## MkDocs : documentation du projet
@@ -126,7 +202,7 @@ La configuration MkDocs du projet active :
 
 ## Environnement Python avec `uv`
 
-Le projet utilise `uv` pour gérer les dépendances Python. L'environnement virtuel est dans `/home/vscode/.venv` et est activé automatiquement dans chaque terminal.
+Le projet utilise `uv` pour gérer les dépendances Python. L'environnement virtuel est dans `/tmp/venv` et est activé automatiquement dans chaque terminal. Il est recréé à chaque rebuild depuis `uv.lock`.
 
 ### Ajouter un package
 
@@ -154,10 +230,10 @@ uv run --active python mon_script.py
 ```
 
 !!! warning "Toujours `--active`"
-    Sans `--active`, `uv` crée un venv temporaire sous `.venv` dans le dossier du projet au lieu d'utiliser `/home/vscode/.venv`. Les packages installés semblent disparaître au terminal suivant.
+    Sans `--active`, `uv` crée un venv temporaire sous `.venv` dans le dossier du projet au lieu d'utiliser `/tmp/venv`. Les packages installés semblent disparaître au terminal suivant.
 
 !!! info "`uv run` facultatif"
-    Comme un `source /home/vscode/.venv/bin/activate` est fait dans `~/.zshrc`, par défaut toutes les commandes s'entendent dans le contexte du venv actif.
+    Comme un `source /tmp/venv/bin/activate` est fait dans `~/.zshrc`, par défaut toutes les commandes s'entendent dans le contexte du venv actif.
     Donc `uv run --active pytest` et `pytest` sont complétement équivalents.
 
 ### Outils de qualité de code
@@ -340,7 +416,7 @@ La feature `docker-in-docker:2` installe un daemon Docker interne et configure a
 
 ### Notebooks Jupyter
 
-Les extensions Jupyter sont installées dans VS Code. Les notebooks `.ipynb` s'ouvrent directement dans l'éditeur avec le kernel Python du venv `/home/vscode/.venv`.
+Les extensions Jupyter sont installées dans VS Code. Les notebooks `.ipynb` s'ouvrent directement dans l'éditeur avec le kernel Python du venv `/tmp/venv`.
 
 Le hook pre-commit `nbdev-clean` nettoie automatiquement les métadonnées et les outputs des notebooks avant chaque commit, pour garder des diffs lisibles.
 
@@ -378,10 +454,10 @@ Le script `scripts/update_mkdocs_repo_url.sh` met à jour automatiquement le cha
 
 Options choisies à la création du projet (`cruft create`). Elles modifient la configuration du Dev Container.
 
-| Option             | Description                                                    | Défaut |
-| ------------------ | -------------------------------------------------------------- | ------ |
-| `use_node`         | Installer Node.js/npm (extensions VS Code, outils web)         | `"n"`  |
-| `docker_in_docker` | Activer Docker dans le Dev Container (accès au daemon de l'hôte) | `"n"` |
+| Option             | Description                                                      | Défaut |
+| ------------------ | ---------------------------------------------------------------- | ------ |
+| `use_node`         | Installer Node.js/npm (extensions VS Code, outils web)           | `"n"`  |
+| `docker_in_docker` | Activer Docker dans le Dev Container (accès au daemon de l'hôte) | `"n"`  |
 
 ### `docker_in_docker`
 
