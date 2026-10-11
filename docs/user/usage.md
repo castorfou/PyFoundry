@@ -432,6 +432,10 @@ Le shell par défaut dans le conteneur est ZSH avec :
 
 Les hooks pre-commit sont installés et pré-chargés par `postCreateCommand.sh`. Ils s'exécutent automatiquement à chaque `git commit`. Si un hook modifie un fichier (Ruff qui reformate, par exemple), il faut `git add` les modifications et recommiter.
 
+À chaque rebuild, `postCreateCommand.sh` lance `pre-commit autoupdate`. Si des hooks ont une nouvelle version, il commite **uniquement** `.pre-commit-config.yaml` (« chore: update pre-commit hooks to latest versions »). Votre travail en cours, indexé ou non, n'est jamais commité : vous pouvez faire un rebuild en pleine séance de travail. Si ce commit échoue, la config mise à jour reste simplement non commitée.
+
+Un projet tout juste généré passe `pre-commit run --all-files` sans aucune modification.
+
 ```bash
 # Mettre à jour les hooks vers les dernières versions
 pre-commit autoupdate
