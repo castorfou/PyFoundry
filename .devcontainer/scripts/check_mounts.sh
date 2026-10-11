@@ -49,22 +49,34 @@ owner_of() {
 
 # Extrait les montages actifs de devcontainer.json : "source<TAB>target" par ligne
 parse_mounts() {
-    python3 -c "
+    python3 - "$1" <<'PY'
 import json, re, sys
 
 with open(sys.argv[1]) as f:
     content = f.read()
 
-# Commentaires JSONC : blocs, et // en début de ligne seulement (pour garder les http://)
-content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
-content = re.sub(r'^[\t ]*//.*$', '', content, flags=re.MULTILINE)
+# JSONC : les chaînes sont reconnues d'abord et gardées telles quelles, pour que
+# // ou /* dans une chaîne (http://, **/*.pyc) ne soient pas pris pour des commentaires
+STRING = r'"(?:\\.|[^"\\])*"'
+content = re.sub(STRING + r'|//[^\n]*|/\*.*?\*/',
+                 lambda m: m.group() if m.group().startswith('"') else '',
+                 content, flags=re.DOTALL)
+# Virgules finales avant ] ou }
+content = re.sub('(' + STRING + r')|,(\s*[\]}])',
+                 lambda m: m.group(1) or m.group(2), content)
 
-for mount in json.loads(content).get('mounts', []):
+try:
+    config = json.loads(content)
+except json.JSONDecodeError as error:
+    print(f'{sys.argv[1]}: {error}', file=sys.stderr)
+    sys.exit(1)
+
+for mount in config.get('mounts', []):
     parts = dict(part.split('=', 1) for part in mount.split(',') if '=' in part)
     source, target = parts.get('source', ''), parts.get('target', '')
     if source and target:
         print(f'{source}\t{target}')
-" "$1"
+PY
 }
 
 # Résout les variables Dev Containers d'un chemin source

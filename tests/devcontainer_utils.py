@@ -11,15 +11,28 @@ REPO_DEVCONTAINER = REPO_ROOT / ".devcontainer"
 SKELETON_DEVCONTAINER = REPO_ROOT / "{{ cookiecutter.project_slug }}" / ".devcontainer"
 
 
-def parse_jsonc(path: Path) -> dict[str, Any]:
-    """Parse un devcontainer.json en retirant les commentaires.
+JSON_STRING = r'"(?:\\.|[^"\\])*"'
 
-    Même logique que check_mounts.sh : seuls les commentaires `//` en début de
-    ligne sont retirés, pour ne pas casser les URLs (`http://`).
+
+def parse_jsonc(path: Path) -> dict[str, Any]:
+    """Parse un devcontainer.json (JSONC) : commentaires et virgules finales.
+
+    Même logique que check_mounts.sh : les chaînes sont reconnues d'abord et
+    gardées telles quelles, pour ne pas prendre `http://` ou `**/*.pyc` pour
+    des commentaires.
     """
     content = path.read_text()
-    content = re.sub(r"/\*.*?\*/", "", content, flags=re.DOTALL)
-    content = re.sub(r"^[\t ]*//.*$", "", content, flags=re.MULTILINE)
+    content = re.sub(
+        JSON_STRING + r"|//[^\n]*|/\*.*?\*/",
+        lambda m: m.group() if m.group().startswith('"') else "",
+        content,
+        flags=re.DOTALL,
+    )
+    content = re.sub(
+        "(" + JSON_STRING + r")|,(\s*[\]}])",
+        lambda m: m.group(1) or m.group(2),
+        content,
+    )
     config: dict[str, Any] = json.loads(content)
     return config
 

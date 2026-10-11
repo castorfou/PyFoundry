@@ -36,6 +36,17 @@ chmod 600 ~/.ssh/id_ed25519
 
 Les clés publiques (`*.pub`) et `known_hosts` ne sont pas contrôlées.
 
+### Le conteneur ne démarre pas : "impossible de lire la section mounts"
+
+```
+.devcontainer/devcontainer.json: Expecting ',' delimiter: line 12 column 60 (char 349)
+  [FAIL] .devcontainer/devcontainer.json: impossible de lire la section mounts
+```
+
+`check_mounts.sh` n'arrive pas à lire `devcontainer.json`. Le script accepte la syntaxe JSONC de VS Code : commentaires `//` et `/* */` n'importe où, y compris en fin de ligne (`// pragma: allowlist secret`), et virgules finales. L'erreur vient donc d'une vraie faute de syntaxe, le plus souvent une virgule oubliée entre deux éléments. La ligne et la colonne indiquées la situent.
+
+Si le message est suivi d'une traceback Python (`JSONDecodeError`), votre `check_mounts.sh` date d'avant la version 0.4.0 et refuse les commentaires en fin de ligne. Mettez le projet à jour avec `cruft update`.
+
 ### `gh` n'est pas authentifié, ou le navigateur ne s'ouvre pas
 
 Le build ne lance pas `gh auth login` : la connexion est proposée à l'ouverture du premier terminal zsh, une seule fois par conteneur. Si vous l'avez interrompue, ou si Claude Code signale que `gh` n'est pas connecté juste après le premier build, ouvrez un terminal VS Code et lancez :
