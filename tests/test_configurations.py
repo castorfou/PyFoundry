@@ -9,6 +9,8 @@ from pathlib import Path
 import pytest
 import yaml
 
+from tests.devcontainer_utils import REPO_DEVCONTAINER, parse_jsonc
+
 
 def test_pyproject_toml_valid(cookies, minimal_template_context):
     """Test que pyproject.toml généré est syntaxiquement correct."""
@@ -75,6 +77,22 @@ def test_devcontainer_json_valid(cookies, minimal_template_context):
     # Test que les commentaires sont présents (format devcontainer)
     assert "// Variables d'environnement" in content
     assert "// Configuration du shell" in content
+
+
+@pytest.mark.parametrize("source", ["repo", "generated"])
+def test_devcontainer_has_no_isort_extension(cookies, minimal_template_context, source):
+    """Ruff trie les imports : l'extension isort est redondante et échoue au démarrage (#70)."""
+    if source == "repo":
+        devcontainer_dir = REPO_DEVCONTAINER
+    else:
+        result = cookies.bake(extra_context=minimal_template_context)
+        assert result.exit_code == 0
+        devcontainer_dir = Path(result.project_path) / ".devcontainer"
+
+    config = parse_jsonc(devcontainer_dir / "devcontainer.json")
+    extensions = config["customizations"]["vscode"]["extensions"]
+
+    assert "ms-python.isort" not in extensions
 
 
 def test_gitignore_includes_ds_patterns(cookies, minimal_template_context):

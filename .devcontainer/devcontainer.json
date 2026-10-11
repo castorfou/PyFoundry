@@ -33,7 +33,6 @@
                 "ms-toolsai.jupyter-renderers",
                 "ms-toolsai.vscode-jupyter-slideshow",
                 "ms-toolsai.jupyter-keymap",
-                "ms-python.isort",
                 "ms-python.debugpy",
                 "ms-python.python",
                 "github.vscode-github-actions",
