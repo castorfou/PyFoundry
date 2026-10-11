@@ -24,6 +24,9 @@ Un template Cookiecutter de qualité industrielle pour démarrer des projets de 
 
 ```
 PyFoundry/
+├── .claude/
+│   ├── commands/                        # Commandes slash (fix-issue, stocke-memoire)
+│   └── settings.json                    # Plugins activés (mattpocock-skills)
 ├── .devcontainer/                       # Environnement de dev pour travailler sur le template
 │   └── scripts/check_mounts.sh          # Vérification des montages (sur l'hôte, via initializeCommand)
 ├── .github/workflows/
@@ -32,6 +35,7 @@ PyFoundry/
 │   └── release.yml                      # Publication des releases
 ├── docs/                                # Fichiers source MkDocs
 │   ├── adr/                             # Architecture Decision Records
+│   ├── agents/                          # Config des skills Matt Pocock (issues, labels, domaine)
 │   ├── cheatsheets/                     # Claude, GitHub, Docker, uv, VSCode, MkDocs...
 │   ├── dev/                             # Docs développeur (architecture, tests, contribution)
 │   └── user/                            # Docs utilisateur (getting started, conventions)
@@ -219,6 +223,20 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 | `test-template.yml` | Push toutes branches, PR main | Lint ruff + tests pytest |
 | `docs.yml` | Push main (docs/ ou mkdocs.yml) | Déploiement GitHub Pages |
 | `release.yml` | Tag `v*` | Release GitHub + tests |
+
+## Skills Matt Pocock
+
+Le plugin [mattpocock-skills](https://github.com/mattpocock/skills) est activé dans `.claude/settings.json`. Ce réglage active le plugin pour le dépôt mais ne le télécharge pas : chaque utilisateur doit l'installer une fois sur sa machine. Dans VS Code : `/plugins` → onglet **Plugins** → rechercher `mattpocock-skills` → **Install** → **Install for this project**.
+
+La configuration attendue par les skills d'ingénierie est déjà pré-remplie (voir [Agent skills](#agent-skills)) : issues sur GitHub, labels de triage par défaut, documentation du domaine à contexte unique. Pour changer ces choix, modifie directement `docs/agents/*.md` ou relance `/setup-matt-pocock-skills`.
+
+Skills les plus utiles :
+
+- `/grill-me`, `/grill-with-docs` : Claude te pose des questions pour clarifier un besoin avant d'écrire du code
+- `/to-spec`, `/to-tickets` : transformer une discussion en spécification, puis en issues
+- `/tdd` : boucle RED → GREEN → REFACTOR
+- `/triage` : trier les issues GitHub à l'aide des labels
+- `/diagnosing-bugs` : enquêter méthodiquement sur un bug
 
 ## Agent skills
 
