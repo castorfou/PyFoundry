@@ -22,7 +22,9 @@
         "UV_LINK_MODE": "copy",
         "UV_PYTHON": "/tmp/venv/bin/python",
         "UV_PROJECT_ENVIRONMENT": "/tmp/venv",
-        "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"
+        "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1",
+        // Config Claude Code partagée (montée sur ~/.claude) : y place aussi .claude.json
+        "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
     },
 
     "customizations": {
@@ -94,21 +96,24 @@
         }
     },
 
-    // Montages : HOME persistant propre au projet (survit aux rebuilds), cache pre-commit et
-    // authentification gh partagés entre devcontainers, clés SSH, cache uv et timezone de l'hôte (appliquée
-    // par setup_timezone : un montage direct sur /etc/localtime écraserait Etc/UTC)
+    // Montages : HOME persistant propre au projet (survit aux rebuilds), cache pre-commit,
+    // authentification gh et config Claude Code partagés entre devcontainers (sauf les verrous IDE,
+    // propres au projet), clés SSH, cache uv et timezone de l'hôte (appliquée par setup_timezone :
+    // un montage direct sur /etc/localtime écraserait Etc/UTC)
     "mounts": [
         "source=${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId},target=/home/vscode,type=bind",
         "source=${localEnv:HOME}/.cache/pre-commit-devcontainers,target=/home/vscode/.cache/pre-commit,type=bind",
         "source=${localEnv:HOME}/.config/gh-devcontainers,target=/home/vscode/.config/gh,type=bind",
+        "source=${localEnv:HOME}/.config/claude-devcontainers,target=/home/vscode/.claude,type=bind",
+        "source=${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.claude-ide,target=/home/vscode/.claude/ide,type=bind",
         "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
         "source=${localEnv:HOME}/.cache/uv,target=/home/vscode/.cache/uv,type=bind,consistency=cached",
         "source=/etc/localtime,target=/etc/localtime.host,type=bind,consistency=cached,readonly"
     ],
 
-    // Exécuté sur l'hôte avant le montage : crée les sources (sinon Docker les crée en root)
-    // puis vérifie chaque montage
-    "initializeCommand": "mkdir -p \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.cache\" \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.config\" \"${localEnv:HOME}/.cache/pre-commit-devcontainers\" \"${localEnv:HOME}/.cache/uv\" && mkdir -p -m 700 \"${localEnv:HOME}/.ssh\" \"${localEnv:HOME}/.config/gh-devcontainers\" && (cd \"${localWorkspaceFolder}\" && DEVCONTAINER_WORKSPACE_FOLDER_BASENAME=\"${localWorkspaceFolderBasename}\" DEVCONTAINER_ID=\"${devcontainerId}\" bash .devcontainer/scripts/check_mounts.sh --host)",
+    // Exécuté sur l'hôte avant le montage : crée les sources (sinon Docker les crée en root),
+    // recopie l'historique Claude Code de l'ancien HOME du projet, puis vérifie chaque montage
+    "initializeCommand": "mkdir -p \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.cache\" \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.config\" \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.claude\" \"${localEnv:HOME}/.cache/pre-commit-devcontainers\" \"${localEnv:HOME}/.cache/uv\" && mkdir -p -m 700 \"${localEnv:HOME}/.ssh\" \"${localEnv:HOME}/.config/gh-devcontainers\" \"${localEnv:HOME}/.config/claude-devcontainers\" \"${localEnv:HOME}/.config/claude-devcontainers/ide\" \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.claude-ide\" && DEVCONTAINER_WORKSPACE_FOLDER_BASENAME=\"${localWorkspaceFolderBasename}\" DEVCONTAINER_ID=\"${devcontainerId}\" bash \"${localWorkspaceFolder}/.devcontainer/scripts/migrate_claude_history.sh\" && (cd \"${localWorkspaceFolder}\" && DEVCONTAINER_WORKSPACE_FOLDER_BASENAME=\"${localWorkspaceFolderBasename}\" DEVCONTAINER_ID=\"${devcontainerId}\" bash .devcontainer/scripts/check_mounts.sh --host)",
     // Configuration du shell et de l'environnement
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
     "postStartCommand": "echo '🚀 PyFoundry - Environnement prêt!'",
