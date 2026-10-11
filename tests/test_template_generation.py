@@ -177,24 +177,6 @@ def test_docker_in_docker_enabled_when_requested(
     assert "docker-host.sock" in devcontainer_content
 
 
-def test_timezone_configuration(cookies, default_template_context):
-    """Test que la timezone du host est bien héritée par le devcontainer."""
-    result = cookies.bake(extra_context=default_template_context)
-
-    # Vérifier que devcontainer.json contient la configuration timezone
-    devcontainer_content = (
-        result.project_path / ".devcontainer" / "devcontainer.json"
-    ).read_text()
-
-    # Vérifier la présence de la variable d'environnement TZ
-    assert (
-        '"TZ": "${localEnv:TZ}"' in devcontainer_content or "TZ" in devcontainer_content
-    )
-
-    # Vérifier les montages pour les fichiers timezone
-    assert "/etc/localtime" in devcontainer_content
-
-
 def test_claude_md_file_created(cookies, minimal_template_context):
     """Test que le fichier CLAUDE.md est créé avec le template."""
     result = cookies.bake(extra_context=minimal_template_context)

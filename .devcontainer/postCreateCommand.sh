@@ -41,6 +41,35 @@ update_system() {
     echo "Système mis à jour"
 }
 
+# Fuseau de l'hôte : son /etc/localtime est monté sur /etc/localtime.host (issue #65).
+# Monté directement sur /etc/localtime, lien vers zoneinfo/Etc/UTC, il écraserait Etc/UTC :
+# UTC deviendrait l'heure locale et la mise à jour de tzdata échouerait.
+# On fait pointer /etc/localtime vers la zone de même contenu, pour garder son nom.
+setup_timezone() {
+    local host_tz="${HOST_LOCALTIME:-/etc/localtime.host}"
+    local zoneinfo="${ZONEINFO_DIR:-/usr/share/zoneinfo}"
+    local etc_dir="${ETC_DIR:-/etc}"
+
+    if [ ! -s "$host_tz" ]; then
+        echo "⚠️  Fuseau de l'hôte introuvable ($host_tz) : le conteneur reste en UTC"
+        return 0
+    fi
+
+    local zone
+    zone=$(cd "$zoneinfo" && find . -type f ! -path './posix/*' ! -path './right/*' \
+        -exec cmp -s "$host_tz" {} \; -print -quit)
+    zone="${zone#./}"
+
+    if [ -n "$zone" ]; then
+        sudo ln -sfn "$zoneinfo/$zone" "$etc_dir/localtime"
+        echo "$zone" | sudo tee "$etc_dir/timezone" > /dev/null
+        echo "✅ Fuseau horaire : $zone"
+    else
+        sudo ln -sfn "$host_tz" "$etc_dir/localtime"
+        echo "✅ Fuseau horaire : celui de l'hôte (zone non identifiée)"
+    fi
+}
+
 # outil pour ajouter une ligne dans .zshrc si elle n'existe pas déjà
 ensure_zshrc_line() {
     local line="$1"
@@ -266,6 +295,7 @@ config_zsh() {
 # Exécution des étapes
 seed_home
 update_system
+setup_timezone
 ensure_uv
 create_python_environment
 setup_git
