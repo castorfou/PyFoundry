@@ -105,6 +105,23 @@ code ~/temp/mon-projet-data-science
 # Puis "Reopen in Container"
 ```
 
+### Tester la conformité pre-commit du projet généré
+
+Le `.pre-commit-config.yaml` de PyFoundry exclut `{{ cookiecutter.project_slug }}/` de tous les hooks, à cause de la syntaxe Jinja. Les fichiers du squelette ne sont donc jamais nettoyés au commit. Ces tests prennent le relais en CI :
+
+- `tests/test_configurations.py` rend le template (défaut, `use_node=y`, `docker_in_docker=y`) et vérifie ce que contrôlent `end-of-file-fixer`, `trailing-whitespace` et `check-json` : un seul retour à la ligne final, aucun espace en fin de ligne, JSON valides. Les exclusions sont lues dans le `.pre-commit-config.yaml` généré, et seuls les fichiers que git suivrait sont vérifiés.
+- `tests/test_post_create_command.py` exécute `setup_pre-commit` (dépôt et projet généré) dans un dépôt temporaire, avec un faux `pre-commit` et du travail en cours : un rebuild ne doit commiter que `.pre-commit-config.yaml`.
+
+Si un test signale une fin de fichier incorrecte sur un fichier qui se termine par un bloc Jinja, vérifier le rendu des deux branches : un `{% if %}` faux en fin de fichier laisse souvent une ligne vide en trop. Le contrôle d'espaces Jinja (`{%- if %}`, `{%- endif %}`) règle le problème.
+
+Pour vérifier avec le vrai pre-commit :
+
+```bash
+cd ~/temp && rm -rf mon-projet-data-science
+cookiecutter /workspaces/PyFoundry --no-input
+cd mon-projet-data-science && git init -q && git add -A && pre-commit run --all-files
+```
+
 ### Tester le HOME persistant
 
 Les tests automatisés couvrent la configuration :

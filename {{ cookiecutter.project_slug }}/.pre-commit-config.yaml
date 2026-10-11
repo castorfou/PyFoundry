@@ -1,4 +1,4 @@
-# Configuration Pre-commit pour PyFoundry v0.3
+# Configuration Pre-commit pour PyFoundry
 # Hooks de qualité de code exécutés avant chaque commit
 
 repos:
@@ -25,7 +25,7 @@ repos:
       - id: check-merge-conflict      # Détecte les marqueurs de conflit Git
       - id: mixed-line-ending         # Normalise les fins de ligne
       - id: check-case-conflict       # Détecte les conflits de casse
-      
+
   # Ruff - Linter et formateur Python moderne
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.0
@@ -35,7 +35,7 @@ repos:
         name: ruff (lint)
         args: [--fix, --exit-non-zero-on-fix]
         types_or: [python, pyi, jupyter]
-        
+
       # Formatage avec ruff (remplace black)
       - id: ruff-format
         name: ruff (format)
@@ -54,7 +54,7 @@ repos:
           - types-requests           # Types pour requests
         args: [--config-file=pyproject.toml]
 
-  # Sécurité - Détection de secrets et vulnérabilités  
+  # Sécurité - Détection de secrets et vulnérabilités
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
@@ -77,18 +77,18 @@ fail_fast: false                    # Continue même si un hook échoue
 # Fichiers et répertoires exclus
 exclude: |
   (?x)^(
-      data/.*|              # Données
-      models/.*|            # Modèles ML  
-      \{\{\ cookiecutter.project_slug\ \}\}/.*|  # Template output directory (Jinja placeholders)
-      logs/.*|              # Logs
-      \.jupyter/.*|         # Config Jupyter
+      data/.*|                                    # Données
+      models/.*|                                  # Modèles ML
+      logs/.*|                                    # Logs
+      \.jupyter/.*|                               # Config Jupyter
+      \{\{\ cookiecutter\.project_slug\ \}\}/.*   # Fichiers du template Cookiecutter (syntaxe Jinja)
   )$
 
 # Configuration spécifique CI
 ci:
   autofix_commit_msg: |
     [pre-commit.ci] auto fixes from pre-commit.com hooks
-    
+
     for more information, see https://pre-commit.ci
   autofix_prs: true
   autoupdate_branch: ''

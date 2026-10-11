@@ -43,10 +43,11 @@ PyFoundry/
 │   ├── conftest.py                      # Fixtures pytest (contextes de génération)
 │   ├── devcontainer_utils.py            # Parseur JSONC de devcontainer.json
 │   ├── test_template_generation.py      # Tests de génération (structure, fichiers)
-│   ├── test_configurations.py           # Tests de validation (TOML, YAML, JSON)
+│   ├── test_configurations.py           # Validation (TOML, YAML, JSON), conformité aux hooks pre-commit
 │   ├── test_mkdocs_integration.py       # Tests MkDocs (config, build)
 │   ├── test_persistent_home.py          # HOME persistant, montages, venv /tmp/venv
-│   └── test_check_mounts.py             # Script check_mounts.sh
+│   ├── test_check_mounts.py             # Script check_mounts.sh
+│   └── test_post_create_command.py      # setup_pre-commit de postCreateCommand.sh
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── cookiecutter.json                    # Variables du template
 ├── mkdocs.yml
@@ -211,10 +212,11 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 |---------|------|
 | `conftest.py` | Fixtures : `default_template_context`, `minimal_template_context` |
 | `test_template_generation.py` | Structure générée, fichiers présents, variables injectées |
-| `test_configurations.py` | Validité TOML/YAML/JSON, config ruff/mypy/devcontainer |
+| `test_configurations.py` | Validité TOML/YAML/JSON, config ruff/mypy/devcontainer, fichiers générés conformes à `trailing-whitespace`, `end-of-file-fixer` et `check-json` |
 | `test_mkdocs_integration.py` | Config mkdocs.yml, build documentation |
 | `test_persistent_home.py` | HOME persistant, montages, `initializeCommand`, venv `/tmp/venv` (dépôt et projet généré) |
 | `test_check_mounts.py` | `check_mounts.sh` : sources manquantes, résolution des variables, permissions `.ssh` |
+| `test_post_create_command.py` | `setup_pre-commit` : un rebuild ne commite que `.pre-commit-config.yaml`, jamais le travail en cours |
 
 ### CI/CD GitHub Actions
 

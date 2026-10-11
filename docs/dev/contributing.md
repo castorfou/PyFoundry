@@ -298,6 +298,7 @@ tests/
 - `devcontainer.json` : structure devcontainer, éléments essentiels
 - `.gitignore` : patterns Data Science essentiels
 - Configuration Ruff : règles pandas/numpy, line-length
+- Fichiers générés conformes aux hooks `end-of-file-fixer`, `trailing-whitespace` et `check-json`
 - Configuration MyPy : mode progressif, overrides Data Science
 
 #### Lancement des tests

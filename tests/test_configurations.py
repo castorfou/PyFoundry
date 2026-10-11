@@ -1,7 +1,12 @@
 """Tests de validation des configurations générées."""
 
+import json
+import re
+import subprocess
 import tomllib
+from pathlib import Path
 
+import pytest
 import yaml
 
 
@@ -145,3 +150,101 @@ def test_mypy_configuration_progressive(cookies, minimal_template_context):
                 assert override.get("ignore_missing_imports") is True
 
     assert ds_modules_found, "Missing Data Science modules in mypy overrides"
+
+
+# --- Hygiène des fichiers générés (hooks pre-commit, issue #68) ---
+
+CONTEXTS = [
+    "default_template_context",
+    "node_template_context",
+    "docker_in_docker_template_context",
+]
+
+
+def _precommit_exclude_patterns(project_path: Path) -> tuple[re.Pattern, re.Pattern]:
+    """Retourne l'exclusion globale et celle du hook check-json du projet généré."""
+    config = yaml.safe_load((project_path / ".pre-commit-config.yaml").read_text())
+    check_json = next(
+        hook
+        for repo in config["repos"]
+        for hook in repo["hooks"]
+        if hook["id"] == "check-json"
+    )
+    return re.compile(config["exclude"]), re.compile(check_json.get("exclude", "^$"))
+
+
+def _text_files(project_path: Path) -> dict[str, str]:
+    """Fichiers texte non vides que pre-commit vérifierait, par chemin relatif."""
+    global_exclude, _ = _precommit_exclude_patterns(project_path)
+    # Comme pre-commit, ne voir que les fichiers que git suivrait (.gitignore appliqué)
+    subprocess.run(["git", "init", "-q"], cwd=project_path, check=True)
+    listed = subprocess.run(
+        ["git", "ls-files", "--others", "--exclude-standard"],
+        cwd=project_path,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()
+    files = {}
+    for rel in sorted(listed):
+        if global_exclude.search(rel):
+            continue
+        try:
+            content = (project_path / rel).read_bytes().decode("utf-8")
+        except UnicodeDecodeError:
+            continue  # fichier binaire (images...)
+        if content:
+            files[rel] = content
+    return files
+
+
+@pytest.mark.parametrize("context_name", CONTEXTS)
+def test_generated_files_end_with_single_newline(cookies, request, context_name):
+    """Chaque fichier texte finit par un seul retour à la ligne (end-of-file-fixer)."""
+    result = cookies.bake(extra_context=request.getfixturevalue(context_name))
+    assert result.exit_code == 0
+
+    bad = [
+        rel
+        for rel, content in _text_files(result.project_path).items()
+        if not content.endswith("\n") or content.endswith("\n\n")
+    ]
+    assert not bad, f"Fin de fichier incorrecte : {bad}"
+
+
+@pytest.mark.parametrize("context_name", CONTEXTS)
+def test_generated_files_have_no_trailing_whitespace(cookies, request, context_name):
+    """Aucune ligne ne finit par un espace ou une tabulation (trailing-whitespace)."""
+    result = cookies.bake(extra_context=request.getfixturevalue(context_name))
+    assert result.exit_code == 0
+
+    bad = [
+        f"{rel}:{lineno}"
+        for rel, content in _text_files(result.project_path).items()
+        for lineno, line in enumerate(content.splitlines(), start=1)
+        if line != line.rstrip(" \t")
+    ]
+    assert not bad, f"Espaces en fin de ligne : {bad}"
+
+
+@pytest.mark.parametrize("context_name", CONTEXTS)
+def test_generated_json_files_are_valid(cookies, request, context_name):
+    """Les fichiers JSON vérifiés par check-json sont du JSON strict."""
+    result = cookies.bake(extra_context=request.getfixturevalue(context_name))
+    assert result.exit_code == 0
+
+    _, check_json_exclude = _precommit_exclude_patterns(result.project_path)
+    json_files = {
+        rel: content
+        for rel, content in _text_files(result.project_path).items()
+        if rel.endswith(".json") and not check_json_exclude.search(rel)
+    }
+    assert ".vscode/settings.json" in json_files
+
+    bad = []
+    for rel, content in json_files.items():
+        try:
+            json.loads(content)
+        except json.JSONDecodeError as exc:
+            bad.append(f"{rel}: {exc}")
+    assert not bad, f"JSON invalide : {bad}"
