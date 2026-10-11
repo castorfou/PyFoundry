@@ -324,6 +324,73 @@ class TestHostCheck:
         assert "devcontainer.json not found" in result.stdout
 
 
+# Syntaxes JSONC acceptées par VS Code, que le JSON strict refuse (issue #80)
+JSONC_SAMPLES = {
+    # Commentaire de fin de ligne ajouté par detect-secrets (cas de l'issue)
+    "end_of_line_comment": """{
+    "runArgs": [
+        "--env",
+        "CONTAINER_NAME=dev" // pragma: allowlist secret
+    ],
+    "mounts": [
+        "source=/etc/localtime,target=/etc/localtime.host,type=bind" // fuseau
+    ]
+}""",
+    # // et /* dans une chaîne ne sont pas des commentaires
+    "comment_markers_in_strings": """{
+    "image": "http://registry.example.com/python",
+    "settings": {"files.exclude": {"**/*.pyc": true}, "x": "*/"},
+    "mounts": [
+        "source=/etc/localtime,target=/etc/localtime.host,type=bind"
+    ]
+}""",
+    "trailing_commas": """{
+    "mounts": [
+        "source=/etc/localtime,target=/etc/localtime.host,type=bind",
+    ],
+}""",
+}
+
+
+class TestJsonc:
+    @pytest.mark.parametrize("sample", JSONC_SAMPLES)
+    def test_script_reads_mounts(self, workspace, host_home, sample):
+        write_devcontainer(workspace, JSONC_SAMPLES[sample])
+
+        result = run_check(workspace, host_env(host_home))
+
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "Mount: /etc/localtime -> /etc/localtime.host" in result.stdout
+
+    @pytest.mark.parametrize("sample", JSONC_SAMPLES)
+    def test_parse_jsonc_reads_mounts(self, tmp_path, sample):
+        path = tmp_path / "devcontainer.json"
+        path.write_text(JSONC_SAMPLES[sample])
+
+        assert parse_jsonc(path)["mounts"] == [
+            "source=/etc/localtime,target=/etc/localtime.host,type=bind"
+        ]
+
+    def test_parse_jsonc_keeps_comment_markers_in_strings(self, tmp_path):
+        path = tmp_path / "devcontainer.json"
+        path.write_text(JSONC_SAMPLES["comment_markers_in_strings"])
+
+        config = parse_jsonc(path)
+
+        assert config["image"] == "http://registry.example.com/python"
+        assert config["settings"] == {"files.exclude": {"**/*.pyc": True}, "x": "*/"}
+
+    def test_invalid_json_fails_with_location_not_traceback(self, workspace, host_home):
+        write_devcontainer(workspace, '{\n    "mounts": [\n        "a" "b"\n    ]\n}')
+
+        result = run_check(workspace, host_env(host_home))
+
+        assert result.returncode == 1
+        assert "impossible de lire la section mounts" in result.stdout
+        assert "Traceback" not in result.stderr
+        assert "line 3" in result.stderr
+
+
 def test_repo_configuration_passes_once_sources_exist(tmp_path, host_home):
     """La vraie config du dépôt passe après les mkdir de initializeCommand."""
     workspace = tmp_path / "PyFoundry"
