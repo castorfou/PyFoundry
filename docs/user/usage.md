@@ -75,7 +75,19 @@ Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : le
     export CONTAINER_ID=<ID>
     ```
 
-2. Copiez dans `$BACKUP` uniquement ce que vous voulez garder. Ne copiez pas tout `/home/vscode` : `docker cp` copierait aussi le contenu des montages, dont le cache `uv` qui pèse plusieurs Go.
+2. Repérez ce que vous voulez garder. La commande suivante liste les dossiers et fichiers du HOME modifiés depuis 30 jours, du plus récent au plus ancien, sur deux niveaux (`.config/gh`, `.claude/projects`…). Les points de montage (`.ssh`, `.cache/uv`…) sont exclus : ils sont déjà sur l'hôte. Le conteneur doit être démarré : sinon lancez d'abord `docker start "$CONTAINER_ID"`.
+
+    ```bash
+    docker exec "$CONTAINER_ID" sh -c '
+        prune=$(awk "\$2 ~ \"^/home/vscode/\" { printf \"-path %s -prune -o \", \$2 }" /proc/self/mounts)
+        find /home/vscode -mindepth 1 $prune -type f -mtime -30 -printf "%TY-%Tm-%Td %TH:%TM %P\n"
+    ' | sort -r | awk '{ split($3, p, "/"); k = p[1]; if (p[2] != "" && p[3] != "") k = k "/" p[2]
+                         if (!(k in vu)) { vu[k] = 1; print $1, $2, k } }'
+    ```
+
+    Changez `-mtime -30` pour remonter plus ou moins loin (en jours).
+
+    Copiez ensuite dans `$BACKUP` uniquement ce que vous voulez garder. Ne copiez pas tout `/home/vscode` : `docker cp` copierait aussi le contenu des montages, dont le cache `uv` qui pèse plusieurs Go.
 
     ```bash
     for item in .claude .claude.json .zsh_history .config/gh; do   # ajoutez vos propres dossiers
