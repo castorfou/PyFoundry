@@ -52,13 +52,9 @@ Le template stocke désormais le HOME du conteneur (`/home/vscode`) sur l'hôte,
 
 Cette section concerne les projets générés avant ce changement. Si `cruft diff` montre l'ajout de la ligne `target=/home/vscode` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
 
-Le **premier** rebuild après la mise à jour démarre avec un HOME vide. Sans précaution, vous perdez la connexion `gh` et l'historique du shell. Pour les conserver, sauvegardez le HOME de l'ancien conteneur **avant** le rebuild.
+Le **premier** rebuild après la mise à jour supprime l'ancien conteneur et démarre avec un HOME vide. Sans précaution, vous perdez l'historique Claude Code (conversations, mémoire, checkpoints), la connexion `gh` et l'historique du shell. Pour les conserver, sauvegardez le HOME de l'ancien conteneur **avant** le rebuild.
 
-Claude Code n'est pas concerné : sa config est copiée dans le dossier partagé, voir [Passer à la config Claude Code partagée](#passer-a-la-config-claude-code-partagee). Cette copie part du HOME persistant : elle ne récupère pas les conversations d'un conteneur qui n'en avait pas encore. Pour les garder, ajoutez `.claude` à la boucle de sauvegarde de l'étape 2, puis, à l'étape 5, recopiez-le dans le dossier partagé sans écraser l'existant :
-
-```bash
-cp -an "$BACKUP/.claude/." ~/.config/claude-devcontainers/
-```
+La copie automatique de l'historique Claude Code (voir [Passer à la config Claude Code partagée](#passer-a-la-config-claude-code-partagee)) ne vous aide pas ici : elle part du HOME persistant, que votre projet n'avait pas encore.
 
 Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : les variables définies à l'étape 1 servent jusqu'à la fin.
 
@@ -96,7 +92,7 @@ Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : le
     Copiez ensuite dans `$BACKUP` uniquement ce que vous voulez garder. Ne copiez pas tout `/home/vscode` : `docker cp` copierait aussi le contenu des montages, dont le cache `uv` qui pèse plusieurs Go.
 
     ```bash
-    for item in .zsh_history .config/gh; do   # ajoutez vos propres dossiers
+    for item in .claude .config/gh .zsh_history; do   # ajoutez vos propres dossiers
         mkdir -p "$BACKUP/$(dirname "$item")"
         docker cp "$CONTAINER_ID:/home/vscode/$item" "$BACKUP/$item" || echo "absent : $item"
     done
@@ -115,15 +111,25 @@ Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : le
 
 4. Reconstruisez le conteneur (`Ctrl+Shift+P` → `Dev Containers: Rebuild Container`). Le dossier `~/.devcontainer/homes/$PROJET-<identifiant>` est créé sur l'hôte.
 
-5. Recopiez la sauvegarde dans le nouveau HOME :
+5. Recopiez la sauvegarde. `.claude` et `.config/gh` vont dans les dossiers partagés : dans le conteneur, ils sont montés par-dessus le HOME, qui ne les voit donc pas. `-n` n'écrase rien de ce qui s'y trouve déjà, en particulier une connexion faite depuis un autre projet. Le reste va dans le nouveau HOME.
 
     ```bash
+    cp -an "$BACKUP/.claude/." ~/.config/claude-devcontainers/
+    cp -an "$BACKUP/.config/gh/." ~/.config/gh-devcontainers/
+    rm -rf "$BACKUP/.claude" "$BACKUP/.config/gh"   # copiés ci-dessus, inutiles dans le HOME
     export NEW_HOME=$(ls -d ~/.devcontainer/homes/"$PROJET"-*)
     echo "$NEW_HOME"                          # un seul dossier attendu
     cp -a "$BACKUP/." "$NEW_HOME/"
     ```
 
-6. Rechargez la fenêtre VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`), puis vérifiez que `gh auth status` est toujours connecté. Vous pouvez ensuite supprimer la sauvegarde : `rm -rf "$BACKUP"`.
+    Selon la version de `cp`, un fichier déjà présent dans un dossier partagé est signalé par `not replacing` : c'est attendu, il est simplement conservé.
+
+6. Rechargez la fenêtre VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`), puis vérifiez :
+
+    - `gh auth status` : connecté ;
+    - `/resume` dans Claude Code : vos conversations sont là. Si le panneau demande de vous connecter, faites-le : la connexion Claude Code n'est pas reprise de l'ancien conteneur, une seule connexion sert à tous les projets.
+
+    Vous pouvez ensuite supprimer la sauvegarde : `rm -rf "$BACKUP"`.
 
 !!! info "Le venv n'est plus dans le HOME"
     L'environnement Python passe de `/home/vscode/.venv` à `/tmp/venv`. Il n'est pas conservé : il est recréé à chaque rebuild par `postCreateCommand.sh`. Il n'y a rien à migrer.
