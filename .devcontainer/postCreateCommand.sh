@@ -138,17 +138,12 @@ setup_pre-commit() {
             # Force l'installation des environnements maintenant pour éviter les délais futurs
             pre-commit install-hooks
 
-            # Commiter les changements de pre-commit autoupdate + corrections formatage
-            if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
-                echo "Commit des mises à jour et corrections pre-commit..."
-                git add .pre-commit-config.yaml
-
-                # Correction du formatage par les hooks peut générer des changements
-                if ! git commit -m "chore: update pre-commit hooks to latest versions" 2>/dev/null; then
-                    # Si le commit échoue à cause des hooks, ajouter les corrections
-                    echo "Ajout des corrections de formatage..."
-                    git add .
-                    git commit -m "chore: update pre-commit hooks and fix formatting" || true
+            # Commiter la seule config mise à jour par autoupdate : `git commit -- fichier`
+            # laisse intacts l'index et le travail en cours (pas de `git add .`)
+            if ! git diff --quiet -- .pre-commit-config.yaml; then
+                echo "Commit de la mise à jour des hooks pre-commit..."
+                if ! git commit -m "chore: update pre-commit hooks to latest versions" -- .pre-commit-config.yaml; then
+                    echo "⚠️  Commit impossible : .pre-commit-config.yaml mis à jour mais non commité"
                 fi
             fi
 
