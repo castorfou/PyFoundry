@@ -275,11 +275,13 @@ def test_repo_configuration_passes_once_sources_exist(tmp_path, host_home):
     )
     for directory in [
         ".devcontainer/homes/PyFoundry-id42/.cache",
+        ".devcontainer/homes/PyFoundry-id42/.config",
         ".cache/pre-commit-devcontainers",
         ".cache/uv",
     ]:
         (host_home / directory).mkdir(parents=True)
     (host_home / ".ssh").mkdir(mode=0o700)
+    (host_home / ".config" / "gh-devcontainers").mkdir(parents=True, mode=0o700)
 
     result = run_check(
         workspace,
