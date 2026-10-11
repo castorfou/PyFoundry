@@ -15,6 +15,7 @@ from tests.devcontainer_utils import (
     REPO_DEVCONTAINER,
     REPO_ROOT,
     SKELETON_DEVCONTAINER,
+    parse_jsonc,
 )
 
 
@@ -259,6 +260,63 @@ class TestHostCheck:
         assert result.returncode == 1
         assert f'chmod 700 "{ssh}"' in result.stdout
 
+    @staticmethod
+    def _nested_mount(workspace: Path, host_home: Path) -> Path:
+        """HOME persistant contenant le point de montage du cache uv."""
+        home_dir = host_home / ".devcontainer" / "homes" / f"{workspace.name}-id42"
+        (home_dir / ".cache" / "uv").mkdir(parents=True)
+        (host_home / ".cache" / "uv").mkdir(parents=True)
+        write_devcontainer(
+            workspace,
+            [
+                HOME_MOUNT,
+                (
+                    "source=${localEnv:HOME}/.cache/uv,"
+                    "target=/home/vscode/.cache/uv,type=bind"
+                ),
+            ],
+        )
+        return home_dir / ".cache" / "uv"
+
+    def test_foreign_nested_mountpoint_warns_with_fix(self, workspace, host_home):
+        """Un point de montage créé en root par Docker bloque `rm -rf` du HOME."""
+        mountpoint = self._nested_mount(workspace, host_home)
+        env = host_env(host_home, DEVCONTAINER_ID="id42")
+        env["CHECK_MOUNTS_UID"] = str(os.getuid() + 1)
+
+        result = run_check(workspace, env)
+
+        assert result.returncode == 0, result.stdout
+        home_dir = mountpoint.parent.parent
+        assert "[WARN] Dossiers appartenant à" in result.stdout
+        assert f'cd "{home_dir}"' in result.stdout
+        assert "rmdir .cache/uv && mkdir .cache/uv" in result.stdout
+        # VS Code étiquette le conteneur avec le dossier du projet sur l'hôte
+        assert (
+            "docker stop $(docker ps -q --filter "
+            f'"label=devcontainer.local_folder={workspace}")'
+        ) in result.stdout
+        # La source du HOME n'est pas un point de montage imbriqué
+        assert result.stdout.count("[WARN]") == 1
+
+    def test_own_nested_mountpoint_does_not_warn(self, workspace, host_home):
+        self._nested_mount(workspace, host_home)
+
+        result = run_check(workspace, host_env(host_home, DEVCONTAINER_ID="id42"))
+
+        assert result.returncode == 0, result.stdout
+        assert "[WARN]" not in result.stdout
+
+    def test_missing_nested_mountpoint_does_not_warn(self, workspace, host_home):
+        self._nested_mount(workspace, host_home).rmdir()
+        env = host_env(host_home, DEVCONTAINER_ID="id42")
+        env["CHECK_MOUNTS_UID"] = str(os.getuid() + 1)
+
+        result = run_check(workspace, env)
+
+        assert result.returncode == 0, result.stdout
+        assert "[WARN]" not in result.stdout
+
     def test_missing_devcontainer_json_fails(self, workspace, host_home):
         result = run_check(workspace, host_env(host_home))
 
@@ -270,20 +328,21 @@ def test_repo_configuration_passes_once_sources_exist(tmp_path, host_home):
     """La vraie config du dépôt passe après les mkdir de initializeCommand."""
     workspace = tmp_path / "PyFoundry"
     (workspace / ".devcontainer").mkdir(parents=True)
+    devcontainer_json = REPO_ROOT / ".devcontainer" / "devcontainer.json"
     (workspace / ".devcontainer" / "devcontainer.json").write_text(
-        (REPO_ROOT / ".devcontainer" / "devcontainer.json").read_text()
+        devcontainer_json.read_text()
     )
-    for directory in [
-        ".devcontainer/homes/PyFoundry-id42/.cache",
-        ".devcontainer/homes/PyFoundry-id42/.config",
-        ".cache/pre-commit-devcontainers",
-        ".cache/uv",
-    ]:
-        (host_home / directory).mkdir(parents=True)
-    (host_home / ".ssh").mkdir(mode=0o700)
-    (host_home / ".config" / "gh-devcontainers").mkdir(parents=True, mode=0o700)
-    (host_home / ".config" / "claude-devcontainers" / "ide").mkdir(parents=True)
-    (host_home / ".devcontainer/homes/PyFoundry-id42/.claude-ide").mkdir()
+    command = parse_jsonc(devcontainer_json)["initializeCommand"]
+    mkdirs = " && ".join(
+        part for part in command.split(" && ") if part.startswith("mkdir ")
+    )
+    for variable, value in {
+        "${localEnv:HOME}": str(host_home),
+        "${localWorkspaceFolderBasename}": "PyFoundry",
+        "${devcontainerId}": "id42",
+    }.items():
+        mkdirs = mkdirs.replace(variable, value)
+    subprocess.run(["bash", "-c", mkdirs], check=True)
 
     result = run_check(
         workspace,
@@ -295,3 +354,4 @@ def test_repo_configuration_passes_once_sources_exist(tmp_path, host_home):
     )
 
     assert result.returncode == 0, result.stdout
+    assert "[WARN]" not in result.stdout

@@ -98,15 +98,6 @@ def test_initialize_command_creates_private_claude_dirs(devcontainer_dir):
     assert f'"{PERSISTENT_HOME}/.claude-ide"' in commands
 
 
-def test_initialize_command_creates_claude_mountpoint_in_persistent_home(
-    devcontainer_dir,
-):
-    # Sinon Docker crée le point de montage .claude en root dans le HOME persistant
-    config = parse_jsonc(devcontainer_dir / "devcontainer.json")
-
-    assert f'"{PERSISTENT_HOME}/.claude"' in config["initializeCommand"]
-
-
 def test_initialize_command_migrates_history_before_checking_mounts(
     devcontainer_dir,
 ):

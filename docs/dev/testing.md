@@ -144,7 +144,7 @@ cd mon-projet-data-science && git init -q && git add -A && pre-commit run --all-
 
 `tests/test_github_auth.py` couvre le dépôt et les projets générés (défaut et `docker_in_docker=y`) :
 
-- le montage `~/.config/gh-devcontainers` → `/home/vscode/.config/gh` ; `initializeCommand` crée la source en `700` et crée `.config` dans le HOME persistant ;
+- le montage `~/.config/gh-devcontainers` → `/home/vscode/.config/gh` ; `initializeCommand` crée la source en `700` ;
 - `postCreateCommand.sh` ne contient pas `gh auth login`, et `config_zsh` ajoute le hook `gh_login.sh` à `.zshrc` ;
 - `setup_gh_credential_helper` est exécuté dans un dépôt temporaire, avec un faux `gh` puis sans `gh` ;
 - `gh_login.sh` est exécuté avec un faux `gh` qui journalise ses appels (`FAKE_GH_LOG`) et un marqueur dans `tmp_path` (`GH_LOGIN_MARKER`). Le test vérifie que le script reste silencieux si un token existe, sans appel à `gh auth status` ; qu'il lance un login `--web` une seule fois par conteneur ; qu'il sort en `0` quand le login échoue ou que `gh` est absent.
@@ -156,7 +156,7 @@ Le parcours réel se vérifie sur l'hôte : générer un projet, le rebuild, ouv
 `tests/test_claude_auth.py` couvre le dépôt et les projets générés (défaut et `docker_in_docker=y`) :
 
 - le montage `~/.config/claude-devcontainers` → `/home/vscode/.claude`, `CLAUDE_CONFIG_DIR`, et le montage de `.claude-ide` sur `~/.claude/ide` ;
-- `initializeCommand` crée ces dossiers en `700` et le point de montage `.claude` dans le HOME persistant, puis lance `migrate_claude_history.sh` avant `check_mounts.sh` ;
+- `initializeCommand` crée ces dossiers en `700`, puis lance `migrate_claude_history.sh` avant `check_mounts.sh` ;
 - `migrate_claude_history.sh` est exécuté avec un faux `HOME` (`tmp_path`). Le test vérifie qu'il copie les conversations, la mémoire et les checkpoints sans écraser l'existant, qu'il ajoute `history.jsonl` à la fin, qu'il ne tourne qu'une fois, qu'il ne copie pas la connexion, et qu'il sort en `0` sans ancien historique ou quand le dossier partagé est en lecture seule.
 
 Le parcours réel se vérifie sur l'hôte :
@@ -170,8 +170,8 @@ Le parcours réel se vérifie sur l'hôte :
 
 Les tests automatisés couvrent la configuration :
 
-- `tests/test_persistent_home.py` : montages, `initializeCommand`, venv `/tmp/venv` (dont `UV_PROJECT_ENVIRONMENT`) et `seed_home`, sur le devcontainer du dépôt et sur les projets générés.
-- `tests/test_check_mounts.py` : exécute `check_mounts.sh` dans un `tmp_path` avec un `HOME` redirigé (source manquante, résolution des variables, permissions `.ssh`).
+- `tests/test_persistent_home.py` : montages, `initializeCommand`, venv `/tmp/venv` (dont `UV_PROJECT_ENVIRONMENT`) et `seed_home`, sur le devcontainer du dépôt et sur les projets générés. `test_initialize_command_creates_nested_mountpoints` déduit des `mounts` chaque point de montage imbriqué dans la source d'un autre montage (helper `nested_mountpoints` de `tests/devcontainer_utils.py`), et vérifie qu'`initializeCommand` le crée. Un nouveau montage dans le HOME est couvert sans modifier le test.
+- `tests/test_check_mounts.py` : exécute `check_mounts.sh` dans un `tmp_path` avec un `HOME` redirigé (source manquante, résolution des variables, permissions `.ssh`, points de montage imbriqués). Un dossier root ne se crée pas sans `sudo` : `CHECK_MOUNTS_UID` remplace l'uid attendu pour simuler un autre propriétaire. `test_repo_configuration_passes_once_sources_exist` exécute les vrais `mkdir` d'`initializeCommand`, puis vérifie que la config du dépôt passe sans `[WARN]`.
 
 Le comportement réel ne se vérifie que sur l'hôte. Après un rebuild du conteneur :
 
@@ -181,6 +181,12 @@ echo $VIRTUAL_ENV           # /tmp/venv
 ```
 
 Puis faites un **second** rebuild : `~/.claude`, `gh auth status` et `~/.zsh_history` doivent être conservés.
+
+Sur l'hôte, aucun dossier du HOME persistant ne doit appartenir à root :
+
+```bash
+find ~/.devcontainer/homes -mindepth 1 -maxdepth 3 -user root   # sortie vide
+```
 
 Pour vérifier les montages sans rebuild, sur l'hôte à la racine du projet :
 

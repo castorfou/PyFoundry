@@ -16,7 +16,11 @@ fi
 WORKSPACE_FOLDER_BASENAME="${DEVCONTAINER_WORKSPACE_FOLDER_BASENAME:-$(basename "$PWD")}"
 HOMES_DIR="$HOME/.devcontainer/homes"
 
+# Propriétaire attendu des points de montage (surchargé par les tests)
+OWNER_UID="${CHECK_MOUNTS_UID:-$(id -u)}"
+
 ERRORS=0
+WARNINGS=0
 
 log_section() {
     echo ""
@@ -31,6 +35,16 @@ log_ok() {
 log_fail() {
     echo "  [FAIL] $1"
     ERRORS=$((ERRORS + 1))
+}
+
+log_warn() {
+    echo "  [WARN] $1"
+    WARNINGS=$((WARNINGS + 1))
+}
+
+# Propriétaire d'un chemin : uid et nom (stat GNU, sinon BSD/macOS)
+owner_of() {
+    stat -c '%u %U' "$1" 2>/dev/null || stat -f '%u %Su' "$1"
 }
 
 # Extrait les montages actifs de devcontainer.json : "source<TAB>target" par ligne
@@ -125,9 +139,15 @@ fi
 
 log_section "Montages détectés"
 
+# Cibles et sources résolues, dans l'ordre de devcontainer.json (bash 3 : pas de tableau associatif)
+TARGETS=()
+RESOLVED_SOURCES=()
+
 while IFS=$'\t' read -r source target; do
     [[ -n "$source" ]] || continue
     resolved=$(resolve_path "$source")
+    TARGETS+=("$target")
+    RESOLVED_SOURCES+=("$resolved")
     echo "  Mount: $resolved -> $target"
 
     if [[ "$resolved" == *'${devcontainerId}'* ]]; then
@@ -165,11 +185,67 @@ while IFS=$'\t' read -r source target; do
     log_ok "$target"
 done <<< "$MOUNTS"
 
+# Un montage imbriqué dans un autre (ex. ~/.ssh dans le HOME) a son point de montage
+# dans la source du parent. S'il manque, Docker le crée en root : supprimer cette source
+# demande alors sudo. Le dossier reste vide sur l'hôte, donc rmdir suffit à le recréer.
+log_section "Points de montage imbriqués"
+
+# Points de montage d'un autre propriétaire, regroupés par source parente (index du montage)
+FOREIGN=()
+FOREIGN_OWNER=()
+
+for i in "${!TARGETS[@]}"; do
+    target="${TARGETS[$i]}"
+    parent=""
+    parent_index=""
+    for j in "${!TARGETS[@]}"; do
+        candidate="${TARGETS[$j]}"
+        if [[ "$target" == "${candidate%/}/"* && ${#candidate} -gt ${#parent} ]]; then
+            parent="$candidate"
+            parent_index="$j"
+        fi
+    done
+    [[ -n "$parent" ]] || continue
+
+    relative="${target#"${parent%/}/"}"
+    mountpoint="${RESOLVED_SOURCES[$parent_index]}/$relative"
+    [[ "$mountpoint" != *'${'* && -d "$mountpoint" ]] || continue
+
+    read -r uid name < <(owner_of "$mountpoint")
+    if [[ "$uid" != "$OWNER_UID" ]]; then
+        FOREIGN[$parent_index]="${FOREIGN[$parent_index]:-} $relative"
+        FOREIGN_OWNER[$parent_index]="$name"
+    else
+        log_ok "$target"
+    fi
+done
+
+for j in "${!FOREIGN[@]}"; do
+    source_dir="${RESOLVED_SOURCES[$j]}"
+    log_warn "Dossiers appartenant à ${FOREIGN_OWNER[$j]} dans $source_dir :"
+    echo "          ${FOREIGN[$j]# }"
+    echo "        Docker les a créés vides pour y monter des dossiers de l'hôte. Le conteneur"
+    echo "        fonctionne, mais supprimer $source_dir demandera sudo."
+    echo "        Pour les rendre à $(id -un) (sudo inutile) :"
+    echo "          1. Fermez VS Code."
+    echo "          2. Sur l'hôte, arrêtez le conteneur du projet :"
+    echo "               docker stop \$(docker ps -q --filter \"label=devcontainer.local_folder=$PWD\")"
+    echo "          3. Recréez les dossiers :"
+    echo "               cd \"$source_dir\""
+    echo "               rmdir${FOREIGN[$j]} && mkdir${FOREIGN[$j]}"
+    echo "          4. Rouvrez le projet dans VS Code."
+done
+
 log_section "Résumé"
 
 if [[ "$ERRORS" -gt 0 ]]; then
     echo "  $ERRORS erreur(s) : corrigez-les avant de démarrer le devcontainer."
     exit 1
+fi
+
+if [[ "$WARNINGS" -gt 0 ]]; then
+    echo "  Tous les montages sont valides, $WARNINGS avertissement(s)."
+    exit 0
 fi
 
 echo "  Tous les montages sont valides."
