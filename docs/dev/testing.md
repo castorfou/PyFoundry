@@ -91,12 +91,11 @@ grep "docker-in-docker" mon-projet-data-science/.devcontainer/devcontainer.json
 ### Tester le devcontainer
 
 ```bash
-# Vérifier que devcontainer.json est valide (JSON avec commentaires)
+# Vérifier que devcontainer.json est valide (JSONC), depuis la racine du dépôt PyFoundry
 python -c "
-import re, json
-content = open('mon-projet-data-science/.devcontainer/devcontainer.json').read()
-content = re.sub(r'//[^\n]*', '', content)
-json.loads(content)
+from pathlib import Path
+from tests.devcontainer_utils import parse_jsonc
+parse_jsonc(Path.home() / 'temp/mon-projet-data-science/.devcontainer/devcontainer.json')
 print('JSON valide')
 "
 
@@ -171,7 +170,7 @@ Le parcours réel se vérifie sur l'hôte :
 Les tests automatisés couvrent la configuration :
 
 - `tests/test_persistent_home.py` : montages, `initializeCommand`, venv `/tmp/venv` (dont `UV_PROJECT_ENVIRONMENT`) et `seed_home`, sur le devcontainer du dépôt et sur les projets générés. `test_initialize_command_creates_nested_mountpoints` déduit des `mounts` chaque point de montage imbriqué dans la source d'un autre montage (helper `nested_mountpoints` de `tests/devcontainer_utils.py`), et vérifie qu'`initializeCommand` le crée. Un nouveau montage dans le HOME est couvert sans modifier le test.
-- `tests/test_check_mounts.py` : exécute `check_mounts.sh` dans un `tmp_path` avec un `HOME` redirigé (source manquante, résolution des variables, permissions `.ssh`, points de montage imbriqués). Un dossier root ne se crée pas sans `sudo` : `CHECK_MOUNTS_UID` remplace l'uid attendu pour simuler un autre propriétaire. `test_repo_configuration_passes_once_sources_exist` exécute les vrais `mkdir` d'`initializeCommand`, puis vérifie que la config du dépôt passe sans `[WARN]`.
+- `tests/test_check_mounts.py` : exécute `check_mounts.sh` dans un `tmp_path` avec un `HOME` redirigé (source manquante, résolution des variables, permissions `.ssh`, points de montage imbriqués). La classe `TestJsonc` passe les mêmes échantillons JSONC (commentaire en fin de ligne, `//` et `/* */` dans des chaînes, virgules finales) au script et à `parse_jsonc` de `tests/devcontainer_utils.py`, pour garder les deux parseurs alignés. Un dossier root ne se crée pas sans `sudo` : `CHECK_MOUNTS_UID` remplace l'uid attendu pour simuler un autre propriétaire. `test_repo_configuration_passes_once_sources_exist` exécute les vrais `mkdir` d'`initializeCommand`, puis vérifie que la config du dépôt passe sans `[WARN]`.
 
 Le comportement réel ne se vérifie que sur l'hôte. Après un rebuild du conteneur :
 
