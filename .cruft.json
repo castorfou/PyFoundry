@@ -1,6 +1,6 @@
 {
   "template": "git@github.com:castorfou/PyFoundry.git",
-  "commit": "c33ad72116c504764583923131da05a99d47401c",
+  "commit": "73c914b4e93c9520427eb6f60db8c6f5ed684b24",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -10,11 +10,13 @@
       "python_version": "3.11",
       "github_username": "castorfou",
       "use_node": "y",
+      "docker_in_docker": "n",
       "_copy_without_render": [
-        ".devcontainer/resources/.p10k.zsh"
+        ".devcontainer/resources/.p10k.zsh",
+        ".devcontainer/scripts/check_mounts.sh"
       ],
       "_template": "git@github.com:castorfou/PyFoundry.git",
-      "_commit": "c33ad72116c504764583923131da05a99d47401c"
+      "_commit": "73c914b4e93c9520427eb6f60db8c6f5ed684b24"
     }
   },
   "directory": null
