@@ -30,7 +30,8 @@ PyFoundry/
 ├── .devcontainer/                       # Environnement de dev pour travailler sur le template
 │   └── scripts/
 │       ├── check_mounts.sh              # Vérification des montages (sur l'hôte, via initializeCommand)
-│       └── gh_login.sh                  # Authentification gh au premier terminal zsh
+│       ├── gh_login.sh                  # Authentification gh au premier terminal zsh
+│       └── migrate_claude_history.sh    # Historique Claude Code vers la config partagée (sur l'hôte)
 ├── .github/workflows/
 │   ├── test-template.yml                # CI : lint + tests sur toutes les branches
 │   ├── docs.yml                         # Déploiement documentation GitHub Pages
@@ -51,7 +52,8 @@ PyFoundry/
 │   ├── test_check_mounts.py             # Script check_mounts.sh
 │   ├── test_post_create_command.py      # setup_pre-commit de postCreateCommand.sh
 │   ├── test_timezone.py                 # Fuseau de l'hôte : montage, setup_timezone
-│   └── test_github_auth.py              # Authentification gh : montage partagé, gh_login.sh
+│   ├── test_github_auth.py              # Authentification gh : montage partagé, gh_login.sh
+│   └── test_claude_auth.py              # Config Claude Code partagée, migration de l'historique
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── cookiecutter.json                    # Variables du template
 ├── mkdocs.yml
@@ -223,6 +225,7 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 | `test_post_create_command.py` | `setup_pre-commit` : un rebuild ne commite que `.pre-commit-config.yaml`, jamais le travail en cours |
 | `test_timezone.py` | Fuseau de l'hôte monté sur `/etc/localtime.host` (jamais sur `/etc/localtime`, qui écraserait `Etc/UTC`), pas de `TZ` transmis (vide = UTC), `setup_timezone` relie `/etc/localtime` à la zone de même contenu |
 | `test_github_auth.py` | Config gh partagée entre devcontainers (`~/.config/gh-devcontainers`, créé en `700`), aucun `gh auth login` dans `postCreateCommand`, `setup_gh_credential_helper`, `gh_login.sh` (silencieux si authentifié, sans réseau, une seule tentative par conteneur, jamais d'échec du shell) |
+| `test_claude_auth.py` | Config Claude Code partagée entre devcontainers (`~/.config/claude-devcontainers` monté sur `~/.claude`, créé en `700`), `CLAUDE_CONFIG_DIR`, verrous `~/.claude/ide` propres au projet, `migrate_claude_history.sh` (copie sans écraser, une seule fois, jamais la connexion, jamais d'échec) |
 
 ### CI/CD GitHub Actions
 

@@ -151,6 +151,21 @@ cd mon-projet-data-science && git init -q && git add -A && pre-commit run --all-
 
 Le parcours réel se vérifie sur l'hôte : générer un projet, le rebuild, ouvrir un terminal (le navigateur de l'hôte s'ouvre), puis rebuild à nouveau : `gh auth status` doit rester connecté.
 
+### Tester la config Claude Code partagée
+
+`tests/test_claude_auth.py` couvre le dépôt et les projets générés (défaut et `docker_in_docker=y`) :
+
+- le montage `~/.config/claude-devcontainers` → `/home/vscode/.claude`, `CLAUDE_CONFIG_DIR`, et le montage de `.claude-ide` sur `~/.claude/ide` ;
+- `initializeCommand` crée ces dossiers en `700` et le point de montage `.claude` dans le HOME persistant, puis lance `migrate_claude_history.sh` avant `check_mounts.sh` ;
+- `migrate_claude_history.sh` est exécuté avec un faux `HOME` (`tmp_path`). Le test vérifie qu'il copie les conversations, la mémoire et les checkpoints sans écraser l'existant, qu'il ajoute `history.jsonl` à la fin, qu'il ne tourne qu'une fois, qu'il ne copie pas la connexion, et qu'il sort en `0` sans ancien historique ou quand le dossier partagé est en lecture seule.
+
+Le parcours réel se vérifie sur l'hôte :
+
+1. Créer un projet depuis `main` (`cruft create … --checkout main`), l'ouvrir et démarrer une conversation.
+2. Le mettre à jour vers la branche (`cruft update --checkout <branche>`, qui ne voit que les commits), puis rebuild.
+3. Après la connexion, la conversation est là.
+4. Au rebuild suivant, la connexion est conservée.
+
 ### Tester le HOME persistant
 
 Les tests automatisés couvrent la configuration :
@@ -161,7 +176,7 @@ Les tests automatisés couvrent la configuration :
 Le comportement réel ne se vérifie que sur l'hôte. Après un rebuild du conteneur :
 
 ```bash
-mount | grep /home/vscode   # HOME, .ssh (ro), .cache/pre-commit, .config/gh, .cache/uv
+mount | grep /home/vscode   # HOME, .ssh (ro), .cache/pre-commit, .config/gh, .claude, .claude/ide, .cache/uv
 echo $VIRTUAL_ENV           # /tmp/venv
 ```
 

@@ -61,3 +61,7 @@ Cette configuration est déjà pré-remplie par PyFoundry : issues dans GitHub (
 | `/tdd` | boucle RED → GREEN → REFACTOR |
 | `/triage` | trier les issues GitHub à l'aide des labels |
 | `/diagnosing-bugs` | enquêter méthodiquement sur un bug |
+
+## Connexion dans un devcontainer PyFoundry
+
+Dans un devcontainer PyFoundry, `~/.claude` est partagé par tous les devcontainers (dossier `~/.config/claude-devcontainers` sur l'hôte), et `CLAUDE_CONFIG_DIR` y place aussi `.claude.json`. On se connecte une seule fois pour tous les projets, et la connexion survit aux rebuilds. Les conversations et la mémoire restent propres à chaque projet, car Claude Code les range par chemin (`/workspaces/<projet>`).

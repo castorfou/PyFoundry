@@ -48,11 +48,17 @@ cruft update --variables-to-update-file .cruft.json
 
 ### Passer au HOME persistant
 
-Le template stocke désormais le HOME du conteneur (`/home/vscode`) sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Il survit aux rebuilds : connexion Claude Code, historique du shell, `~/.gitconfig`. La connexion `gh` est stockée à part, dans `~/.config/gh-devcontainers` sur l'hôte, partagé par tous les devcontainers.
+Le template stocke désormais le HOME du conteneur (`/home/vscode`) sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Il survit aux rebuilds : historique du shell, `~/.gitconfig`. La connexion `gh` et la config Claude Code (connexion, conversations) sont stockées à part, dans `~/.config/gh-devcontainers` et `~/.config/claude-devcontainers` sur l'hôte, partagés par tous les devcontainers.
 
 Cette section concerne les projets générés avant ce changement. Si `cruft diff` montre l'ajout de la ligne `target=/home/vscode` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
 
-Le **premier** rebuild après la mise à jour démarre avec un HOME vide. Sans précaution, vous perdez la connexion Claude Code et `gh`, l'historique et la mémoire des conversations Claude Code, et l'historique du shell. Pour les conserver, sauvegardez le HOME de l'ancien conteneur **avant** le rebuild.
+Le **premier** rebuild après la mise à jour démarre avec un HOME vide. Sans précaution, vous perdez la connexion `gh` et l'historique du shell. Pour les conserver, sauvegardez le HOME de l'ancien conteneur **avant** le rebuild.
+
+Claude Code n'est pas concerné : sa config est copiée dans le dossier partagé, voir [Passer à la config Claude Code partagée](#passer-a-la-config-claude-code-partagee). Cette copie part du HOME persistant : elle ne récupère pas les conversations d'un conteneur qui n'en avait pas encore. Pour les garder, ajoutez `.claude` à la boucle de sauvegarde de l'étape 2, puis, à l'étape 5, recopiez-le dans le dossier partagé sans écraser l'existant :
+
+```bash
+cp -an "$BACKUP/.claude/." ~/.config/claude-devcontainers/
+```
 
 Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : les variables définies à l'étape 1 servent jusqu'à la fin.
 
@@ -90,7 +96,7 @@ Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : le
     Copiez ensuite dans `$BACKUP` uniquement ce que vous voulez garder. Ne copiez pas tout `/home/vscode` : `docker cp` copierait aussi le contenu des montages, dont le cache `uv` qui pèse plusieurs Go.
 
     ```bash
-    for item in .claude .claude.json .zsh_history .config/gh; do   # ajoutez vos propres dossiers
+    for item in .zsh_history .config/gh; do   # ajoutez vos propres dossiers
         mkdir -p "$BACKUP/$(dirname "$item")"
         docker cp "$CONTAINER_ID:/home/vscode/$item" "$BACKUP/$item" || echo "absent : $item"
     done
@@ -117,10 +123,26 @@ Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : le
     cp -a "$BACKUP/." "$NEW_HOME/"
     ```
 
-6. Rechargez la fenêtre VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`), puis vérifiez que `claude` et `gh auth status` sont toujours connectés. Vous pouvez ensuite supprimer la sauvegarde : `rm -rf "$BACKUP"`.
+6. Rechargez la fenêtre VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`), puis vérifiez que `gh auth status` est toujours connecté. Vous pouvez ensuite supprimer la sauvegarde : `rm -rf "$BACKUP"`.
 
 !!! info "Le venv n'est plus dans le HOME"
     L'environnement Python passe de `/home/vscode/.venv` à `/tmp/venv`. Il n'est pas conservé : il est recréé à chaque rebuild par `postCreateCommand.sh`. Il n'y a rien à migrer.
+
+
+### Passer à la config Claude Code partagée
+
+La connexion et la config Claude Code sont désormais partagées par tous les devcontainers : le dossier `~/.config/claude-devcontainers` de l'hôte est monté sur `~/.claude`. Vous vous connectez une fois pour tous les projets.
+
+Cette section concerne les projets qui ont déjà le HOME persistant. Si `cruft diff` montre l'ajout de `claude-devcontainers` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
+
+Il n'y a rien à sauvegarder :
+
+1. Appliquez la mise à jour du template (`cruft update`, puis commit), comme décrit dans [Appliquer la mise à jour](#appliquer-la-mise-a-jour).
+2. Reconstruisez le conteneur. Avant le démarrage, `.devcontainer/scripts/migrate_claude_history.sh` copie sur l'hôte l'historique du projet dans le dossier partagé : conversations, mémoire, checkpoints et historique des prompts. La copie n'écrase rien et n'a lieu qu'une fois par projet.
+3. Connectez-vous dans le panneau Claude Code. La connexion n'est pas copiée : cette étape n'est à faire qu'une fois, pour le premier projet mis à jour.
+4. Vérifiez avec `/resume` que vos conversations sont là.
+
+L'ancienne config reste sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>/.claude` et `.claude.json`. Le conteneur ne la voit plus. Une fois la migration vérifiée, vous pouvez la supprimer.
 
 ---
 
