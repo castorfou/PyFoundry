@@ -46,6 +46,49 @@ cruft update --variables-to-update '{ "docker_in_docker": "y" }'
 cruft update --variables-to-update-file .cruft.json
 ```
 
+### Passer au HOME persistant
+
+Le template stocke désormais le HOME du conteneur (`/home/vscode`) sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Il survit aux rebuilds : connexion Claude Code, connexion `gh`, historique du shell, `~/.gitconfig`.
+
+Cette section concerne les projets générés avant ce changement. Si `cruft diff` montre l'ajout de la ligne `target=/home/vscode` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
+
+Le **premier** rebuild après la mise à jour démarre avec un HOME vide. Sans précaution, vous perdez la connexion Claude Code et `gh`, l'historique et la mémoire des conversations Claude Code, et l'historique du shell. Pour les conserver, sauvegardez le HOME de l'ancien conteneur **avant** le rebuild.
+
+1. Sur l'hôte, repérez l'ancien conteneur du projet (colonne de droite : dossier du projet) :
+
+    ```bash
+    docker ps -a --format '{{.ID}}  {{.Label "devcontainer.local_folder"}}'
+    ```
+
+2. Copiez son HOME sur l'hôte (remplacez `<ID>` et `<projet>`) :
+
+    ```bash
+    docker cp <ID>:/home/vscode ~/<projet>-home-backup
+    ```
+
+3. Appliquez la mise à jour du template, comme décrit dans [Appliquer la mise à jour](#appliquer-la-mise-a-jour) : `cruft update` résolution des éventuels fichiers `.rej`, puis commit.
+
+    ```bash
+    cruft update
+    git add . && git commit -m "chore: update template (HOME persistant)"
+    ```
+
+4. Reconstruisez le conteneur (`Ctrl+Shift+P` → `Dev Containers: Rebuild Container`). Le dossier `~/.devcontainer/homes/<projet>-<identifiant>` est créé sur l'hôte.
+
+5. Sur l'hôte, recopiez ce que vous voulez garder dans le nouveau HOME :
+
+    ```bash
+    backup=~/<projet>-home-backup
+    home=$(ls -d ~/.devcontainer/homes/<projet>-*)   # un seul dossier attendu
+    cp -a "$backup/.claude" "$backup/.claude.json" "$backup/.zsh_history" "$home/"
+    mkdir -p "$home/.config" && cp -a "$backup/.config/gh" "$home/.config/"
+    ```
+
+6. Rechargez la fenêtre VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`), puis vérifiez que `claude` et `gh auth status` sont toujours connectés. Vous pouvez ensuite supprimer `~/<projet>-home-backup`.
+
+!!! info "Le venv n'est plus dans le HOME"
+    L'environnement Python passe de `/home/vscode/.venv` à `/tmp/venv`. Il n'est pas conservé : il est recréé à chaque rebuild par `postCreateCommand.sh`. Il n'y a rien à migrer.
+
 ---
 
 ## MkDocs : documentation du projet
@@ -378,10 +421,10 @@ Le script `scripts/update_mkdocs_repo_url.sh` met à jour automatiquement le cha
 
 Options choisies à la création du projet (`cruft create`). Elles modifient la configuration du Dev Container.
 
-| Option             | Description                                                    | Défaut |
-| ------------------ | -------------------------------------------------------------- | ------ |
-| `use_node`         | Installer Node.js/npm (extensions VS Code, outils web)         | `"n"`  |
-| `docker_in_docker` | Activer Docker dans le Dev Container (accès au daemon de l'hôte) | `"n"` |
+| Option             | Description                                                      | Défaut |
+| ------------------ | ---------------------------------------------------------------- | ------ |
+| `use_node`         | Installer Node.js/npm (extensions VS Code, outils web)           | `"n"`  |
+| `docker_in_docker` | Activer Docker dans le Dev Container (accès au daemon de l'hôte) | `"n"`  |
 
 ### `docker_in_docker`
 
