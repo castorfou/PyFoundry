@@ -56,10 +56,12 @@ graph TD
 #### Montages pour héritage config
 ```json
 "mounts": [
-    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached,readonly",
+    "source=${localEnv:HOME}/.cache/pre-commit-devcontainers,target=/home/vscode/.cache/pre-commit,type=bind",
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly"
 ]
 ```
+
+Le cache pre-commit est partagé entre devcontainers : les hooks ne sont téléchargés qu'une fois par hôte. `~/.gitconfig` n'est plus monté, VS Code le copie depuis l'hôte. Voir [HOME persistant](architecture.md#home-persistant).
 
 ### 2. Configuration pre-commit optimisée
 

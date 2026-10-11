@@ -10,7 +10,7 @@ Les tests automatisés utilisent `pytest-cookies` pour générer des projets tem
 
 ```bash
 # Depuis le devcontainer PyFoundry
-source /home/vscode/.venv/bin/activate && pytest tests -v
+source /tmp/venv/bin/activate && pytest tests -v
 
 # Un fichier spécifique
 pytest tests/test_template_generation.py -v
@@ -105,6 +105,28 @@ code ~/temp/mon-projet-data-science
 # Puis "Reopen in Container"
 ```
 
+### Tester le HOME persistant
+
+Les tests automatisés couvrent la configuration :
+
+- `tests/test_persistent_home.py` : montages, `initializeCommand`, venv `/tmp/venv` et `seed_home`, sur le devcontainer du dépôt et sur les projets générés.
+- `tests/test_check_mounts.py` : exécute `check_mounts.sh` dans un `tmp_path` avec un `HOME` redirigé (source manquante, résolution des variables, permissions `.ssh`).
+
+Le comportement réel ne se vérifie que sur l'hôte. Après un rebuild du conteneur :
+
+```bash
+mount | grep /home/vscode   # HOME, .ssh (ro), .cache/pre-commit, .cache/uv
+echo $VIRTUAL_ENV           # /tmp/venv
+```
+
+Puis faites un **second** rebuild : `~/.claude`, `gh auth status` et `~/.zsh_history` doivent être conservés.
+
+Pour vérifier les montages sans rebuild, sur l'hôte à la racine du projet :
+
+```bash
+bash .devcontainer/scripts/check_mounts.sh --host
+```
+
 ### Tester MkDocs
 
 ```bash
@@ -128,7 +150,7 @@ uv run --active pytest
 
 ```bash
 # 1. Tests automatisés
-source /home/vscode/.venv/bin/activate && pytest tests -v
+source /tmp/venv/bin/activate && pytest tests -v
 
 # 2. Lint
 ruff check tests/ docs/ --fix

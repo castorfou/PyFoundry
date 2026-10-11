@@ -190,7 +190,7 @@ La configuration MkDocs du projet active :
 
 ## Environnement Python avec `uv`
 
-Le projet utilise `uv` pour gérer les dépendances Python. L'environnement virtuel est dans `/home/vscode/.venv` et est activé automatiquement dans chaque terminal.
+Le projet utilise `uv` pour gérer les dépendances Python. L'environnement virtuel est dans `/tmp/venv` et est activé automatiquement dans chaque terminal. Il est recréé à chaque rebuild depuis `uv.lock`.
 
 ### Ajouter un package
 
@@ -218,10 +218,10 @@ uv run --active python mon_script.py
 ```
 
 !!! warning "Toujours `--active`"
-    Sans `--active`, `uv` crée un venv temporaire sous `.venv` dans le dossier du projet au lieu d'utiliser `/home/vscode/.venv`. Les packages installés semblent disparaître au terminal suivant.
+    Sans `--active`, `uv` crée un venv temporaire sous `.venv` dans le dossier du projet au lieu d'utiliser `/tmp/venv`. Les packages installés semblent disparaître au terminal suivant.
 
 !!! info "`uv run` facultatif"
-    Comme un `source /home/vscode/.venv/bin/activate` est fait dans `~/.zshrc`, par défaut toutes les commandes s'entendent dans le contexte du venv actif.
+    Comme un `source /tmp/venv/bin/activate` est fait dans `~/.zshrc`, par défaut toutes les commandes s'entendent dans le contexte du venv actif.
     Donc `uv run --active pytest` et `pytest` sont complétement équivalents.
 
 ### Outils de qualité de code
@@ -404,7 +404,7 @@ La feature `docker-in-docker:2` installe un daemon Docker interne et configure a
 
 ### Notebooks Jupyter
 
-Les extensions Jupyter sont installées dans VS Code. Les notebooks `.ipynb` s'ouvrent directement dans l'éditeur avec le kernel Python du venv `/home/vscode/.venv`.
+Les extensions Jupyter sont installées dans VS Code. Les notebooks `.ipynb` s'ouvrent directement dans l'éditeur avec le kernel Python du venv `/tmp/venv`.
 
 Le hook pre-commit `nbdev-clean` nettoie automatiquement les métadonnées et les outputs des notebooks avant chaque commit, pour garder des diffs lisibles.
 

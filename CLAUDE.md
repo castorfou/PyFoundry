@@ -25,19 +25,24 @@ Un template Cookiecutter de qualité industrielle pour démarrer des projets de 
 ```
 PyFoundry/
 ├── .devcontainer/                       # Environnement de dev pour travailler sur le template
+│   └── scripts/check_mounts.sh          # Vérification des montages (sur l'hôte, via initializeCommand)
 ├── .github/workflows/
 │   ├── test-template.yml                # CI : lint + tests sur toutes les branches
 │   ├── docs.yml                         # Déploiement documentation GitHub Pages
 │   └── release.yml                      # Publication des releases
 ├── docs/                                # Fichiers source MkDocs
+│   ├── adr/                             # Architecture Decision Records
 │   ├── cheatsheets/                     # Claude, GitHub, Docker, uv, VSCode, MkDocs...
 │   ├── dev/                             # Docs développeur (architecture, tests, contribution)
 │   └── user/                            # Docs utilisateur (getting started, conventions)
 ├── tests/
 │   ├── conftest.py                      # Fixtures pytest (contextes de génération)
+│   ├── devcontainer_utils.py            # Parseur JSONC de devcontainer.json
 │   ├── test_template_generation.py      # Tests de génération (structure, fichiers)
 │   ├── test_configurations.py           # Tests de validation (TOML, YAML, JSON)
-│   └── test_mkdocs_integration.py       # Tests MkDocs (config, build)
+│   ├── test_mkdocs_integration.py       # Tests MkDocs (config, build)
+│   ├── test_persistent_home.py          # HOME persistant, montages, venv /tmp/venv
+│   └── test_check_mounts.py             # Script check_mounts.sh
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── cookiecutter.json                    # Variables du template
 ├── mkdocs.yml
@@ -154,7 +159,7 @@ uv run --active mkdocs build --strict
 ### R1.1 — Lancer pytest
 
 ```bash
-source /home/vscode/.venv/bin/activate && pytest tests -v
+source /tmp/venv/bin/activate && pytest tests -v
 ```
 
 ### R1.2 — Lancer ruff
@@ -204,6 +209,8 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 | `test_template_generation.py` | Structure générée, fichiers présents, variables injectées |
 | `test_configurations.py` | Validité TOML/YAML/JSON, config ruff/mypy/devcontainer |
 | `test_mkdocs_integration.py` | Config mkdocs.yml, build documentation |
+| `test_persistent_home.py` | HOME persistant, montages, `initializeCommand`, venv `/tmp/venv` (dépôt et projet généré) |
+| `test_check_mounts.py` | `check_mounts.sh` : sources manquantes, résolution des variables, permissions `.ssh` |
 
 ### CI/CD GitHub Actions
 

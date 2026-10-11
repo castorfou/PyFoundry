@@ -11,15 +11,57 @@ Vous êtes probablement ici parce que quelque chose ne marche pas. Cherchez votr
 Error: bind mount /home/user/.ssh failed: No such file or directory
 ```
 
-Le Dev Container monte des dossiers de votre machine hôte (`~/.ssh`, `~/.gitconfig`). Si l'un n'existe pas, Docker refuse de démarrer.
+Le Dev Container monte des dossiers de votre machine hôte (HOME persistant, `~/.ssh`, caches). Si l'un n'existe pas, Docker refuse de démarrer.
+
+Normalement `initializeCommand` les crée avant le démarrage, puis `check_mounts.sh` vérifie chaque montage. Lisez la sortie du build : chaque montage en erreur est signalé par `[FAIL]` avec la commande à lancer (`mkdir -p`, `touch`, `chmod`).
+
+Pour relancer la vérification à la main :
 
 ```bash
-# Sur votre machine hôte (pas dans le conteneur)
-mkdir -p ~/.ssh
-touch ~/.gitconfig
+# Sur votre machine hôte (pas dans le conteneur), à la racine du projet
+bash .devcontainer/scripts/check_mounts.sh --host
 ```
 
-Puis relancez le conteneur.
+Corrigez les `[FAIL]` signalés, puis relancez le conteneur.
+
+### Le conteneur refuse de démarrer : permissions de `~/.ssh`
+
+`check_mounts.sh` applique les mêmes règles que `ssh` : le dossier `~/.ssh` et `~/.ssh/config` ne doivent pas être modifiables par le groupe ou les autres, et les clés privées ne doivent être lisibles que par vous. Le message `[FAIL]` donne la commande `chmod` exacte pour chaque fichier fautif, par exemple :
+
+```bash
+# Sur votre machine hôte
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_ed25519
+```
+
+Les clés publiques (`*.pub`) et `known_hosts` ne sont pas contrôlées.
+
+### Repartir d'un HOME vierge
+
+Le HOME du conteneur est conservé sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Si une configuration y est cassée (shell, extension VS Code, connexion Claude Code), supprimez ce dossier puis reconstruisez le conteneur :
+
+```bash
+# Sur votre machine hôte, conteneur arrêté
+rm -rf ~/.devcontainer/homes/<projet>-*
+```
+
+Vous perdez alors les connexions (`claude`, `gh`), l'historique du shell et la mémoire des conversations Claude Code.
+
+Ce dossier n'est pas supprimé avec le projet : pensez à le retirer quand vous supprimez un projet.
+
+### pre-commit échoue : `InvalidManifestError`
+
+```
+An error has occurred: InvalidManifestError:
+==> File /home/vscode/.cache/pre-commit/repo.../.pre-commit-hooks.yaml
+```
+
+Le cache pre-commit est partagé entre tous vos devcontainers. Un clone interrompu (build coupé, réseau instable) peut y rester à moitié écrit. Videz le cache, puis réinstallez les hooks :
+
+```bash
+pre-commit clean
+pre-commit install-hooks
+```
 
 
 ### Le build échoue sur les features (ghcr.io)
@@ -50,12 +92,12 @@ Vous avez installé un package mais Python ne le trouve pas :
 ModuleNotFoundError: No module named 'pandas'
 ```
 
-**Cause probable** : vous avez oublié `--active`. Sans cette option, `uv` crée un venv éphémère au lieu d'utiliser `/home/vscode/.venv`.
+**Cause probable** : vous avez oublié `--active`. Sans cette option, `uv` crée un venv éphémère au lieu d'utiliser `/tmp/venv`.
 
 ```bash
 # Vérifier quel venv est actif
 echo $VIRTUAL_ENV
-# Doit afficher : /home/vscode/.venv
+# Doit afficher : /tmp/venv
 
 # Réinstaller proprement
 uv sync --active --all-extras

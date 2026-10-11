@@ -21,13 +21,16 @@ mamba install -c conda-forge cruft
 
 ### Dossiers et fichiers montés par le Dev Container
 
-Le conteneur monte des chemins de la machine hôte pour partager la configuration Git, SSH et le cache uv. **Ils doivent exister sur l'hôte avant le premier lancement**, sinon devcontainer refusera de démarrer.
+Le conteneur monte des chemins de la machine hôte pour conserver le HOME entre deux rebuilds et partager SSH et les caches. Vous n'avez rien à créer : avant chaque démarrage, `initializeCommand` crée les dossiers manquants sur l'hôte puis vérifie chaque montage avec `.devcontainer/scripts/check_mounts.sh`.
 
-| Chemin hôte    | Type    | Rôle                      |
-| -------------- | ------- | ------------------------- |
-| `~/.ssh`       | Dossier | Clés SSH pour Git         |
-| `~/.gitconfig` | Fichier | Configuration Git globale |
-| `~/.cache/uv ` | Dossier | Cache UV                  |
+| Chemin hôte                                         | Monté sur                        | Rôle                                                       |
+| --------------------------------------------------- | -------------------------------- | ---------------------------------------------------------- |
+| `~/.devcontainer/homes/<projet>-<identifiant>`       | `/home/vscode`                   | HOME persistant, propre au projet (survit aux rebuilds)    |
+| `~/.cache/pre-commit-devcontainers`                  | `/home/vscode/.cache/pre-commit` | Cache pre-commit, partagé entre devcontainers              |
+| `~/.ssh`                                             | `/home/vscode/.ssh` (lecture seule) | Clés SSH pour Git                                       |
+| `~/.cache/uv`                                        | `/home/vscode/.cache/uv`         | Cache uv, partagé entre devcontainers                      |
+
+`~/.gitconfig` n'est plus monté : VS Code copie automatiquement le `.gitconfig` de l'hôte dans le conteneur.
 
 
 ---
@@ -64,7 +67,8 @@ VS Code détecte `.devcontainer/` et propose **"Reopen in Container"** (ou `Ctrl
 
 Le premier build prend quelques minutes. Le script `postCreateCommand.sh` :
 
-- crée l'environnement Python dans `/home/vscode/.venv` via `uv`
+- crée l'environnement Python dans `/tmp/venv` via `uv` (recréé à chaque rebuild)
+- complète le HOME persistant avec les fichiers par défaut (`.bashrc`, `.profile`…) sans écraser l'existant
 - installe toutes les dépendances du projet en les récupérant depuis `pyproject.toml`
 - configure `pre-commit`, `zsh`, `gh` (GitHub CLI), Git
 - initialise le dépôt Git local avec un premier commit
