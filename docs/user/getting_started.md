@@ -27,6 +27,7 @@ Le conteneur monte des chemins de la machine hôte pour conserver le HOME entre 
 | --------------------------------------------------- | -------------------------------- | ---------------------------------------------------------- |
 | `~/.devcontainer/homes/<projet>-<identifiant>`       | `/home/vscode`                   | HOME persistant, propre au projet (survit aux rebuilds)    |
 | `~/.cache/pre-commit-devcontainers`                  | `/home/vscode/.cache/pre-commit` | Cache pre-commit, partagé entre devcontainers              |
+| `~/.config/gh-devcontainers`                         | `/home/vscode/.config/gh`        | Authentification `gh`, partagée entre devcontainers        |
 | `~/.ssh`                                             | `/home/vscode/.ssh` (lecture seule) | Clés SSH pour Git                                       |
 | `~/.cache/uv`                                        | `/home/vscode/.cache/uv`         | Cache uv, partagé entre devcontainers                      |
 
@@ -98,8 +99,17 @@ Le dépôt Git local est déjà initialisé par `postCreateCommand.sh`. Il reste
 
 #### 1. S'authentifier
 
+Le build ne demande rien. À l'ouverture du **premier terminal** zsh, si `gh` n'est pas encore authentifié, la connexion vous est proposée :
+
+1. Appuyez sur Entrée : le navigateur de votre machine hôte s'ouvre sur `github.com/login/device`.
+2. Collez le code affiché dans le terminal, puis validez.
+
+L'authentification est partagée par tous vos devcontainers PyFoundry (dossier `~/.config/gh-devcontainers` de l'hôte) : vous ne la faites qu'une fois, et elle survit aux rebuilds. Vérifiez avec `gh auth status`.
+
+La connexion n'est proposée qu'une fois par conteneur. Si vous l'avez interrompue, relancez-la depuis un terminal :
+
 ```bash
-gh auth login
+gh auth login --web
 ```
 
 #### 2. Créer le dépôt distant

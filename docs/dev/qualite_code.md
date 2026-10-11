@@ -33,7 +33,7 @@ graph TD
     E --> F[Setup Python + deps]
     F --> G[Git init --initial-branch=main]
     G --> H[pre-commit install + install-hooks]
-    H --> I[gh auth login]
+    H --> I[gh : credential helper]
     I --> J[Commit initial avec hooks]
     J --> K[Projet prêt !]
 ```
@@ -57,11 +57,12 @@ graph TD
 ```json
 "mounts": [
     "source=${localEnv:HOME}/.cache/pre-commit-devcontainers,target=/home/vscode/.cache/pre-commit,type=bind",
+    "source=${localEnv:HOME}/.config/gh-devcontainers,target=/home/vscode/.config/gh,type=bind",
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly"
 ]
 ```
 
-Le cache pre-commit est partagé entre devcontainers : les hooks ne sont téléchargés qu'une fois par hôte. `~/.gitconfig` n'est plus monté, VS Code le copie depuis l'hôte. Voir [HOME persistant](architecture.md#home-persistant).
+Le cache pre-commit et la config `gh` sont partagés entre devcontainers : les hooks ne sont téléchargés qu'une fois par hôte, et l'authentification GitHub n'est faite qu'une fois. `~/.gitconfig` n'est plus monté, VS Code le copie depuis l'hôte. Voir [HOME persistant](architecture.md#home-persistant).
 
 ### 2. Configuration pre-commit optimisée
 
@@ -154,16 +155,9 @@ fi
 
 ### 2. Authentification GitHub interrompue
 
-Problème : L'utilisateur peut interrompre `gh auth login`.
+Problème : lancé depuis `postCreateCommand`, `gh auth login --web` bloquait le build et ne pouvait ouvrir ni le navigateur ni le presse-papiers (issue #64).
 
-Solution : Check status + guidance claire :
-```bash
-if ! gh auth status &>/dev/null; then
-    echo "🔐 Authentification GitHub requise pour push/pull"
-    echo "Lancement de l'authentification..."
-    gh auth login --git-protocol https --web
-fi
-```
+Solution : la connexion est proposée au premier terminal zsh par `.devcontainer/scripts/gh_login.sh`, où la variable `BROWSER` de VS Code ouvre le navigateur de l'hôte. Une interruption ne casse pas le shell, et un marqueur évite de reposer la question à chaque terminal. Voir [Authentification GitHub](architecture.md#authentification-github).
 
 ### 3. detect-secrets sans baseline
 
