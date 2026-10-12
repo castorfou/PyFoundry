@@ -165,6 +165,16 @@ Le parcours réel se vérifie sur l'hôte :
 3. Après la connexion, la conversation est là.
 4. Au rebuild suivant, la connexion est conservée.
 
+### Tester la gestion des versions
+
+`tests/test_versioning.py` garde cohérentes les trois copies de la version (voir [Versions et releases](release.md)) :
+
+- la version de `pyproject.toml` est en SemVer strict et égale à `_pyfoundry_version` de `cookiecutter.json`. Le projet généré a cette variable dans son contexte ;
+- `CHANGELOG.md` commence par `## [Non publié]`, a une section datée pour la version courante et couvre l'historique depuis la 0.4.0 ;
+- `.github/scripts/release.py` est lancé en sous-processus, avec `--root` pointant vers une copie des fichiers dans `tmp_path`. `check-tag` refuse un tag d'une autre version, un tag sans `v`, un `cookiecutter.json` désaligné ou une version absente du CHANGELOG. `notes` renvoie le corps exact d'une section ;
+- `release.yml` appelle `check-tag` et `notes`, sans `git log` ;
+- `/fix-issue` contient l'étape CHANGELOG et reste identique dans le dépôt et le squelette.
+
 ### Tester le HOME persistant
 
 Les tests automatisés couvrent la configuration :

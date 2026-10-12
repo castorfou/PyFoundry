@@ -9,5 +9,6 @@
     "_copy_without_render": [
         ".devcontainer/resources/.p10k.zsh",
         ".devcontainer/scripts/check_mounts.sh"
-    ]
+    ],
+    "_pyfoundry_version": "1.0.0"
 }

@@ -516,7 +516,7 @@ Après avoir généré un projet test, vérifier :
 ### Backward compatibility
 - **Pas de breaking changes** sans version majeure
 - **Deprecation warnings** avant suppression
-- **Migration guide** pour les changements majeurs
+- **Migration guide** pour les changements majeurs, signalé dans la rubrique `Migration` du `CHANGELOG.md` (voir [Versions et releases](release.md))
 
 ### Performance
 - **Template léger** : éviter les dépendances lourdes par défaut

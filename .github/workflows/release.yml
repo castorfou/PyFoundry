@@ -28,6 +28,11 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
 
+      - name: 🔎 Check tag against pyproject.toml, cookiecutter.json and CHANGELOG.md
+        env:
+          VERSION: ${{ steps.get-version.outputs.version }}
+        run: python3 .github/scripts/release.py check-tag "$VERSION"
+
       - name: ✅ Check if prerelease
         id: check-prerelease
         env:
@@ -53,49 +58,25 @@ jobs:
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Need full history for changelog
 
-      - name: 📝 Generate release notes
-        id: generate-notes
+      - name: 📝 Generate release notes from CHANGELOG.md
         env:
           VERSION: ${{ needs.validate-tag.outputs.version }}
         run: |
-          # Get the previous tag for changelog (empty on first release)
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          python3 .github/scripts/release.py notes "$VERSION" > release_notes.md
 
-          # Generate changelog
-          if [ -n "$PREVIOUS_TAG" ]; then
-            echo "## Changes since $PREVIOUS_TAG" > release_notes.md
-            echo "" >> release_notes.md
-            git log --pretty=format:"- %s" "$PREVIOUS_TAG..HEAD" >> release_notes.md
-          else
-            echo "## Initial Release" > release_notes.md
-            echo "" >> release_notes.md
-            git log --pretty=format:"- %s" >> release_notes.md
-          fi
-
-          # Add template info
-          echo "" >> release_notes.md
-          echo "## Template Features" >> release_notes.md
-          echo "" >> release_notes.md
-          echo "✅ **Dev Environment**: VS Code devcontainer with Python 3.11+" >> release_notes.md
-          echo "✅ **Dependencies**: uv for fast package management" >> release_notes.md
-          echo "✅ **Code Quality**: Ruff + MyPy + pre-commit hooks" >> release_notes.md
-          echo "✅ **Testing**: pytest framework ready" >> release_notes.md
-          echo "✅ **Git Integration**: Automatic GitHub setup" >> release_notes.md
-          echo "" >> release_notes.md
-          echo "## Usage" >> release_notes.md
-          echo "" >> release_notes.md
-          echo '```bash' >> release_notes.md
-          echo "# Create new project from this template" >> release_notes.md
-          echo "cruft create https://github.com/castorfou/PyFoundry.git" >> release_notes.md
-          echo "" >> release_notes.md
-          echo "# Or use specific version" >> release_notes.md
-          echo "cruft create https://github.com/castorfou/PyFoundry.git --checkout $VERSION" >> release_notes.md
-          echo '```' >> release_notes.md
-          echo "" >> release_notes.md
-          echo "🤖 Generated with [Claude Code](https://claude.ai/code)" >> release_notes.md
+          {
+            echo ""
+            echo "## Usage"
+            echo ""
+            echo '```bash'
+            echo "# Create a new project from this version of the template"
+            echo "cruft create https://github.com/castorfou/PyFoundry.git --checkout $VERSION"
+            echo ""
+            echo "# Update an existing project to this version"
+            echo "cruft update --checkout $VERSION"
+            echo '```'
+          } >> release_notes.md
 
       - name: 🚀 Create GitHub Release
         uses: softprops/action-gh-release@v2

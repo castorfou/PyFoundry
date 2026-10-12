@@ -4,6 +4,24 @@
 
 Le template évolue (corrections, nouvelles fonctionnalités, nouvelles options). Le fichier `.cruft.json` à la racine du projet fait le lien avec le commit du template utilisé lors de la génération.
 
+### Connaître la version du template
+
+Depuis PyFoundry 1.0.0, le `.cruft.json` du projet indique la version du template utilisée lors de la génération ou de la dernière mise à jour :
+
+```bash
+jq -r '.context.cookiecutter._pyfoundry_version' .cruft.json
+```
+
+Un résultat `null` signifie que le projet date d'avant la 1.0.0. Le champ `commit` donne le commit exact du template.
+
+Les nouveautés de chaque version, et les étapes de migration qu'elles demandent, sont dans le [changelog](../changelog.md). Avant une mise à jour, lisez les sections des versions entre la vôtre et la dernière, en particulier les rubriques **Migration**.
+
+Pour viser une version précise plutôt que la dernière :
+
+```bash
+cruft update --checkout v1.0.0
+```
+
 ### Vérifier si une mise à jour est disponible
 
 ```bash
@@ -50,7 +68,7 @@ cruft update --variables-to-update-file .cruft.json
 
 Le template stocke désormais le HOME du conteneur (`/home/vscode`) sur l'hôte, dans `~/.devcontainer/homes/<projet>-<identifiant>`. Il survit aux rebuilds : historique du shell, `~/.gitconfig`. La connexion `gh` et la config Claude Code (connexion, conversations) sont stockées à part, dans `~/.config/gh-devcontainers` et `~/.config/claude-devcontainers` sur l'hôte, partagés par tous les devcontainers.
 
-Cette section concerne les projets générés avant ce changement. Si `cruft diff` montre l'ajout de la ligne `target=/home/vscode` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
+Cette section concerne les projets générés avant PyFoundry 1.0.0. Si `cruft diff` montre l'ajout de la ligne `target=/home/vscode` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
 
 Le **premier** rebuild après la mise à jour supprime l'ancien conteneur et démarre avec un HOME vide. Sans précaution, vous perdez l'historique Claude Code (conversations, mémoire, checkpoints), la connexion `gh` et l'historique du shell. Pour les conserver, sauvegardez le HOME de l'ancien conteneur **avant** le rebuild.
 
@@ -139,7 +157,7 @@ Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : le
 
 La connexion et la config Claude Code sont désormais partagées par tous les devcontainers : le dossier `~/.config/claude-devcontainers` de l'hôte est monté sur `~/.claude`. Vous vous connectez une fois pour tous les projets.
 
-Cette section concerne les projets qui ont déjà le HOME persistant. Si `cruft diff` montre l'ajout de `claude-devcontainers` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
+Cette section concerne les projets générés avant PyFoundry 1.0.0 qui ont déjà le HOME persistant. Si `cruft diff` montre l'ajout de `claude-devcontainers` dans `.devcontainer/devcontainer.json`, votre projet est concerné.
 
 Il n'y a rien à sauvegarder :
 
@@ -277,7 +295,7 @@ La doc publiée est visible à l'adresse habituelle du projet, `https://<utilisa
     gh workflow run docs.yml --ref main
     ```
 
-!!! note "Projets créés avant PyFoundry 0.4.0"
+!!! note "Projets créés avant PyFoundry 1.0.0"
     Le déploiement depuis une branche demande la version à jour de `.github/workflows/docs.yml`. Récupérez-la avec `cruft update` (voir [Mise à jour vers la dernière version du template](#mise-a-jour-vers-la-derniere-version-du-template)).
 
 ---
