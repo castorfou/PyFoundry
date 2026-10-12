@@ -8,7 +8,8 @@
     "docker_in_docker": "n",
     "_copy_without_render": [
         ".devcontainer/resources/.p10k.zsh",
-        ".devcontainer/scripts/check_mounts.sh"
+        ".devcontainer/scripts/check_mounts.sh",
+        ".devcontainer/scripts/migrate_claude_history.sh"
     ],
     "_pyfoundry_version": "1.0.0"
 }
