@@ -6,7 +6,7 @@ Un template Cookiecutter de qualité industrielle pour démarrer des projets de 
 
 - **GitHub** : https://github.com/castorfou/PyFoundry
 - **Documentation** : https://castorfou.github.io/PyFoundry
-- **Version actuelle** : 0.4.0-dev
+- **Version** : celle de `pyproject.toml`, détaillée dans `CHANGELOG.md` (processus dans `docs/dev/release.md`)
 
 ## La Stack
 
@@ -32,10 +32,12 @@ PyFoundry/
 │       ├── check_mounts.sh              # Vérification des montages (sur l'hôte, via initializeCommand)
 │       ├── gh_login.sh                  # Authentification gh au premier terminal zsh
 │       └── migrate_claude_history.sh    # Historique Claude Code vers la config partagée (sur l'hôte)
-├── .github/workflows/
-│   ├── test-template.yml                # CI : lint + tests sur toutes les branches
-│   ├── docs.yml                         # Déploiement documentation GitHub Pages
-│   └── release.yml                      # Publication des releases
+├── .github/
+│   ├── scripts/release.py               # Contrôle du tag et notes de release tirées du CHANGELOG
+│   └── workflows/
+│       ├── test-template.yml            # CI : lint + tests sur toutes les branches
+│       ├── docs.yml                     # Déploiement documentation GitHub Pages
+│       └── release.yml                  # Publication des releases
 ├── docs/                                # Fichiers source MkDocs
 │   ├── adr/                             # Architecture Decision Records
 │   ├── agents/                          # Config des skills Matt Pocock (issues, labels, domaine)
@@ -53,9 +55,11 @@ PyFoundry/
 │   ├── test_post_create_command.py      # setup_pre-commit de postCreateCommand.sh
 │   ├── test_timezone.py                 # Fuseau de l'hôte : montage, setup_timezone
 │   ├── test_github_auth.py              # Authentification gh : montage partagé, gh_login.sh
-│   └── test_claude_auth.py              # Config Claude Code partagée, migration de l'historique
+│   ├── test_claude_auth.py              # Config Claude Code partagée, migration de l'historique
+│   └── test_versioning.py               # Version, CHANGELOG, release.py, release.yml
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
-├── cookiecutter.json                    # Variables du template
+├── CHANGELOG.md                         # Évolutions par version (Keep a Changelog)
+├── cookiecutter.json                    # Variables du template (dont _pyfoundry_version)
 ├── mkdocs.yml
 └── pyproject.toml                       # Dépendances et config outils (ruff, mypy, pytest)
 ```
@@ -70,9 +74,12 @@ PyFoundry/
     "python_version": "3.11",
     "github_username": "castorfou",
     "use_node": "n",
-    "docker_in_docker": "n"
+    "docker_in_docker": "n",
+    "_pyfoundry_version": "<version de pyproject.toml>"
 }
 ```
+
+`_pyfoundry_version` est privée : cruft la relit dans le nouveau template à chaque `cruft update`, donc le `.cruft.json` d'un projet généré porte la version du template dont il vient.
 
 ### Structure du Projet Généré
 
@@ -202,6 +209,10 @@ Pour tester des modifications non commitées, utiliser `cookiecutter` directemen
 
 Ce dépôt contient le template lui-même et le squelette du projet généré, sous `{{ cookiecutter.project_slug }}/`. Pour chaque modification de l'un, vérifier si l'autre demande la même modification, et les garder alignés quand c'est pertinent. Après une modification du squelette, valider le projet rendu (R1.3, ou `cookiecutter` pour des fichiers non commités, voir R1.4).
 
+### R1.6 — Tenir le CHANGELOG
+
+Chaque changement visible pour un utilisateur du template va dans la section `## [Non publié]` de `CHANGELOG.md`, avec le numéro de l'issue. Si les projets existants doivent faire une action manuelle en plus de `cruft update`, ajouter une note dans `### Migration` : la prochaine release sera une majeure. Ne pas modifier la version hors d'une PR de release (voir `docs/dev/release.md`).
+
 ## Conventions & Style de Code
 
 - **Source de vérité unique** : `pyproject.toml` pour toutes les configurations.
@@ -225,6 +236,7 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 | `test_post_create_command.py` | `setup_pre-commit` : un rebuild ne commite que `.pre-commit-config.yaml`, jamais le travail en cours |
 | `test_timezone.py` | Fuseau de l'hôte monté sur `/etc/localtime.host` (jamais sur `/etc/localtime`, qui écraserait `Etc/UTC`), pas de `TZ` transmis (vide = UTC), `setup_timezone` relie `/etc/localtime` à la zone de même contenu |
 | `test_github_auth.py` | Config gh partagée entre devcontainers (`~/.config/gh-devcontainers`, créé en `700`), aucun `gh auth login` dans `postCreateCommand`, `setup_gh_credential_helper`, `gh_login.sh` (silencieux si authentifié, sans réseau, une seule tentative par conteneur, jamais d'échec du shell) |
+| `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag` et `notes` ; `release.yml` les appelle ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |
 | `test_claude_auth.py` | Config Claude Code partagée entre devcontainers (`~/.config/claude-devcontainers` monté sur `~/.claude`, créé en `700`), `CLAUDE_CONFIG_DIR`, verrous `~/.claude/ide` propres au projet, `migrate_claude_history.sh` (copie sans écraser, une seule fois, jamais la connexion, jamais d'échec) |
 
 ### CI/CD GitHub Actions
@@ -233,7 +245,7 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 |----------|-------------|------|
 | `test-template.yml` | Push toutes branches, PR main | Lint ruff + tests pytest |
 | `docs.yml` | Push main (docs/ ou mkdocs.yml), lancement manuel depuis n'importe quelle branche | Déploiement GitHub Pages |
-| `release.yml` | Tag `v*` | Release GitHub + tests |
+| `release.yml` | Tag `v*.*.*` | Vérifie le tag (`release.py check-tag`), lance les tests, publie la release avec la section du CHANGELOG |
 
 ## Skills Matt Pocock
 

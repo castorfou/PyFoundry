@@ -39,6 +39,8 @@ pour intégrer les dernieres fonctions de **`PyFoundry`**
 cruft update
 ```
 
+Les nouveautés de chaque version, et les éventuelles étapes de migration, sont dans le [changelog](/changelog). Pour viser une version précise : `cruft update --checkout v1.0.0`.
+
 ## ✨ Fonctionnalités
 
 - **Environnement reproductible** : Devcontainer VS Code avec uv & pyproject.toml, extensions vscode, zsh et ses plugins

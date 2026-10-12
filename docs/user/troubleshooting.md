@@ -45,7 +45,7 @@ Les clés publiques (`*.pub`) et `known_hosts` ne sont pas contrôlées.
 
 `check_mounts.sh` n'arrive pas à lire `devcontainer.json`. Le script accepte la syntaxe JSONC de VS Code : commentaires `//` et `/* */` n'importe où, y compris en fin de ligne (`// pragma: allowlist secret`), et virgules finales. L'erreur vient donc d'une vraie faute de syntaxe, le plus souvent une virgule oubliée entre deux éléments. La ligne et la colonne indiquées la situent.
 
-Si le message est suivi d'une traceback Python (`JSONDecodeError`), votre `check_mounts.sh` date d'avant la version 0.4.0 et refuse les commentaires en fin de ligne. Mettez le projet à jour avec `cruft update`.
+Si le message est suivi d'une traceback Python (`JSONDecodeError`), votre `check_mounts.sh` date d'avant PyFoundry 1.0.0 et refuse les commentaires en fin de ligne. Mettez le projet à jour avec `cruft update`.
 
 ### `gh` n'est pas authentifié, ou le navigateur ne s'ouvre pas
 

@@ -128,29 +128,7 @@ gh api repos/:owner/PyFoundry \
 
 ## Gestion des releases
 
-### Créer une release v0.1
-```bash
-# Créer un tag
-git tag -a v0.1.0 -m "Release v0.1.0 - Squelette avec environnement reproductible"
-git push origin v0.1.0
-
-# Créer la release sur GitHub
-gh release create v0.1.0 \
-  --title "v0.1.0 - Squelette fonctionnel" \
-  --notes "## 🚀 Fonctionnalités
-
-- ✅ Structure de projet standardisée
-- ✅ Configuration devcontainer VS Code avec .venv
-- ✅ Installation conditionnelle d'outils (uv, Node.js, Git)
-- ✅ Documentation complète avec MkDocs Material
-- ✅ CI/CD GitHub Actions
-
-## 📦 Utilisation
-
-\`\`\`bash
-cruft create https://github.com/VOTRE_USERNAME/PyFoundry.git
-\`\`\`"
-```
+La numérotation, le CHANGELOG et la publication d'une release sont décrits dans [Versions et releases](release.md).
 
 ## Troubleshooting
 
