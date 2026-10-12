@@ -1,6 +1,6 @@
 [project]
 name = "PyFoundry"
-version = "0.4.0-dev"
+version = "1.0.0"
 description = "Template Cookiecutter de qualité industrielle pour projets Data Science Python"
 readme = "README.md"
 requires-python = ">=3.11"
