@@ -7,12 +7,14 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 ### Ajouté
 
 - Script `scripts/clean_test_project.sh <dossier>` pour les contributeurs du template : il supprime le devcontainer d'un projet de test (retrouvé par le label `devcontainer.local_folder`), puis son dossier et son HOME persistant. Supprimer le dossier seul laissait le conteneur tourner (#92).
+- La CI des projets générés vérifie que `uv.lock` est à jour avec `pyproject.toml` (`uv lock --check`). Une simple différence de format, due à une version d'`uv` plus récente, ne la fait pas échouer. Si cette étape échoue après `cruft update`, lancez `uv lock` et commitez `uv.lock` (#87).
 
 ### Corrigé
 
 - Fermer la fenêtre VS Code arrête maintenant le devcontainer (`"shutdownAction": "stopContainer"`). Avec `none`, un conteneur ouvert une fois tournait jusqu'au prochain `docker stop` et pouvait occuper un cœur à 100 %. Sur un projet existant, le réglage s'applique au rebuild qui suit `cruft update` (#92).
 - Les commits d'un projet généré ne sont plus signés `Default User` à la place de l'identité git de l'utilisateur. Sans identité au premier build, le commit initial est fait sous `<GITHUB_USERNAME>@users.noreply.github.com`, sans rien écrire dans `.git/config`, et un avertissement indique comment configurer la sienne. Sur les projets existants, le rebuild qui suit `cruft update` retire l'ancienne identité de `.git/config` (#94).
 - Le cheatsheet Docker utilise un registre public (`ghcr.io`) au lieu d'un registre interne (#94).
+- La création et le démarrage du devcontainer ne modifient plus `uv.lock`. Le venv est installé depuis le lock tel quel (`uv sync --frozen`) : ni une version d'`uv` plus récente ni un `pyproject.toml` modifié sans `uv lock` ne réécrivent le fichier. Dans ce second cas, un avertissement indique de lancer `uv lock` (#87).
 
 ## [1.1.0] - 2026-10-25
 

@@ -252,7 +252,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_configurations.py` | Validité TOML/YAML/JSON, config ruff/mypy/devcontainer (dont `shutdownAction: stopContainer`), fichiers générés conformes à `trailing-whitespace`, `end-of-file-fixer` et `check-json`, pas d'extension isort, hook `no-venv-at-root` |
 | `test_mkdocs_integration.py` | Config mkdocs.yml, build documentation, `docs.yml` (dépôt et projet généré) : publication sur `main` ou sur lancement manuel depuis n'importe quelle branche, jamais sur une pull request |
 | `test_persistent_home.py` | HOME persistant, montages, `initializeCommand` (dont chaque point de montage imbriqué, déduit des `mounts`), venv `/tmp/venv` et `UV_PROJECT_ENVIRONMENT` (dépôt et projet généré) |
-| `test_ensure_venv.py` | `ensure_venv.sh` (identique dans le dépôt et le squelette) lancé par `postStartCommand` : recrée `/tmp/venv` s'il manque ou sans interpréteur, ne fait rien sinon, `--sync` force la synchronisation, échec d'`uv` signalé avec le contournement ; `create_python_environment` lui délègue ; `.zshrc` n'active le venv que s'il existe et perd l'ancienne ligne non protégée |
+| `test_ensure_venv.py` | `ensure_venv.sh` (identique dans le dépôt et le squelette) lancé par `postStartCommand` : recrée `/tmp/venv` s'il manque ou sans interpréteur, ne fait rien sinon, `--sync` force la synchronisation, échec d'`uv` signalé avec le contournement ; `uv sync --frozen` si `uv.lock` existe (jamais réécrit, vérifié avec le vrai `uv`), avertissement si `uv lock --check` échoue, sync normal sans lock ; étape `uv lock --check` en CI (dépôt et projet généré) ; `create_python_environment` lui délègue ; `.zshrc` n'active le venv que s'il existe et perd l'ancienne ligne non protégée |
 | `test_check_mounts.py` | `check_mounts.sh` : sources manquantes, résolution des variables, permissions `.ssh`, `[WARN]` sur les points de montage imbriqués d'un autre propriétaire (`CHECK_MOUNTS_UID`), lecture JSONC (commentaires en fin de ligne, marqueurs dans les chaînes, virgules finales) alignée sur `parse_jsonc` |
 | `test_post_create_command.py` | `setup_pre-commit` : un rebuild ne commite que `.pre-commit-config.yaml`, jamais le travail en cours |
 | `test_setup_git.py` | `setup_git` (dépôt et projet généré) : sans identité, commit initial sous `<GITHUB_USERNAME>@users.noreply.github.com` (ou `PyFoundry`) sans rien écrire dans `.git/config` ; au rebuild, l'ancienne identité `Default User` est retirée, une autre identité locale conservée ; aucun fichier ne cite le domaine interne |
@@ -267,7 +267,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 
 | Workflow | Déclencheur | Rôle |
 |----------|-------------|------|
-| `test-template.yml` | Push toutes branches, PR main | Lint ruff + tests pytest ; sur les PR, `release.py plan` refuse une PR de release incohérente |
+| `test-template.yml` | Push toutes branches, PR main | `uv lock --check`, lint ruff + tests pytest ; sur les PR, `release.py plan` refuse une PR de release incohérente |
 | `docs.yml` | Push main (docs/ ou mkdocs.yml), lancement manuel depuis n'importe quelle branche | Déploiement GitHub Pages |
 | `release.yml` | Push main | `release.py plan` détecte une hausse de version ; si oui, lance les tests puis crée le tag `vX.Y.Z` et la release (section du CHANGELOG) en une commande |
 

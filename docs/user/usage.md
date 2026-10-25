@@ -328,7 +328,7 @@ La doc publiée est visible à l'adresse habituelle du projet, `https://<utilisa
 
 ## Environnement Python avec `uv`
 
-Le projet utilise `uv` pour gérer les dépendances Python. L'environnement virtuel est dans `/tmp/venv` et est activé automatiquement dans chaque terminal. Il est recréé à chaque rebuild depuis `uv.lock`, et au démarrage du conteneur s'il manque : avec Docker-in-Docker, `/tmp` est vidé à chaque démarrage.
+Le projet utilise `uv` pour gérer les dépendances Python. L'environnement virtuel est dans `/tmp/venv` et est activé automatiquement dans chaque terminal. Il est recréé à chaque rebuild depuis `uv.lock`, et au démarrage du conteneur s'il manque : avec Docker-in-Docker, `/tmp` est vidé à chaque démarrage. Cette recréation installe `uv.lock` tel quel (`uv sync --frozen`) et ne le modifie jamais : `uv.lock` ne change que par une commande de votre part (`uv add`, `uv remove`, `uv lock`).
 
 ### Ajouter un package
 
@@ -347,6 +347,23 @@ uv sync --active --all-extras
 ```
 
 Cela installe exactement les versions du `uv.lock` commité.
+
+### Après une modification à la main de `pyproject.toml`
+
+`uv add` et `uv remove` mettent `uv.lock` à jour. Si vous éditez `pyproject.toml` directement, mettez le lock à jour vous-même, puis commitez-le avec `pyproject.toml` :
+
+```bash
+uv lock
+uv sync --active --all-extras
+```
+
+Tant que ce n'est pas fait, le venv recréé par le devcontainer suit `uv.lock`, pas `pyproject.toml`, et affiche :
+
+```
+⚠️  uv.lock n'est plus à jour avec pyproject.toml : le venv suit uv.lock.
+```
+
+La CI vérifie la même chose (`uv lock --check`) et échoue si `uv.lock` n'est pas à jour. Une simple différence de format, due à une version d'`uv` plus récente, ne la fait pas échouer.
 
 ### Lancer une commande dans l'environnement
 
