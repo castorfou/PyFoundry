@@ -4,6 +4,8 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 
 ## [Non publié]
 
+## [1.1.0] - 2026-10-25
+
 ### Ajouté
 
 - Skill Claude Code `/cruft-update` dans les projets générés : elle lance `cruft update`, résume les nouveautés et les migrations du CHANGELOG, résout les rejets (`.rej`, marqueurs de conflit) selon le propriétaire de chaque fichier, vérifie le résultat et commite. Elle se déclenche aussi sur « mets à jour le projet depuis le template » (#89).
@@ -90,7 +92,8 @@ Première release depuis la 0.5.0. Elle impose une migration manuelle aux projet
 
 - Environnement reproductible : fichiers de lock uv, `.env.template`, devcontainer optimisé, configuration Jupyter.
 
-[Non publié]: https://github.com/castorfou/PyFoundry/compare/v1.0.0...HEAD
+[Non publié]: https://github.com/castorfou/PyFoundry/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/castorfou/PyFoundry/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/castorfou/PyFoundry/compare/v0.5.0...v1.0.0
 [0.5.0]: https://github.com/castorfou/PyFoundry/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/castorfou/PyFoundry/compare/v0.3.0...v0.4.0
