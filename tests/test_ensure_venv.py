@@ -13,6 +13,7 @@ import re
 import shutil
 import stat
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -243,7 +244,9 @@ def test_real_uv_leaves_lock_untouched(tmp_path):
     (project / "pyproject.toml").write_text(PYPROJECT.format(version="0.2.0"))
     before = lock.read_bytes()
     env = {key: value for key, value in os.environ.items() if key != "VIRTUAL_ENV"}
-    env |= {"VENV_HOME": str(tmp_path / "venv"), "PYTHON_VERSION": "3.11"}
+    # Python qui lance les tests : seul interpréteur sûr d'être présent, hors ligne
+    python = f"{sys.version_info.major}.{sys.version_info.minor}"
+    env |= {"VENV_HOME": str(tmp_path / "venv"), "PYTHON_VERSION": python}
     env |= {"PROJECT_DIR": str(project), "UV_OFFLINE": "1"}
     env.pop("UV_PROJECT_ENVIRONMENT", None)
     env.pop("UV_PYTHON", None)
