@@ -35,6 +35,24 @@ cruft diff
 
 ### Appliquer la mise à jour
 
+#### Avec Claude Code (recommandé)
+
+Dans le projet, demandez à Claude Code : « mets à jour le projet depuis le template », ou tapez `/cruft-update`. La skill `cruft-update`, livrée avec le template dans `.claude/skills/cruft-update/` :
+
+1. s'arrête si le dépôt contient du travail non commité ;
+2. crée une branche `chore/template-update-<commit>` et lance `cruft update` vers la tête de `main` du template ;
+3. résume les nouveautés du CHANGELOG et dresse la liste des migrations ;
+4. résout les rejets selon le propriétaire de chaque fichier (voir [ADR 0003](../adr/0003-proprietaire-des-fichiers-mise-a-jour.md)) : la version du template l'emporte dans `.devcontainer/` ou `.github/workflows/`, la vôtre dans `src/` ou `notebooks/`, les deux sont fusionnées dans `pyproject.toml` ou `CLAUDE.md`. Elle vous demande dès qu'une personnalisation est en jeu ;
+5. fait les migrations possibles dans le conteneur et vous décrit celles à faire sur l'hôte ;
+6. lance pre-commit, pytest et `mkdocs build --strict`, et vous prévient si un rebuild du devcontainer est nécessaire ;
+7. commite avec un tableau des décisions, puis vous demande avant de pousser.
+
+Si une mise à jour lancée à la main a laissé des rejets, la skill reprend à partir de leur résolution.
+
+La skill arrive dans le projet avec la mise à jour du template qui l'introduit : pour cette première fois, faites la mise à jour à la main.
+
+#### À la main
+
 Partir d'un dépôt Git propre (aucun fichier non commité), de préférence sur une branche dédiée :
 
 ```bash

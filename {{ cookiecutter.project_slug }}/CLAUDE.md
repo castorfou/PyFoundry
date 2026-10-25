@@ -20,6 +20,7 @@
 .
 ├── .claude/                # Configuration Claude Code
 │   ├── commands/          # Commandes slash personnalisées
+│   ├── skills/            # Skills (cruft-update : mise à jour du template)
 │   └── settings.json      # Plugins activés (mattpocock-skills)
 ├── .devcontainer/          # Configuration du dev container
 ├── .github/workflows/      # CI/CD GitHub Actions
@@ -260,6 +261,10 @@ Skills les plus utiles :
 - `/tdd` : boucle RED → GREEN → REFACTOR
 - `/triage` : trier les issues GitHub à l'aide des labels
 - `/diagnosing-bugs` : enquêter méthodiquement sur un bug
+
+## Mise à jour du template
+
+La skill `/cruft-update` (`.claude/skills/cruft-update/`) applique les évolutions de PyFoundry : `cruft update`, lecture du CHANGELOG et des migrations, résolution des rejets (`.rej`, marqueurs de conflit) selon le propriétaire de chaque fichier, vérifications, commit. Demande simplement « mets à jour le projet depuis le template ». Elle vient du template : ne la modifie pas ici, la prochaine mise à jour l'écraserait.
 
 ## Workflow de Développement
 

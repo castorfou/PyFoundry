@@ -115,6 +115,12 @@ docs: compléter la page d'installation
 - **`.devcontainer/postCreateCommand.sh`** : chaque modification rend les futures mises à jour du template plus difficiles (`cruft update` crée des conflits sur les fichiers modifiés).
 - **`.pre-commit-config.yaml`** : les hooks sont alignés avec la CI. Si vous en désactivez un, la CI échouera.
 
+Lors d'une mise à jour du template, chaque fichier a un propriétaire ([ADR 0003](../adr/0003-proprietaire-des-fichiers-mise-a-jour.md)) :
+
+- **fichiers du template** (`.devcontainer/`, `.github/workflows/`, `.claude/commands/`, `.claude/skills/`, `.pre-commit-config.yaml`, `docs/cheatsheets/`) : la version du template l'emporte. Chaque personnalisation vous sera redemandée à chaque mise à jour ;
+- **fichiers du projet** (`src/`, `tests/`, `notebooks/`, `data/`, `README.md`, `docs/user/`, `docs/dev/`, `docs/claude/memory/`) : votre version l'emporte ;
+- **fichiers mixtes** (`pyproject.toml`, `uv.lock`, `mkdocs.yml`, `CLAUDE.md`, `.gitignore`, `docs/agents/`, `.claude/settings.json`) : les deux versions sont fusionnées.
+
 
 
 ## 🎯 Règles d'Or (Les 5 Commandements)

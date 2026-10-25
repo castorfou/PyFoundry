@@ -26,6 +26,7 @@ Un template Cookiecutter de qualité industrielle pour démarrer des projets de 
 PyFoundry/
 ├── .claude/
 │   ├── commands/                        # Commandes slash (fix-issue, stocke-memoire)
+│   ├── skills/cruft-update/             # Skill de mise à jour du template (identique dans le squelette)
 │   └── settings.json                    # Plugins activés (mattpocock-skills)
 ├── .devcontainer/                       # Environnement de dev pour travailler sur le template
 │   └── scripts/
@@ -58,9 +59,11 @@ PyFoundry/
 │   ├── test_timezone.py                 # Fuseau de l'hôte : montage, setup_timezone
 │   ├── test_github_auth.py              # Authentification gh : montage partagé, gh_login.sh
 │   ├── test_claude_auth.py              # Config Claude Code partagée, migration de l'historique
-│   └── test_versioning.py               # Version, CHANGELOG, release.py, release.yml
+│   ├── test_versioning.py               # Version, CHANGELOG, release.py, release.yml
+│   └── test_cruft_update_skill.py       # Skill /cruft-update et son script
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── CHANGELOG.md                         # Évolutions par version (Keep a Changelog)
+├── CONTEXT.md                           # Glossaire du domaine (template, projet généré, rejet…)
 ├── cookiecutter.json                    # Variables du template (dont _pyfoundry_version)
 ├── mkdocs.yml
 └── pyproject.toml                       # Dépendances et config outils (ruff, mypy, pytest)
@@ -89,6 +92,7 @@ PyFoundry/
 mon-projet-data-science/
 ├── .claude/
 │   ├── commands/                  # Commandes slash (fix-issue, stocke-memoire)
+│   ├── skills/cruft-update/       # Mise à jour du template (cruft update, rejets)
 │   └── settings.json              # Plugins activés (mattpocock-skills)
 ├── .devcontainer/                  # Environnement de dev reproductible
 ├── .github/workflows/              # CI/CD du projet généré
@@ -220,7 +224,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 - **Source de vérité unique** : `pyproject.toml` pour toutes les configurations.
 - **Formatage & Linting** : `ruff` configuré dans `pyproject.toml`.
 - **Templating** : syntaxe `{{ cookiecutter.variable }}` pour les fichiers dynamiques.
-- **Exclusion ruff** : le dossier `{{ cookiecutter.project_slug }}` est exclu via `extend-exclude = ["[{][{]*"]`.
+- **Exclusion ruff** : le dossier `{{ cookiecutter.project_slug }}` est exclu via `extend-exclude = ["[{][{]*"]`. Pour un fichier identique à la racine et dans le squelette (skill, scripts), `ruff format` ne modifie que la copie de la racine : recopie-la ensuite dans le squelette, sinon les tests d'égalité échouent.
 - **Commits** : convention `type(scope): message` — `feat`, `fix`, `docs`, `test`, `chore`, `refactor`.
 
 ## Stratégie de Test
@@ -240,6 +244,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_timezone.py` | Fuseau de l'hôte monté sur `/etc/localtime.host` (jamais sur `/etc/localtime`, qui écraserait `Etc/UTC`), pas de `TZ` transmis (vide = UTC), `setup_timezone` relie `/etc/localtime` à la zone de même contenu |
 | `test_github_auth.py` | Config gh partagée entre devcontainers (`~/.config/gh-devcontainers`, créé en `700`), aucun `gh auth login` dans `postCreateCommand`, `setup_gh_credential_helper`, `gh_login.sh` (silencieux si authentifié, sans réseau, une seule tentative par conteneur, jamais d'échec du shell) |
 | `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag` et `notes` ; `release.yml` les appelle ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |
+| `test_cruft_update_skill.py` | Skill `/cruft-update` identique dans le dépôt et le projet généré (donc non rendue par Jinja, `_copy_without_render`), frontmatter (model-invoked), `template_update.py` : `categorie` (catégories de l'ADR 0003), `rejets` (`.rej` et vrai conflit `git apply -3`), `changelog` (template local ou clone léger depuis `.cruft.json`) |
 | `test_claude_auth.py` | Config Claude Code partagée entre devcontainers (`~/.config/claude-devcontainers` monté sur `~/.claude`, créé en `700`), `CLAUDE_CONFIG_DIR`, verrous `~/.claude/ide` propres au projet, `migrate_claude_history.sh` (copie sans écraser, une seule fois, jamais la connexion, jamais d'échec) |
 
 ### CI/CD GitHub Actions
