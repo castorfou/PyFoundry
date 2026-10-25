@@ -150,7 +150,7 @@ Toutes les commandes se lancent **sur l'hôte**, dans le **même terminal** : le
     Vous pouvez ensuite supprimer la sauvegarde : `rm -rf "$BACKUP"`.
 
 !!! info "Le venv n'est plus dans le HOME"
-    L'environnement Python passe de `/home/vscode/.venv` à `/tmp/venv`. Il n'est pas conservé : il est recréé à chaque rebuild par `postCreateCommand.sh`. Il n'y a rien à migrer.
+    L'environnement Python passe de `/home/vscode/.venv` à `/tmp/venv`. Il n'est pas conservé : il est recréé à chaque rebuild par `postCreateCommand.sh`, et au démarrage du conteneur s'il manque. Il n'y a rien à migrer.
 
 
 ### Passer à la config Claude Code partagée
@@ -302,7 +302,7 @@ La doc publiée est visible à l'adresse habituelle du projet, `https://<utilisa
 
 ## Environnement Python avec `uv`
 
-Le projet utilise `uv` pour gérer les dépendances Python. L'environnement virtuel est dans `/tmp/venv` et est activé automatiquement dans chaque terminal. Il est recréé à chaque rebuild depuis `uv.lock`.
+Le projet utilise `uv` pour gérer les dépendances Python. L'environnement virtuel est dans `/tmp/venv` et est activé automatiquement dans chaque terminal. Il est recréé à chaque rebuild depuis `uv.lock`, et au démarrage du conteneur s'il manque : avec Docker-in-Docker, `/tmp` est vidé à chaque démarrage.
 
 ### Ajouter un package
 

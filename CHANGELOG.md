@@ -4,6 +4,10 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 
 ## [Non publié]
 
+### Corrigé
+
+- Le venv `/tmp/venv` est recréé au démarrage du conteneur s'il manque. Avec Docker-in-Docker, `/tmp` était vidé à chaque redémarrage, ce qui supprimait le venv (`no such file or directory: /tmp/venv/bin/activate`). Le `.zshrc` n'active plus le venv s'il n'existe pas (#86).
+
 ## [1.0.0] - 2026-10-12
 
 Première release depuis la 0.5.0. Elle impose une migration manuelle aux projets existants (HOME persistant), d'où la version majeure.

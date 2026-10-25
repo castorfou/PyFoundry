@@ -75,7 +75,7 @@ PyFoundry/                                    # Dépôt du template
 - **Image officielle Microsoft** Python 3.12 pour la compatibilité
 - **Devcontainer features** pour l'installation standardisée des outils
 - **Script postCreateCommand** simplifié pour la configuration
-- **Environnement virtuel `/tmp/venv`**, hors du HOME persistant, recréé à chaque rebuild
+- **Environnement virtuel `/tmp/venv`**, hors du HOME persistant, recréé à chaque rebuild, et au démarrage s'il manque
 - **Features officielles** (uv) au lieu d'installation manuelle
 - **Fuseau horaire de l'hôte** : fichier `/etc/localtime` de l'hôte monté à côté de celui du conteneur, appliqué par `setup_timezone`
 
@@ -140,7 +140,7 @@ Trois mécanismes complètent le montage :
 
 - **`initializeCommand`**, exécuté sur l'hôte avant le montage, crée les dossiers sources et les points de montage imbriqués dans le HOME (`.ssh`, `.cache/uv`, `.cache/pre-commit`, `.config/gh`, `.claude`), pour que Docker ne les crée pas en root ; `~/.ssh`, `~/.config/gh-devcontainers`, `~/.config/claude-devcontainers` et `.claude-ide` sont créés en `700`. Il lance `.devcontainer/scripts/migrate_claude_history.sh` (voir [Config Claude Code partagée](#config-claude-code-partagee)), puis `.devcontainer/scripts/check_mounts.sh --host`. Ce script lit les `mounts` de `devcontainer.json` (JSONC : commentaires partout et virgules finales, les chaînes étant gardées intactes), résout `${localEnv:HOME}`, `${localWorkspaceFolderBasename}` et `${devcontainerId}`, signale chaque source absente avec la commande pour la créer, et contrôle les permissions de `~/.ssh`. Il sort en erreur si un montage est invalide. Il signale aussi, par un `[WARN]` non bloquant, chaque point de montage imbriqué qui n'appartient pas à l'utilisateur, avec la procédure pour le recréer (`rmdir` puis `mkdir`, conteneur arrêté).
 - **`seed_home`** dans `postCreateCommand.sh` : le bind mount masque le HOME de l'image, donc `cp -rn /etc/skel/. "$HOME"` recopie `.bashrc`, `.profile`… sans écraser l'existant.
-- **Venv dans `/tmp/venv`** : il reste hors du HOME persistant et est recréé à chaque rebuild depuis `uv.lock`, ce qui évite de conserver un venv lié à une ancienne image Python.
+- **Venv dans `/tmp/venv`** : il reste hors du HOME persistant et est recréé à chaque rebuild depuis `uv.lock`, ce qui évite de conserver un venv lié à une ancienne image Python. Avec Docker-in-Docker, `/tmp` est un tmpfs vidé à chaque démarrage du conteneur : `postStartCommand` lance `.devcontainer/scripts/ensure_venv.sh`, qui recrée le venv si son interpréteur manque et ne fait rien sinon. `postCreateCommand.sh` passe par le même script, avec `--sync`. Le `.zshrc` n'active le venv que s'il existe (`[[ ! -f /tmp/venv/bin/activate ]] || source …`), car un terminal peut s'ouvrir avant la fin de `postStartCommand` (issue #86).
 
 `~/.gitconfig` n'est plus monté : VS Code copie celui de l'hôte au démarrage.
 

@@ -117,7 +117,8 @@
     "initializeCommand": "mkdir -p \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.ssh\" \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.cache/pre-commit\" \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.cache/uv\" \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.config/gh\" \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.claude\" \"${localEnv:HOME}/.cache/pre-commit-devcontainers\" \"${localEnv:HOME}/.cache/uv\" && mkdir -p -m 700 \"${localEnv:HOME}/.ssh\" \"${localEnv:HOME}/.config/gh-devcontainers\" \"${localEnv:HOME}/.config/claude-devcontainers\" \"${localEnv:HOME}/.config/claude-devcontainers/ide\" \"${localEnv:HOME}/.devcontainer/homes/${localWorkspaceFolderBasename}-${devcontainerId}/.claude-ide\" && DEVCONTAINER_WORKSPACE_FOLDER_BASENAME=\"${localWorkspaceFolderBasename}\" DEVCONTAINER_ID=\"${devcontainerId}\" bash \"${localWorkspaceFolder}/.devcontainer/scripts/migrate_claude_history.sh\" && (cd \"${localWorkspaceFolder}\" && DEVCONTAINER_WORKSPACE_FOLDER_BASENAME=\"${localWorkspaceFolderBasename}\" DEVCONTAINER_ID=\"${devcontainerId}\" bash .devcontainer/scripts/check_mounts.sh --host)",
     // Configuration du shell et de l'environnement
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
-    "postStartCommand": "echo '🚀 PyFoundry - Environnement prêt!'",
+    // À chaque démarrage : recrée /tmp/venv s'il manque (/tmp peut être un tmpfs vidé au démarrage)
+    "postStartCommand": "bash .devcontainer/scripts/ensure_venv.sh && echo '🚀 PyFoundry - Environnement prêt!'",
 
     // Utilisateur non-root pour la sécurité
     "remoteUser": "vscode",

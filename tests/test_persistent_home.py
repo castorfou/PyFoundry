@@ -2,7 +2,7 @@
 
 Le HOME `/home/vscode` est un dossier de l'hôte propre à chaque projet, pour
 survivre aux rebuilds. Le venv vit dans `/tmp/venv`, hors du HOME : il est
-recréé à chaque rebuild.
+recréé à chaque rebuild, et au démarrage s'il manque (#86).
 """
 
 from pathlib import Path
@@ -119,9 +119,11 @@ def test_uv_project_environment_points_to_tmp_venv(devcontainer_dir):
 
 def test_post_create_builds_venv_in_tmp(devcontainer_dir):
     script = (devcontainer_dir / "postCreateCommand.sh").read_text()
+    ensure_venv = (devcontainer_dir / "scripts" / "ensure_venv.sh").read_text()
 
-    assert f'VENV_HOME="{VENV}"' in script
-    assert f"ensure_zshrc_line 'source {VENV}/bin/activate'" in script
+    assert f'VENV_HOME="${{VENV_HOME:-{VENV}}}"' in ensure_venv
+    assert "bash .devcontainer/scripts/ensure_venv.sh --sync" in script
+    assert f"|| source {VENV}/bin/activate'" in script
 
 
 def test_post_create_seeds_home_from_skel(devcontainer_dir):
