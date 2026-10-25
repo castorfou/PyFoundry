@@ -315,3 +315,43 @@ def test_docs_workflow_deploys_only_from_main_or_manual_run(
         name: evaluate_if(condition, event_name, ref)
         for name, condition in conditions.items()
     } == dict.fromkeys(conditions, deployed)
+
+
+# Source GitHub Pages réglée sur « GitHub Actions » (issue #85)
+
+PAGES_SOURCE_COMMANDS = [
+    'gh api -X POST "repos/{owner}/{repo}/pages" -f build_type=workflow',
+    'gh api -X PUT "repos/{owner}/{repo}/pages" -f build_type=workflow',
+    'gh api "repos/{owner}/{repo}/pages" --jq .build_type',
+]
+
+
+@pytest.mark.parametrize(
+    ("root", "doc"),
+    [
+        ("repo", "docs/user/usage.md"),
+        ("repo", "docs/cheatsheets/mkdocs.md"),
+        ("generated", "docs/cheatsheets/mkdocs.md"),
+    ],
+)
+def test_pages_source_commands_documented(root, doc, cookies, minimal_template_context):
+    if root == "repo":
+        base = REPO_ROOT
+    else:
+        result = cookies.bake(extra_context=minimal_template_context)
+        assert result.exit_code == 0
+        base = Path(result.project_path)
+    content = (base / doc).read_text()
+
+    assert [command for command in PAGES_SOURCE_COMMANDS if command in content] == (
+        PAGES_SOURCE_COMMANDS
+    )
+    assert "Source : GitHub Actions" in content
+    assert "Build with Jekyll" in content
+
+
+def test_troubleshooting_explains_failing_jekyll_build():
+    content = (REPO_ROOT / "docs" / "user" / "troubleshooting.md").read_text()
+
+    assert "Build with Jekyll" in content
+    assert "usage.md#activer-github-pages-une-fois-par-projet" in content

@@ -147,6 +147,7 @@ uv run mkdocs build --strict
 ### Déploiement automatique
 
 La documentation est automatiquement construite et déployée sur GitHub Pages via la workflow `.github/workflows/docs.yml` :
+- Prérequis, une fois par projet : source GitHub Pages réglée sur « GitHub Actions » (`gh api "repos/{owner}/{repo}/pages" --jq .build_type` doit afficher `workflow`). Avec « Deploy from a branch », GitHub lance à chaque push un run `pages build and deployment` en échec dans « Build with Jekyll » (voir `docs/cheatsheets/mkdocs.md`, section « Activer GitHub Pages »).
 - Déclenché à chaque push sur `main` modifiant `docs/` ou `mkdocs.yml`
 - Lançable à la main depuis n'importe quelle branche : `gh workflow run docs.yml --ref <branche>`. Prérequis, une fois par projet : autoriser la branche dans l'environnement GitHub `github-pages` (voir `docs/cheatsheets/mkdocs.md`, section « Publier la doc d'une branche »). La doc publiée remplace celle de `main` jusqu'au prochain déploiement depuis `main`.
 - Disponible à l'URL : https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}

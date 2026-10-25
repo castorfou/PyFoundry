@@ -143,6 +143,9 @@ Le projet inclut un repertoire `.github/workflows` pré-configuré. Dès le prem
 
 Le pipeline est visible sous **Actions** sur la page du projet GitHub.
 
+!!! warning "Une fois par projet : source GitHub Pages sur « GitHub Actions »"
+    Avant le premier déploiement de la doc, réglez **Settings → Pages → Source** sur **GitHub Actions**. Avec « Deploy from a branch », proposé par défaut, GitHub lance à chaque push un build Jekyll en échec. Voir [Activer GitHub Pages](usage.md#activer-github-pages-une-fois-par-projet).
+
 ---
 
 ## Lier un projet pré-existant au template

@@ -78,6 +78,21 @@ Le workflow `.github/workflows/docs.yml` automatise trois choses :
 - **Déploiement automatique sur GitHub Pages** : à chaque push sur `main`.
 - **Déploiement manuel depuis une branche** : on lance le workflow à la main pour publier la doc d'une autre branche.
 
+### Activer GitHub Pages (une fois par projet)
+
+`docs.yml` publie avec GitHub Actions : dans **Settings → Pages → Build and deployment**, choisir **Source : GitHub Actions** (et non « Deploy from a branch »). Ce réglage du dépôt ne figure dans aucun fichier :
+
+```bash
+# Pages pas encore activé
+gh api -X POST "repos/{owner}/{repo}/pages" -f build_type=workflow
+# Pages déjà activé avec la mauvaise source
+gh api -X PUT "repos/{owner}/{repo}/pages" -f build_type=workflow
+# Vérifier : doit afficher workflow
+gh api "repos/{owner}/{repo}/pages" --jq .build_type
+```
+
+Avec « Deploy from a branch », la doc semble publiée, mais GitHub lance à chaque push un run `pages build and deployment` qui échoue à l'étape « Build with Jekyll ».
+
 ### Publier la doc d'une branche
 
 Une seule fois par projet, autoriser les branches à déployer. L'environnement GitHub `github-pages` n'accepte par défaut que la branche par défaut. Ce réglage du dépôt ne figure dans aucun fichier :
