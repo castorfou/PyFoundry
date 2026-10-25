@@ -33,7 +33,11 @@ def setup_git(
         result = cookies.bake(extra_context=default_template_context)
         assert result.exit_code == 0
         script_path = result.project_path / ".devcontainer" / "postCreateCommand.sh"
-    return extract_function(script_path.read_text(), "setup_git")
+    script = script_path.read_text()
+    return "\n".join(
+        extract_function(script, name)
+        for name in ("git_commit_with_fallback", "setup_git")
+    )
 
 
 @pytest.fixture

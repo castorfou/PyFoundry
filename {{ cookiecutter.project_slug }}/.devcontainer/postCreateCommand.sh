@@ -162,6 +162,27 @@ EOF
 {% endif %}
 
 # Configuration Git
+# git commit, y compris sans identité : au premier build, le HOME est neuf et
+# l'identité de l'hôte n'arrive qu'après postCreateCommand. Identité ponctuelle
+# pour ce seul commit, jamais écrite dans .git/config où elle masquerait la
+# globale (#94, #102). Arguments : ceux de git commit.
+git_commit_with_fallback() {
+    if [ -n "$(git config user.email)" ]; then
+        git commit "$@"
+        return
+    fi
+    local name="${GITHUB_USERNAME:-PyFoundry}"
+    local email="${GITHUB_USERNAME:-pyfoundry}@users.noreply.github.com"
+    git -c user.name="$name" -c user.email="$email" commit "$@" || return
+    if [ -z "${IDENTITY_WARNED:-}" ]; then
+        IDENTITY_WARNED=1
+        echo "⚠️  Identité Git non configurée : commits faits sous $name <$email>"
+        echo "    Configurez la vôtre avec :"
+        echo "    git config --global user.name \"Prénom Nom\""
+        echo "    git config --global user.email \"vous@exemple.com\""
+    fi
+}
+
 setup_git() {
     echo "Configuration Git..."
     if [ ! -d ".git" ]; then
@@ -169,20 +190,7 @@ setup_git() {
         git init
         git branch -M main
         git add .
-
-        if [ -n "$(git config user.email)" ]; then
-            git commit -m "Initial commit"
-        else
-            # Pas encore d'identité (HOME neuf) : identité ponctuelle pour ce seul
-            # commit, jamais écrite dans .git/config où elle masquerait la globale (#94)
-            local name="${GITHUB_USERNAME:-PyFoundry}"
-            local email="${GITHUB_USERNAME:-pyfoundry}@users.noreply.github.com"
-            git -c user.name="$name" -c user.email="$email" commit -m "Initial commit"
-            echo "⚠️  Identité Git non configurée : commit initial fait sous $name <$email>"
-            echo "    Configurez la vôtre avec :"
-            echo "    git config --global user.name \"Prénom Nom\""
-            echo "    git config --global user.email \"vous@exemple.com\""
-        fi
+        git_commit_with_fallback -m "Initial commit"
         echo "✅ Dépôt Git initialisé et premier commit effectué"
     else
         echo "Dépôt Git déjà existant"
@@ -216,7 +224,7 @@ setup_pre-commit() {
             # laisse intacts l'index et le travail en cours (pas de `git add .`)
             if ! git diff --quiet -- .pre-commit-config.yaml; then
                 echo "Commit de la mise à jour des hooks pre-commit..."
-                if ! git commit -m "chore: update pre-commit hooks to latest versions" -- .pre-commit-config.yaml; then
+                if ! git_commit_with_fallback -m "chore: update pre-commit hooks to latest versions" -- .pre-commit-config.yaml; then
                     echo "⚠️  Commit impossible : .pre-commit-config.yaml mis à jour mais non commité"
                 fi
             fi
@@ -280,17 +288,6 @@ setup_github() {
 }
 
 # Helper: update MkDocs repo_url from Git remote
-run_mkdocs_repo_url_update() {
-    if [ -f "${WORKSPACE_FOLDER}/.devcontainer/scripts/update_mkdocs_repo_url.sh" ]; then
-        chmod +x "${WORKSPACE_FOLDER}/.devcontainer/scripts/update_mkdocs_repo_url.sh" || true
-        ( cd "${WORKSPACE_FOLDER}" && ./.devcontainer/scripts/update_mkdocs_repo_url.sh ) \
-            || echo "[postCreate] update_mkdocs_repo_url.sh exited with non-zero status"
-        echo "✅ mkdocs_repo_url configurée"
-    else
-        echo "[postCreate] ${WORKSPACE_FOLDER}/.devcontainer/scripts/update_mkdocs_repo_url.sh not found"
-    fi
-}
-
 # config zsh
 config_zsh() {
     echo "Configuration de zsh..."
@@ -344,7 +341,6 @@ create_python_environment
 setup_github
 setup_pre-commit
 config_zsh
-run_mkdocs_repo_url_update
 
 echo ""
 echo "=================================================================="

@@ -296,7 +296,7 @@ Les commits déjà faits gardent l'ancien auteur. Seul un rebase les corrige, ce
 
 ### `⚠️ Identité Git non configurée` au premier build
 
-Au premier build, le HOME du conteneur est neuf. Le commit initial est fait sous `<GITHUB_USERNAME>@users.noreply.github.com`, sans rien écrire dans `.git/config`. Configurez ensuite votre identité :
+Au premier build, le HOME du conteneur est neuf : VS Code n'y copie le `~/.gitconfig` de l'hôte qu'après `postCreateCommand`. Le commit initial et celui de la mise à jour des hooks pre-commit sont faits sous `<GITHUB_USERNAME>@users.noreply.github.com`, sans rien écrire dans `.git/config`. Configurez ensuite votre identité :
 
 ```bash
 git config --global user.name "Prénom Nom"
@@ -466,11 +466,10 @@ mkdocs build --strict
 
 ### `repo_url` absent ou faux
 
-Le script `scripts/update_mkdocs_repo_url.sh` s'exécute au démarrage du conteneur. Si le remote `origin` n'existait pas encore à ce moment-là, le champ `repo_url` est absent de `mkdocs.yml`.
+`repo_url` est écrit dans `mkdocs.yml` à la génération, à partir de `github_username` et `project_slug`. S'il ne correspond plus à l'adresse du dépôt (renommage, transfert, `github_username` mal saisi), corrigez-le à la main :
 
-```bash
-# Une fois origin configuré
-./scripts/update_mkdocs_repo_url.sh
+```yaml
+repo_url: https://github.com/<compte>/<depot>
 ```
 
 ### Déploiement refusé : `not allowed to deploy to github-pages`

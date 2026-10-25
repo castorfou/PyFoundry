@@ -144,9 +144,11 @@ Trois mécanismes complètent le montage :
 
 `~/.gitconfig` n'est plus monté : VS Code copie celui de l'hôte au démarrage.
 
-Au premier build, il n'y a donc pas encore d'identité git. `setup_git` fait alors le commit initial avec une identité ponctuelle (`git -c user.name=… -c user.email=… commit`) : `<GITHUB_USERNAME>@users.noreply.github.com`, ou `pyfoundry@users.noreply.github.com` sans `GITHUB_USERNAME`. Rien n'est écrit dans `.git/config`, où l'identité masquerait ensuite la globale. Sur un dépôt existant, `setup_git` retire l'ancienne identité par défaut (`Default User`) que les versions précédentes y écrivaient (issue #94).
+Au premier build, il n'y a donc pas encore d'identité git : la copie arrive après `postCreateCommand`. Les commits de `postCreateCommand.sh` (commit initial de `setup_git`, mise à jour des hooks de `setup_pre-commit`) passent par `git_commit_with_fallback`, qui utilise alors une identité ponctuelle (`git -c user.name=… -c user.email=… commit`) : `<GITHUB_USERNAME>@users.noreply.github.com`, ou `pyfoundry@users.noreply.github.com` sans `GITHUB_USERNAME`. L'avertissement n'est affiché qu'une fois. Rien n'est écrit dans `.git/config`, où l'identité masquerait ensuite la globale. Un projet tout juste créé n'a ainsi rien à commiter (issue #102). Sur un dépôt existant, `setup_git` retire l'ancienne identité par défaut (`Default User`) que les versions précédentes y écrivaient (issue #94).
 
 Le choix est détaillé dans l'ADR [0001 — HOME persistant](../adr/0001-persist-development-home.md).
+
+`repo_url` est rendu dans le `mkdocs.yml` du squelette (`https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}`), comme `site_url` et le remote `origin` de `setup_github`. Aucun script ne le modifie après la génération.
 
 Le conteneur, lui, ne survit pas à la fenêtre : `"shutdownAction": "stopContainer"` l'arrête quand on ferme VS Code. Avec `none`, tout devcontainer ouvert une fois tournait jusqu'au prochain `docker stop` (#92). VS Code enregistre ce réglage dans le label `devcontainer.metadata` à la création du conteneur : sur un projet existant, il ne s'applique qu'après un rebuild.
 
