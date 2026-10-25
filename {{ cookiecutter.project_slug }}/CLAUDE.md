@@ -40,6 +40,7 @@
 ├── .gitignore
 ├── .pre-commit-config.yaml
 ├── CLAUDE.md              # Ce fichier - Documentation pour Claude Code
+├── TEMPLATE_VERSION       # Version PyFoundry du projet (mise à jour par cruft update)
 └── pyproject.toml         # Configuration du projet et dépendances
 ```
 
