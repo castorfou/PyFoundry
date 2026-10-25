@@ -214,6 +214,33 @@ def test_project_name_in_mkdocs_yml(cookies):
     assert "My Awesome Project" in content or "my-awesome-project" in content
 
 
+def test_repo_url_rendered_in_mkdocs_yml(cookies, default_template_context):
+    """repo_url vient de la génération : rien ne modifie mkdocs.yml ensuite (#102)."""
+    result = cookies.bake(extra_context=default_template_context)
+
+    # Pas de yaml.safe_load : mkdocs.yml contient des balises !!python/name
+    content = (result.project_path / "mkdocs.yml").read_text()
+
+    assert re.findall(r"(?m)^repo_url: (.*)$", content) == [
+        "https://github.com/test-user/test-project"
+    ]
+
+
+@pytest.mark.parametrize("root", ["repo", "generated"])
+def test_no_repo_url_update_script(root, cookies, default_template_context):
+    if root == "repo":
+        devcontainer = REPO_ROOT / ".devcontainer"
+    else:
+        result = cookies.bake(extra_context=default_template_context)
+        devcontainer = result.project_path / ".devcontainer"
+
+    assert not (devcontainer / "scripts" / "update_mkdocs_repo_url.sh").exists()
+    assert (
+        "update_mkdocs_repo_url"
+        not in (devcontainer / "postCreateCommand.sh").read_text()
+    )
+
+
 # Déploiement manuel GitHub Pages depuis une branche (issue #63)
 
 FEATURE_BRANCH = "refs/heads/feature-x"
