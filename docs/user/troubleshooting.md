@@ -190,8 +190,28 @@ Si la recréation a échoué (pas de réseau, par exemple), le log « Dev Contai
 ```bash
 bash .devcontainer/scripts/ensure_venv.sh
 # ou, sans le script :
-uv venv /tmp/venv --python "$PYTHON_VERSION" && uv sync --active --all-extras
+uv venv /tmp/venv --python "$PYTHON_VERSION" && uv sync --frozen --active --all-extras
 ```
+
+### « uv.lock n'est plus à jour avec pyproject.toml »
+
+À la création ou au démarrage du conteneur, le log affiche :
+
+```
+⚠️  uv.lock n'est plus à jour avec pyproject.toml : le venv suit uv.lock.
+```
+
+ou, en CI, l'étape **🔒 Check uv.lock is up to date** échoue.
+
+**Cause** : `pyproject.toml` a été modifié sans mettre à jour `uv.lock` (édition à la main, merge). Le devcontainer installe `uv.lock` tel quel (`uv sync --frozen`) et ne le réécrit jamais : les dépendances ajoutées à `pyproject.toml` ne sont pas installées.
+
+```bash
+uv lock
+uv sync --active --all-extras
+git add uv.lock && git commit -m "chore: mise à jour de uv.lock"
+```
+
+Une différence de format seule (`revision` d'un `uv` plus récent) ne déclenche ni l'avertissement ni l'échec en CI.
 
 ### Package introuvable après installation
 

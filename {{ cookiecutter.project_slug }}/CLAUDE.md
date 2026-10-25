@@ -67,6 +67,10 @@ Les dépendances sont gérées via `uv` et définies dans `pyproject.toml`:
 # Sync des dépendances
 uv sync --active --all-extras
 
+# Après une modification à la main de pyproject.toml : mettre à jour uv.lock et le commiter
+# (le devcontainer installe uv.lock sans le modifier, la CI vérifie qu'il est à jour)
+uv lock
+
 # Tests
 uv run --active pytest
 

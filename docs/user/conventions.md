@@ -28,7 +28,7 @@ Respectez cette structure. Les outils (Ruff, MyPy, pytest, MkDocs) sont configur
 
 L'environnement Python est dans `/tmp/venv`. Il est activé automatiquement dans chaque terminal.
 
-Ce venv n'est pas conservé : il est recréé à chaque rebuild par `postCreateCommand.sh`, à partir de `pyproject.toml` et `uv.lock`. Tout package doit donc être déclaré avec `uv add --active` : un `uv pip install` à la main disparaît au prochain rebuild.
+Ce venv n'est pas conservé : il est recréé à chaque rebuild par `postCreateCommand.sh`, à partir de `uv.lock` (`uv sync --frozen`, qui ne modifie jamais le lock). Tout package doit donc être déclaré avec `uv add --active` : un `uv pip install` à la main disparaît au prochain rebuild. Après une modification à la main de `pyproject.toml`, lancez `uv lock` et commitez `uv.lock`.
 
 Les imports partent de la racine du projet (grâce à `pythonpath = "."` dans `pyproject.toml`) :
 

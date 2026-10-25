@@ -63,7 +63,7 @@ git checkout -b release/vX.Y.Z
 ```
 
 1. Choisir le numéro à partir de la section « Non publié » (présence de `Migration` → majeure, `Ajouté` → mineure, sinon patch).
-2. Modifier la version dans `pyproject.toml` et `_pyfoundry_version` dans `cookiecutter.json`.
+2. Modifier la version dans `pyproject.toml` et `_pyfoundry_version` dans `cookiecutter.json`, puis lancer `uv lock` : `uv.lock` contient la version du projet, et l'étape `uv lock --check` de la CI échoue s'il n'est pas à jour.
 3. Dans `CHANGELOG.md`, renommer `## [Non publié]` en `## [X.Y.Z] - AAAA-MM-JJ` et recréer au-dessus une section `## [Non publié]` vide.
 4. En bas du fichier, mettre à jour les liens de comparaison :
 
