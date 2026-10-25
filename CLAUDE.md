@@ -56,6 +56,7 @@ PyFoundry/
 │   ├── test_ensure_venv.py              # Venv recréé au démarrage, activation dans .zshrc
 │   ├── test_check_mounts.py             # Script check_mounts.sh
 │   ├── test_post_create_command.py      # setup_pre-commit de postCreateCommand.sh
+│   ├── test_setup_git.py                # setup_git : commit initial sans identité locale
 │   ├── test_timezone.py                 # Fuseau de l'hôte : montage, setup_timezone
 │   ├── test_github_auth.py              # Authentification gh : montage partagé, gh_login.sh
 │   ├── test_claude_auth.py              # Config Claude Code partagée, migration de l'historique
@@ -242,6 +243,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_ensure_venv.py` | `ensure_venv.sh` (identique dans le dépôt et le squelette) lancé par `postStartCommand` : recrée `/tmp/venv` s'il manque ou sans interpréteur, ne fait rien sinon, `--sync` force la synchronisation, échec d'`uv` signalé avec le contournement ; `create_python_environment` lui délègue ; `.zshrc` n'active le venv que s'il existe et perd l'ancienne ligne non protégée |
 | `test_check_mounts.py` | `check_mounts.sh` : sources manquantes, résolution des variables, permissions `.ssh`, `[WARN]` sur les points de montage imbriqués d'un autre propriétaire (`CHECK_MOUNTS_UID`), lecture JSONC (commentaires en fin de ligne, marqueurs dans les chaînes, virgules finales) alignée sur `parse_jsonc` |
 | `test_post_create_command.py` | `setup_pre-commit` : un rebuild ne commite que `.pre-commit-config.yaml`, jamais le travail en cours |
+| `test_setup_git.py` | `setup_git` (dépôt et projet généré) : sans identité, commit initial sous `<GITHUB_USERNAME>@users.noreply.github.com` (ou `PyFoundry`) sans rien écrire dans `.git/config` ; au rebuild, l'ancienne identité `Default User` est retirée, une autre identité locale conservée ; aucun fichier ne cite le domaine interne |
 | `test_timezone.py` | Fuseau de l'hôte monté sur `/etc/localtime.host` (jamais sur `/etc/localtime`, qui écraserait `Etc/UTC`), pas de `TZ` transmis (vide = UTC), `setup_timezone` relie `/etc/localtime` à la zone de même contenu |
 | `test_github_auth.py` | Config gh partagée entre devcontainers (`~/.config/gh-devcontainers`, créé en `700`), aucun `gh auth login` dans `postCreateCommand`, `setup_gh_credential_helper`, `gh_login.sh` (silencieux si authentifié, sans réseau, une seule tentative par conteneur, jamais d'échec du shell) |
 | `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag`, `notes` et `plan` (inchangée, hausse, baisse, tag existant, version sous la dernière release, CHANGELOG absent ou vide) ; `release.yml` (push sur `main`, tag et release en une commande, permissions minimales) et `release-plan` sur les PR ; `TEMPLATE_VERSION` généré et suivi par `cruft update` ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |

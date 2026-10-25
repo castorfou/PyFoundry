@@ -4,6 +4,11 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 
 ## [Non publié]
 
+### Corrigé
+
+- Les commits d'un projet généré ne sont plus signés `Default User` à la place de l'identité git de l'utilisateur. Sans identité au premier build, le commit initial est fait sous `<GITHUB_USERNAME>@users.noreply.github.com`, sans rien écrire dans `.git/config`, et un avertissement indique comment configurer la sienne. Sur les projets existants, le rebuild qui suit `cruft update` retire l'ancienne identité de `.git/config` (#94).
+- Le cheatsheet Docker utilise un registre public (`ghcr.io`) au lieu d'un registre interne (#94).
+
 ## [1.1.0] - 2026-10-25
 
 ### Ajouté

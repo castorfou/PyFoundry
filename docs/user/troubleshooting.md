@@ -233,6 +233,33 @@ Voir [Conventions — Imports Python](conventions.md#python-et-imports).
 
 ---
 
+## Git
+
+### Mes commits sont signés `Default User`
+
+Les versions de PyFoundry antérieures au correctif de l'issue #94 écrivaient cette identité dans `.git/config` au premier build. La config locale l'emporte sur votre identité globale, donc tous les commits du projet en héritaient.
+
+Depuis ce correctif, le rebuild qui suit `cruft update` retire cette identité de `.git/config`. Pour le faire à la main :
+
+```bash
+git config --local --unset user.name
+git config --local --unset user.email
+git config user.email   # doit afficher votre identité globale
+```
+
+Les commits déjà faits gardent l'ancien auteur. Seul un rebase les corrige, ce qui réécrit l'historique.
+
+### `⚠️ Identité Git non configurée` au premier build
+
+Au premier build, le HOME du conteneur est neuf. Le commit initial est fait sous `<GITHUB_USERNAME>@users.noreply.github.com`, sans rien écrire dans `.git/config`. Configurez ensuite votre identité :
+
+```bash
+git config --global user.name "Prénom Nom"
+git config --global user.email "vous@exemple.com"
+```
+
+---
+
 ## Pre-commit
 
 ### Un hook échoue et bloque le commit

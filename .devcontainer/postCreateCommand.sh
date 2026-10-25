@@ -134,19 +134,32 @@ setup_git() {
         echo "Initialisation du dépôt Git..."
         git init
         git branch -M main
-
-        # Configuration de l'utilisateur si non défini (pour éviter l'échec du commit)
-        if [ -z "$(git config --global user.email)" ]; then
-            echo "Configuration d'un utilisateur Git par défaut..."
-            git config user.email "default@michelin.com"
-            git config user.name "Default User"
-        fi
-
         git add .
-        git commit -m "Initial commit"
+
+        if [ -n "$(git config user.email)" ]; then
+            git commit -m "Initial commit"
+        else
+            # Pas encore d'identité (HOME neuf) : identité ponctuelle pour ce seul
+            # commit, jamais écrite dans .git/config où elle masquerait la globale (#94)
+            local name="${GITHUB_USERNAME:-PyFoundry}"
+            local email="${GITHUB_USERNAME:-pyfoundry}@users.noreply.github.com"
+            git -c user.name="$name" -c user.email="$email" commit -m "Initial commit"
+            echo "⚠️  Identité Git non configurée : commit initial fait sous $name <$email>"
+            echo "    Configurez la vôtre avec :"
+            echo "    git config --global user.name \"Prénom Nom\""
+            echo "    git config --global user.email \"vous@exemple.com\""
+        fi
         echo "✅ Dépôt Git initialisé et premier commit effectué"
     else
         echo "Dépôt Git déjà existant"
+        # Ancienne identité par défaut écrite dans .git/config par les versions
+        # précédentes : elle masque l'identité globale de l'utilisateur (#94)
+        if [ "$(git config --local user.email)" = "default@michelin.com" ] \
+            && [ "$(git config --local user.name)" = "Default User" ]; then
+            git config --local --unset user.email
+            git config --local --unset user.name
+            echo "✅ Identité Git par défaut (Default User) retirée de .git/config"
+        fi
     fi
 }
 

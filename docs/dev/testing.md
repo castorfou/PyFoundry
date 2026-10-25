@@ -114,6 +114,15 @@ Le `.pre-commit-config.yaml` de PyFoundry exclut `{{ cookiecutter.project_slug }
 
 Si un test signale une fin de fichier incorrecte sur un fichier qui se termine par un bloc Jinja, vérifier le rendu des deux branches : un `{% if %}` faux en fin de fichier laisse souvent une ligne vide en trop. Le contrôle d'espaces Jinja (`{%- if %}`, `{%- endif %}`) règle le problème.
 
+### Tester l'identité git
+
+`tests/test_setup_git.py` exécute `setup_git` (dépôt et projet généré) dans un dossier temporaire, avec une config globale vide (`GIT_CONFIG_GLOBAL`, `GIT_CONFIG_NOSYSTEM`). Les variables `GIT_*`, `GITHUB_*` et `EMAIL` sont retirées de l'environnement, sinon git trouve une identité :
+
+- sans identité : commit initial sous l'adresse noreply de `GITHUB_USERNAME`, ou sous `PyFoundry`, avec un avertissement, et rien dans `.git/config` ;
+- avec une identité globale : elle est utilisée, sans avertissement ;
+- au rebuild : l'ancienne identité `Default User` est retirée, toute autre identité locale est conservée ;
+- aucun fichier du dépôt ni du projet généré ne cite le domaine interne, sauf `postCreateCommand.sh` (pour le nettoyage) et `CHANGELOG.md`.
+
 ### Tester le fuseau horaire
 
 `tests/test_timezone.py` couvre le dépôt et les projets générés (défaut et `docker_in_docker=y`) :
