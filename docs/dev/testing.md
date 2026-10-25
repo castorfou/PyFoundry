@@ -39,11 +39,13 @@ Pour tester avec vos modifications locales (y compris non commitées), utiliser 
 - **`cruft create`** : utilise Git, ne voit que les fichiers **commités**
 - **`cookiecutter`** : lit le filesystem, voit **tous les fichiers** (commités ou non)
 
+Les exemples utilisent le chemin du dépôt dans le devcontainer PyFoundry, `/workspaces/PyFoundry`. Sur l'hôte, remplacez-le par votre clone, par exemple `~/git/PyFoundry`.
+
 #### Workflow de test manuel
 
 ```bash
-# 1. Nettoyer
-rm -rf ~/temp/mon-projet-data-science
+# 1. Nettoyer l'ancien projet : conteneur, dossier et HOME
+bash /workspaces/PyFoundry/scripts/clean_test_project.sh ~/temp/mon-projet-data-science
 
 # 2. Générer avec cookiecutter (modifications non commitées visibles)
 cd ~/temp
@@ -62,7 +64,8 @@ code ~/temp/mon-projet-data-science
 
 ```bash
 # Depuis l'hôte, après avoir pushé la branche
-cd ~/temp && rm -rf mon-projet-data-science
+bash ~/git/PyFoundry/scripts/clean_test_project.sh ~/temp/mon-projet-data-science
+cd ~/temp
 cruft create https://github.com/castorfou/PyFoundry.git \
   -c 44-integrer-docker-in-docker \
   --no-input \
@@ -76,13 +79,15 @@ code mon-projet-data-science
 
 ```bash
 # Option désactivée (défaut)
-cd ~/temp && rm -rf mon-projet-data-science
+bash /workspaces/PyFoundry/scripts/clean_test_project.sh ~/temp/mon-projet-data-science
+cd ~/temp
 cookiecutter /workspaces/PyFoundry --no-input
 grep -c "docker-in-docker" mon-projet-data-science/.devcontainer/devcontainer.json
 # → doit retourner 0
 
 # Option activée
-cd ~/temp && rm -rf mon-projet-data-science
+bash /workspaces/PyFoundry/scripts/clean_test_project.sh ~/temp/mon-projet-data-science
+cd ~/temp
 cookiecutter /workspaces/PyFoundry --no-input --extra-context '{"docker_in_docker": "y"}'
 grep "docker-in-docker" mon-projet-data-science/.devcontainer/devcontainer.json
 # → doit montrer la feature
@@ -143,7 +148,8 @@ readlink /etc/localtime; cat /etc/timezone # zone de l'hôte, ex. Europe/Paris
 Pour vérifier avec le vrai pre-commit :
 
 ```bash
-cd ~/temp && rm -rf mon-projet-data-science
+bash /workspaces/PyFoundry/scripts/clean_test_project.sh ~/temp/mon-projet-data-science
+cd ~/temp
 cookiecutter /workspaces/PyFoundry --no-input
 cd mon-projet-data-science && git init -q && git add -A && pre-commit run --all-files
 ```
@@ -246,15 +252,41 @@ source /tmp/venv/bin/activate && pytest tests -v
 ruff check tests/ docs/ --fix
 
 # 3. Test manuel rapide
-cd ~/temp && rm -rf mon-projet-data-science
+bash /workspaces/PyFoundry/scripts/clean_test_project.sh ~/temp/mon-projet-data-science
+cd ~/temp
 cookiecutter /workspaces/PyFoundry --no-input
 ```
 
 ### Nettoyage
 
+Supprimer le dossier d'un projet de test ne suffit pas : son devcontainer continue à tourner, orphelin, et peut occuper un cœur à 100 %. Pire, un projet régénéré au même chemin redémarre ce vieux conteneur, avec la configuration de sa création : un `devcontainer.json` modifié depuis est ignoré. Nettoyez donc avec le script, depuis l'hôte :
+
 ```bash
-rm -rf ~/temp/mon-projet-data-science
+bash ~/git/PyFoundry/scripts/clean_test_project.sh ~/temp/mon-projet-data-science
 ```
+
+Il supprime dans l'ordre :
+
+1. le conteneur, retrouvé par le label `devcontainer.local_folder` que VS Code pose avec le chemin du dossier ;
+2. le dossier du projet ;
+3. son HOME persistant, `~/.devcontainer/homes/mon-projet-data-science-<identifiant>`. Le HOME d'un autre projet dont le nom commence pareil (`mon-projet-data-science-2`) est conservé.
+
+Si le HOME contient des dossiers root, le script s'arrête en erreur avec la commande `sudo rm -rf` à lancer (voir [Dépannage](../user/troubleshooting.md#rm-rf-du-home-echoue-permission-denied)).
+
+Dans le devcontainer PyFoundry, `docker` est absent : le script supprime le dossier et le HOME, puis affiche la commande à lancer sur l'hôte pour le conteneur.
+
+Sans le script, les commandes équivalentes, sur l'hôte :
+
+```bash
+PROJET=~/temp/mon-projet-data-science
+docker rm -f $(docker ps -aq --filter "label=devcontainer.local_folder=$PROJET")
+rm -rf "$PROJET"
+rm -rf ~/.devcontainer/homes/"$(basename "$PROJET")"-*
+```
+
+Le dernier `rm -rf` supprime aussi le HOME des projets dont le nom commence pareil.
+
+Le script est testé par `tests/test_clean_test_project.py`, avec un faux `docker` (`CLEAN_TEST_PROJECT_DOCKER`) qui journalise ses appels et vérifie que le conteneur est supprimé avant le dossier.
 
 ## Debugging
 

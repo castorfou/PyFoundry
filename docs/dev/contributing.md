@@ -213,7 +213,8 @@ Fichiers typiquement concernés : `.devcontainer/devcontainer.json`, `.devcontai
 !!! tip "Tester avec cookiecutter (non commité)"
     `cookiecutter` lit le filesystem et voit les fichiers non commités, contrairement à `cruft` qui n'utilise que Git :
     ```bash
-    cd ~/temp && rm -rf mon-projet-data-science
+    bash /workspaces/PyFoundry/scripts/clean_test_project.sh ~/temp/mon-projet-data-science
+    cd ~/temp
     cookiecutter /workspaces/PyFoundry --no-input --extra-context '{"docker_in_docker": "y"}'
     ```
 

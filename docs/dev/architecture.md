@@ -148,6 +148,8 @@ Au premier build, il n'y a donc pas encore d'identité git. `setup_git` fait alo
 
 Le choix est détaillé dans l'ADR [0001 — HOME persistant](../adr/0001-persist-development-home.md).
 
+Le conteneur, lui, ne survit pas à la fenêtre : `"shutdownAction": "stopContainer"` l'arrête quand on ferme VS Code. Avec `none`, tout devcontainer ouvert une fois tournait jusqu'au prochain `docker stop` (#92). VS Code enregistre ce réglage dans le label `devcontainer.metadata` à la création du conteneur : sur un projet existant, il ne s'applique qu'après un rebuild.
+
 ### Authentification GitHub
 
 `postCreateCommand.sh` ne lance pas `gh auth login`. Les commandes de cycle de vie (`postCreateCommand`, `postStartCommand`) tournent hors des terminaux VS Code, donc sans la variable `BROWSER` : `gh` ne pourrait pas ouvrir le navigateur, et le build attendrait l'utilisateur. Le conteneur n'ayant pas d'affichage graphique, la copie du code dans le presse-papiers échoue aussi, avec ou sans `xclip`.

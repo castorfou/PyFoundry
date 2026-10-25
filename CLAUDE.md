@@ -46,6 +46,8 @@ PyFoundry/
 │   ├── cheatsheets/                     # Claude, GitHub, Docker, uv, VSCode, MkDocs...
 │   ├── dev/                             # Docs développeur (architecture, tests, contribution)
 │   └── user/                            # Docs utilisateur (getting started, conventions)
+├── scripts/
+│   └── clean_test_project.sh            # Nettoyage d'un projet de test : conteneur, dossier, HOME
 ├── tests/
 │   ├── conftest.py                      # Fixtures pytest (contextes de génération)
 │   ├── devcontainer_utils.py            # Parseur JSONC de devcontainer.json
@@ -61,7 +63,8 @@ PyFoundry/
 │   ├── test_github_auth.py              # Authentification gh : montage partagé, gh_login.sh
 │   ├── test_claude_auth.py              # Config Claude Code partagée, migration de l'historique
 │   ├── test_versioning.py               # Version, CHANGELOG, release.py, release.yml
-│   └── test_cruft_update_skill.py       # Skill /cruft-update et son script
+│   ├── test_cruft_update_skill.py       # Skill /cruft-update et son script
+│   └── test_clean_test_project.py       # Script scripts/clean_test_project.sh
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── CHANGELOG.md                         # Évolutions par version (Keep a Changelog)
 ├── CONTEXT.md                           # Glossaire du domaine (template, projet généré, rejet…)
@@ -161,8 +164,11 @@ uv run --active ruff check . --fix
 ### Générer un projet de test localement
 
 ```bash
+# Nettoyer l'ancien projet de test : conteneur, dossier et HOME (voir R1.3)
+bash scripts/clean_test_project.sh ~/temp/mon-projet-data-science
+
 # cookiecutter lit le filesystem (voit les fichiers non commités) — pour test rapide
-cd ~/temp && rm -rf mon-projet-data-science
+cd ~/temp
 cookiecutter /workspaces/PyFoundry --no-input
 
 # cruft utilise Git (ne voit que les fichiers commités) — pour test fidèle à la prod
@@ -196,15 +202,21 @@ ruff check tests/ docs/ --fix
 
 ### R1.3 — Tester localement le projet généré
 
+Sur l'hôte, depuis le clone `~/git/PyFoundry` :
+
 ```bash
 mamba activate pyfoundry && \
+bash ~/git/PyFoundry/scripts/clean_test_project.sh /tmp/mon-projet-data-science && \
 cd /tmp && \
-rm -rf /tmp/mon-projet-data-science && \
-cruft create /workspaces/PyFoundry --no-input --extra-context '{"use_node": "y"}' && \
+cruft create ~/git/PyFoundry --no-input --extra-context '{"use_node": "y"}' && \
 code mon-projet-data-science
 ```
 
 Puis "Rebuild and Reopen in Container" depuis VS Code.
+
+Dans le devcontainer PyFoundry, le chemin du script devient `/workspaces/PyFoundry/scripts/clean_test_project.sh`. `docker` y est absent : le script supprime le dossier et le HOME, et affiche la commande `docker rm -f` à lancer sur l'hôte.
+
+Ne jamais nettoyer un projet de test avec un simple `rm -rf` : son conteneur continue à tourner, et un projet régénéré au même chemin redémarre ce vieux conteneur avec son ancienne configuration (#92).
 
 ### R1.4 — cruft vs cookiecutter
 
@@ -237,7 +249,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 |---------|------|
 | `conftest.py` | Fixtures : `default_template_context`, `minimal_template_context` |
 | `test_template_generation.py` | Structure générée, fichiers présents, variables injectées |
-| `test_configurations.py` | Validité TOML/YAML/JSON, config ruff/mypy/devcontainer, fichiers générés conformes à `trailing-whitespace`, `end-of-file-fixer` et `check-json`, pas d'extension isort, hook `no-venv-at-root` |
+| `test_configurations.py` | Validité TOML/YAML/JSON, config ruff/mypy/devcontainer (dont `shutdownAction: stopContainer`), fichiers générés conformes à `trailing-whitespace`, `end-of-file-fixer` et `check-json`, pas d'extension isort, hook `no-venv-at-root` |
 | `test_mkdocs_integration.py` | Config mkdocs.yml, build documentation, `docs.yml` (dépôt et projet généré) : publication sur `main` ou sur lancement manuel depuis n'importe quelle branche, jamais sur une pull request |
 | `test_persistent_home.py` | HOME persistant, montages, `initializeCommand` (dont chaque point de montage imbriqué, déduit des `mounts`), venv `/tmp/venv` et `UV_PROJECT_ENVIRONMENT` (dépôt et projet généré) |
 | `test_ensure_venv.py` | `ensure_venv.sh` (identique dans le dépôt et le squelette) lancé par `postStartCommand` : recrée `/tmp/venv` s'il manque ou sans interpréteur, ne fait rien sinon, `--sync` force la synchronisation, échec d'`uv` signalé avec le contournement ; `create_python_environment` lui délègue ; `.zshrc` n'active le venv que s'il existe et perd l'ancienne ligne non protégée |
@@ -248,6 +260,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_github_auth.py` | Config gh partagée entre devcontainers (`~/.config/gh-devcontainers`, créé en `700`), aucun `gh auth login` dans `postCreateCommand`, `setup_gh_credential_helper`, `gh_login.sh` (silencieux si authentifié, sans réseau, une seule tentative par conteneur, jamais d'échec du shell) |
 | `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag`, `notes` et `plan` (inchangée, hausse, baisse, tag existant, version sous la dernière release, CHANGELOG absent ou vide) ; `release.yml` (push sur `main`, tag et release en une commande, permissions minimales) et `release-plan` sur les PR ; `TEMPLATE_VERSION` généré et suivi par `cruft update` ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |
 | `test_cruft_update_skill.py` | Skill `/cruft-update` identique dans le dépôt et le projet généré (donc non rendue par Jinja, `_copy_without_render`), frontmatter (model-invoked), `template_update.py` : `categorie` (catégories de l'ADR 0003), `rejets` (`.rej` et vrai conflit `git apply -3`), `changelog` (template local ou clone léger depuis `.cruft.json`) |
+| `test_clean_test_project.py` | `scripts/clean_test_project.sh` (faux `docker` via `CLEAN_TEST_PROJECT_DOCKER`) : conteneur retrouvé par `devcontainer.local_folder` et supprimé avant le dossier, chemin relatif rendu absolu, dossier déjà supprimé, seul le HOME `<nom>-<id>` est supprimé, commande pour l'hôte sans docker, `sudo rm -rf` suggéré si le HOME résiste, refus sans argument, `/` ou `$HOME` |
 | `test_claude_auth.py` | Config Claude Code partagée entre devcontainers (`~/.config/claude-devcontainers` monté sur `~/.claude`, créé en `700`), `CLAUDE_CONFIG_DIR`, verrous `~/.claude/ide` propres au projet, `migrate_claude_history.sh` (copie sans écraser, une seule fois, jamais la connexion, jamais d'échec) |
 
 ### CI/CD GitHub Actions

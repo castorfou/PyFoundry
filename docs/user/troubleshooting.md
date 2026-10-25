@@ -142,6 +142,31 @@ Les builds suivants utilisent le cache et prennent moins d'une minute.
 
 Si c'est lent à chaque fois : vérifiez que Docker a assez de ressources (4 Go de RAM minimum, 4 CPUs recommandé).
 
+### Le laptop chauffe : des conteneurs oubliés tournent encore
+
+Un devcontainer resté actif sans fenêtre VS Code peut occuper un cœur à 100 %, par son processus `agentHost` (VS Code Server). Listez les devcontainers actifs et leur dossier, sur l'hôte :
+
+```bash
+docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Label "devcontainer.local_folder"}}'
+```
+
+Arrêtez ceux dont vous n'avez pas la fenêtre ouverte :
+
+```bash
+docker stop <nom>
+```
+
+Fermer la fenêtre VS Code arrête normalement le conteneur (`"shutdownAction": "stopContainer"` dans `.devcontainer/devcontainer.json`). Un conteneur peut quand même rester actif dans ces cas :
+
+- **VS Code a été tué ou a planté** : sans fermeture propre de la fenêtre, le conteneur n'est pas arrêté.
+- **Le projet date d'avant ce réglage** : après `cruft update`, faites **Dev Containers: Rebuild Container**. VS Code enregistre la configuration à la création du conteneur et ne relit pas `shutdownAction` tant que le conteneur n'est pas recréé. Pour vérifier la valeur enregistrée :
+
+    ```bash
+    docker inspect <nom> --format '{{ index .Config.Labels "devcontainer.metadata" }}' | grep -o '"shutdownAction":"[^"]*"'
+    ```
+
+- **Le dossier du projet a été supprimé** : le conteneur ne l'est pas avec lui. Supprimez-le avec `docker rm -f <nom>`.
+
 ---
 
 ## Python et `uv`
