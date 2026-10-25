@@ -39,7 +39,7 @@ pour intégrer les dernieres fonctions de **`PyFoundry`**, demandez à Claude Co
 cruft update
 ```
 
-Les nouveautés de chaque version, et les éventuelles étapes de migration, sont dans le [changelog](/changelog). Pour viser une version précise : `cruft update --checkout v1.0.0`.
+La version du template d'un projet est dans son fichier `TEMPLATE_VERSION`, mis à jour par `cruft update`. Les nouveautés de chaque version, et les éventuelles étapes de migration, sont dans le [changelog](/changelog). Pour viser une version précise : `cruft update --checkout v1.0.0`.
 
 ## ✨ Fonctionnalités
 

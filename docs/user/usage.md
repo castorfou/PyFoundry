@@ -6,13 +6,21 @@ Le template évolue (corrections, nouvelles fonctionnalités, nouvelles options)
 
 ### Connaître la version du template
 
-Depuis PyFoundry 1.0.0, le `.cruft.json` du projet indique la version du template utilisée lors de la génération ou de la dernière mise à jour :
+Le fichier `TEMPLATE_VERSION`, à la racine du projet, indique la version du template utilisée lors de la génération ou de la dernière mise à jour :
+
+```bash
+cat TEMPLATE_VERSION
+```
+
+`cruft update` le met à jour avec le reste du template : après la mise à jour, il porte la nouvelle version. Ne le modifiez pas à la main.
+
+Un projet généré avant l'apparition de ce fichier le reçoit à sa prochaine mise à jour. En attendant, la même information est dans `.cruft.json` depuis PyFoundry 1.0.0 :
 
 ```bash
 jq -r '.context.cookiecutter._pyfoundry_version' .cruft.json
 ```
 
-Un résultat `null` signifie que le projet date d'avant la 1.0.0. Le champ `commit` donne le commit exact du template.
+Un résultat `null` signifie que le projet date d'avant la 1.0.0. Le champ `commit` de `.cruft.json` donne le commit exact du template, utile entre deux releases : un projet mis à jour depuis `main` porte la version de la dernière release.
 
 Les nouveautés de chaque version, et les étapes de migration qu'elles demandent, sont dans le [changelog](../changelog.md). Avant une mise à jour, lisez les sections des versions entre la vôtre et la dernière, en particulier les rubriques **Migration**.
 
@@ -407,8 +415,7 @@ Puis reconstruire le conteneur (`Ctrl+Shift+P` → `Dev Containers: Rebuild Cont
 Le projet inclut un repertoire `.github/workflows` pré-configuré. Dès le premier `git push`, GitHub déclenche un pipeline :
 
 - 📚 Deploy Documentation : (docs.yml) — build MkDocs strict et déploiement automatique sur GitHub Pages à chaque push sur main touchant docs/ ou mkdocs.yml. Peut aussi être lancé à la main pour publier la doc d'une autre branche (voir [Publier la doc d'une branche sur GitHub Pages](#publier-la-doc-dune-branche-sur-github-pages)).
-- 🚀 Release Automation : (release.yml) — déclenché sur un tag v*.*.* : réexécute les tests, génère des release notes automatiques depuis le git log, et publie une GitHub Release (stable ou pre-release selon le format du tag).
-- 🧪 Test Template : (test-template.yml) — déclenché sur toutes les branches : lint ruff, pre-commit hooks, génération du projet via cruft et validation sur Python 3.11 et 3.12.
+- 🔄 Continuous Integration : (ci.yml) — déclenché sur les push vers main et develop, et sur les pull requests vers main : lint ruff, tests pytest, mypy, pre-commit hooks et build du package, sur la version Python du projet et 3.12.
 
 Le pipeline est visible sous **Actions** sur la page du projet GitHub.
 

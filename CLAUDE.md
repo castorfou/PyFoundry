@@ -35,11 +35,11 @@ PyFoundry/
 │       ├── gh_login.sh                  # Authentification gh au premier terminal zsh
 │       └── migrate_claude_history.sh    # Historique Claude Code vers la config partagée (sur l'hôte)
 ├── .github/
-│   ├── scripts/release.py               # Contrôle du tag et notes de release tirées du CHANGELOG
+│   ├── scripts/release.py               # Détection d'une hausse de version, contrôles, notes du CHANGELOG
 │   └── workflows/
-│       ├── test-template.yml            # CI : lint + tests sur toutes les branches
+│       ├── test-template.yml            # CI : lint + tests, plan de release sur les PR
 │       ├── docs.yml                     # Déploiement documentation GitHub Pages
-│       └── release.yml                  # Publication des releases
+│       └── release.yml                  # Publication automatique au merge d'une hausse de version
 ├── docs/                                # Fichiers source MkDocs
 │   ├── adr/                             # Architecture Decision Records
 │   ├── agents/                          # Config des skills Matt Pocock (issues, labels, domaine)
@@ -84,7 +84,7 @@ PyFoundry/
 }
 ```
 
-`_pyfoundry_version` est privée : cruft la relit dans le nouveau template à chaque `cruft update`, donc le `.cruft.json` d'un projet généré porte la version du template dont il vient.
+`_pyfoundry_version` est privée : cruft la relit dans le nouveau template à chaque `cruft update`, donc le `.cruft.json` et le fichier `TEMPLATE_VERSION` d'un projet généré portent la version du template dont il vient.
 
 ### Structure du Projet Généré
 
@@ -110,6 +110,7 @@ mon-projet-data-science/
 ├── .gitignore
 ├── .pre-commit-config.yaml
 ├── CLAUDE.md
+├── TEMPLATE_VERSION                # Version PyFoundry du projet (mise à jour par cruft update)
 └── pyproject.toml
 ```
 
@@ -217,7 +218,7 @@ Ce dépôt contient le template lui-même et le squelette du projet généré, s
 
 ### R1.6 — Tenir le CHANGELOG
 
-Chaque changement visible pour un utilisateur du template va dans la section `## [Non publié]` de `CHANGELOG.md`, avec le numéro de l'issue. Si les projets existants doivent faire une action manuelle en plus de `cruft update`, ajouter une note dans `### Migration` : la prochaine release sera une majeure. Ne pas modifier la version hors d'une PR de release (voir `docs/dev/release.md`).
+Chaque changement visible pour un utilisateur du template va dans la section `## [Non publié]` de `CHANGELOG.md`, avec le numéro de l'issue. Si les projets existants doivent faire une action manuelle en plus de `cruft update`, ajouter une note dans `### Migration` : la prochaine release sera une majeure. Ne pas modifier la version hors d'une PR de release : le merge d'une hausse de version sur `main` publie la release automatiquement (voir `docs/dev/release.md`).
 
 ## Conventions & Style de Code
 
@@ -243,7 +244,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_post_create_command.py` | `setup_pre-commit` : un rebuild ne commite que `.pre-commit-config.yaml`, jamais le travail en cours |
 | `test_timezone.py` | Fuseau de l'hôte monté sur `/etc/localtime.host` (jamais sur `/etc/localtime`, qui écraserait `Etc/UTC`), pas de `TZ` transmis (vide = UTC), `setup_timezone` relie `/etc/localtime` à la zone de même contenu |
 | `test_github_auth.py` | Config gh partagée entre devcontainers (`~/.config/gh-devcontainers`, créé en `700`), aucun `gh auth login` dans `postCreateCommand`, `setup_gh_credential_helper`, `gh_login.sh` (silencieux si authentifié, sans réseau, une seule tentative par conteneur, jamais d'échec du shell) |
-| `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag` et `notes` ; `release.yml` les appelle ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |
+| `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag`, `notes` et `plan` (inchangée, hausse, baisse, tag existant, version sous la dernière release, CHANGELOG absent ou vide) ; `release.yml` (push sur `main`, tag et release en une commande, permissions minimales) et `release-plan` sur les PR ; `TEMPLATE_VERSION` généré et suivi par `cruft update` ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |
 | `test_cruft_update_skill.py` | Skill `/cruft-update` identique dans le dépôt et le projet généré (donc non rendue par Jinja, `_copy_without_render`), frontmatter (model-invoked), `template_update.py` : `categorie` (catégories de l'ADR 0003), `rejets` (`.rej` et vrai conflit `git apply -3`), `changelog` (template local ou clone léger depuis `.cruft.json`) |
 | `test_claude_auth.py` | Config Claude Code partagée entre devcontainers (`~/.config/claude-devcontainers` monté sur `~/.claude`, créé en `700`), `CLAUDE_CONFIG_DIR`, verrous `~/.claude/ide` propres au projet, `migrate_claude_history.sh` (copie sans écraser, une seule fois, jamais la connexion, jamais d'échec) |
 
@@ -251,9 +252,9 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 
 | Workflow | Déclencheur | Rôle |
 |----------|-------------|------|
-| `test-template.yml` | Push toutes branches, PR main | Lint ruff + tests pytest |
+| `test-template.yml` | Push toutes branches, PR main | Lint ruff + tests pytest ; sur les PR, `release.py plan` refuse une PR de release incohérente |
 | `docs.yml` | Push main (docs/ ou mkdocs.yml), lancement manuel depuis n'importe quelle branche | Déploiement GitHub Pages |
-| `release.yml` | Tag `v*.*.*` | Vérifie le tag (`release.py check-tag`), lance les tests, publie la release avec la section du CHANGELOG |
+| `release.yml` | Push main | `release.py plan` détecte une hausse de version ; si oui, lance les tests puis crée le tag `vX.Y.Z` et la release (section du CHANGELOG) en une commande |
 
 ## Skills Matt Pocock
 
