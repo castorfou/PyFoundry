@@ -115,13 +115,13 @@ Le `.pre-commit-config.yaml` de PyFoundry exclut `{{ cookiecutter.project_slug }
 
 - `tests/test_configurations.py` rend le template (défaut, `use_node=y`, `docker_in_docker=y`) et vérifie ce que contrôlent `end-of-file-fixer`, `trailing-whitespace` et `check-json` : un seul retour à la ligne final, aucun espace en fin de ligne, JSON valides. Les exclusions sont lues dans le `.pre-commit-config.yaml` généré, et seuls les fichiers que git suivrait sont vérifiés.
 - `tests/test_configurations.py` exécute aussi la commande du hook local `no-venv-at-root` (dépôt et projet généré) dans un dossier temporaire, avec et sans `.venv`.
-- `tests/test_post_create_command.py` exécute `setup_pre-commit` (dépôt et projet généré) dans un dépôt temporaire, avec un faux `pre-commit` et du travail en cours : un rebuild ne doit commiter que `.pre-commit-config.yaml`.
+- `tests/test_post_create_command.py` exécute `setup_pre-commit` (dépôt et projet généré) dans un dépôt temporaire, avec un faux `pre-commit` et du travail en cours : un rebuild ne doit commiter que `.pre-commit-config.yaml`. Sans identité git (voir ci-dessous), ce commit est fait sous l'adresse noreply, et une création simulée (`setup_git` puis `setup_pre-commit`) laisse un `git status` vide avec un seul avertissement.
 
 Si un test signale une fin de fichier incorrecte sur un fichier qui se termine par un bloc Jinja, vérifier le rendu des deux branches : un `{% if %}` faux en fin de fichier laisse souvent une ligne vide en trop. Le contrôle d'espaces Jinja (`{%- if %}`, `{%- endif %}`) règle le problème.
 
 ### Tester l'identité git
 
-`tests/test_setup_git.py` exécute `setup_git` (dépôt et projet généré) dans un dossier temporaire, avec une config globale vide (`GIT_CONFIG_GLOBAL`, `GIT_CONFIG_NOSYSTEM`). Les variables `GIT_*`, `GITHUB_*` et `EMAIL` sont retirées de l'environnement, sinon git trouve une identité :
+`tests/test_setup_git.py` exécute `setup_git` et `git_commit_with_fallback` (dépôt et projet généré) dans un dossier temporaire, avec une config globale vide (`GIT_CONFIG_GLOBAL`, `GIT_CONFIG_NOSYSTEM`). Les variables `GIT_*`, `GITHUB_*` et `EMAIL` sont retirées de l'environnement, sinon git trouve une identité :
 
 - sans identité : commit initial sous l'adresse noreply de `GITHUB_USERNAME`, ou sous `PyFoundry`, avec un avertissement, et rien dans `.git/config` ;
 - avec une identité globale : elle est utilisée, sans avertissement ;

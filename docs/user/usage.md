@@ -577,7 +577,9 @@ Le shell par défaut dans le conteneur est ZSH avec :
 
 Les hooks pre-commit sont installés et pré-chargés par `postCreateCommand.sh`. Ils s'exécutent automatiquement à chaque `git commit`. Si un hook modifie un fichier (Ruff qui reformate, par exemple), il faut `git add` les modifications et recommiter.
 
-À chaque rebuild, `postCreateCommand.sh` lance `pre-commit autoupdate`. Si des hooks ont une nouvelle version, il commite **uniquement** `.pre-commit-config.yaml` (« chore: update pre-commit hooks to latest versions »). Votre travail en cours, indexé ou non, n'est jamais commité : vous pouvez faire un rebuild en pleine séance de travail. Si ce commit échoue, la config mise à jour reste simplement non commitée.
+À chaque rebuild, `postCreateCommand.sh` lance `pre-commit autoupdate`. Si des hooks ont une nouvelle version, il commite **uniquement** `.pre-commit-config.yaml` (« chore: update pre-commit hooks to latest versions »). Votre travail en cours, indexé ou non, n'est jamais commité : vous pouvez faire un rebuild en pleine séance de travail. Sans identité git (premier build), ce commit est fait sous la même identité de repli que le commit initial (voir [Dépannage](troubleshooting.md)). Si ce commit échoue malgré tout, la config mise à jour reste simplement non commitée.
+
+Un projet tout juste créé n'a donc rien à commiter : `git status` est propre.
 
 Un projet tout juste généré passe `pre-commit run --all-files` sans aucune modification.
 
@@ -591,11 +593,7 @@ pre-commit run --all-files
 
 ### repo_url MkDocs
 
-Le script `scripts/update_mkdocs_repo_url.sh` met à jour automatiquement le champ `repo_url` dans `mkdocs.yml` à partir de l'URL du remote `origin`. Il s'exécute au démarrage du Dev Container. Pour le relancer manuellement (après avoir changé de remote par exemple) :
-
-```bash
-./scripts/update_mkdocs_repo_url.sh
-```
+Le champ `repo_url` de `mkdocs.yml` est écrit à la génération du projet : `https://github.com/<github_username>/<project_slug>`, la même adresse que le remote `origin` configuré par le Dev Container. Si le dépôt change d'adresse (renommage, transfert), modifiez `repo_url` à la main dans `mkdocs.yml`.
 
 ---
 
