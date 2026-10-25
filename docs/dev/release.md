@@ -72,15 +72,28 @@ git checkout -b release/vX.Y.Z
     [X.Y.Z]: https://github.com/castorfou/PyFoundry/compare/vA.B.C...vX.Y.Z
     ```
 
-5. Vérifier localement :
+5. Vérifier localement (`git fetch --tags` d'abord : sans les tags distants, `plan` ne voit pas une version déjà publiée) :
 
     ```bash
+    git fetch origin --tags
     pytest tests/test_versioning.py
     python3 .github/scripts/release.py plan --base origin/main   # « publication de vX.Y.Z »
     python3 .github/scripts/release.py notes vX.Y.Z
     ```
 
 6. Commiter (`chore(release): vX.Y.Z`) et ouvrir la PR. Le job **Release plan** de la CI lance le même contrôle : il échoue, avec ses lignes `[ERREUR]`, si la PR n'est pas publiable.
+
+Exemple : la section « Non publié » contient des rubriques `Ajouté`, sans `Migration`. Depuis la 1.0.0, la release est une mineure, la **1.1.0** :
+
+- `pyproject.toml` : `version = "1.1.0"` ; `cookiecutter.json` : `"_pyfoundry_version": "1.1.0"` ;
+- `CHANGELOG.md` : `## [1.1.0] - 2026-10-26` sous une nouvelle section `## [Non publié]` vide, et en bas :
+
+    ```markdown
+    [Non publié]: https://github.com/castorfou/PyFoundry/compare/v1.1.0...HEAD
+    [1.1.0]: https://github.com/castorfou/PyFoundry/compare/v1.0.0...v1.1.0
+    ```
+
+- `release.py plan --base origin/main` affiche « Hausse de version 1.0.0 → 1.1.0 : publication de v1.1.0 ».
 
 ### 2. Merge
 
