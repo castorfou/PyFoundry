@@ -8,10 +8,16 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 
 - Skill Claude Code `/cruft-update` dans les projets générés : elle lance `cruft update`, résume les nouveautés et les migrations du CHANGELOG, résout les rejets (`.rej`, marqueurs de conflit) selon le propriétaire de chaque fichier, vérifie le résultat et commite. Elle se déclenche aussi sur « mets à jour le projet depuis le template » (#89).
 - Règle de propriété des fichiers lors d'une mise à jour du template : fichiers du template, du projet ou mixtes (ADR 0003, #89).
+- Fichier `TEMPLATE_VERSION` à la racine des projets générés : la version PyFoundry du projet, mise à jour par `cruft update` (#90).
+
+### Modifié
+
+- Les releases de PyFoundry sont publiées automatiquement au merge d'une PR de release (hausse de version dans `pyproject.toml`), avec le tag et les notes du CHANGELOG. La CI des pull requests refuse une PR de release incohérente. Les autres merges ne publient rien (ADR 0004, #90).
 
 ### Corrigé
 
 - Le venv `/tmp/venv` est recréé au démarrage du conteneur s'il manque. Avec Docker-in-Docker, `/tmp` était vidé à chaque redémarrage, ce qui supprimait le venv (`no such file or directory: /tmp/venv/bin/activate`). Le `.zshrc` n'active plus le venv s'il n'existe pas (#86).
+- Le guide utilisateur décrit les workflows réellement fournis au projet généré (`ci.yml`, `docs.yml`), et non ceux du dépôt PyFoundry (#90).
 
 ## [1.0.0] - 2026-10-12
 

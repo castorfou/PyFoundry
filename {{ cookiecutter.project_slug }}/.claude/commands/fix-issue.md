@@ -9,7 +9,7 @@ Utilise une todo list pour garder la trace complète de ce travail, et être sû
 8. Appelle la slash-command interne de claude  `/stocke-memoire` pour garder une trace résumée des points saillants de ces apprentissages/modifications
 9.  Met à jour README.md et CLAUDE.md si necessaire, utilise les bonnes pratiques de rédaction décrites dans ta mémoire interne @CLAUDE.md
 10. Met à jour la documentation utilisateur et développeur (sous /docs), utilise les bonnes pratiques de rédaction décrites dans ta mémoire interne @CLAUDE.md
-11. Met à jour `CHANGELOG.md` s'il existe : ajoute les changements visibles pour l'utilisateur dans la section « Non publié » (Ajouté, Modifié, Corrigé…), avec le numéro de l'issue, et une note de migration si une action manuelle est nécessaire
+11. Met à jour `CHANGELOG.md` s'il existe : ajoute les changements visibles pour l'utilisateur dans la section « Non publié » (Ajouté, Modifié, Corrigé…), avec le numéro de l'issue, et une note de migration si une action manuelle est nécessaire. Ne modifie jamais la version (`pyproject.toml`, `_pyfoundry_version`) : elle est réservée aux PR de release, dont le merge publie la release
 12. Commit de façon atomique avec un message descriptif (precommit te forcera à faire quelques modifications) et push ces modifs
 13. Fais un test `mkdocs build --strict` et corrige les erreurs eventuelles
 14. Verifie l'etat de la CI/CD (gh run view). Attend jusqu'à la fin de l'execution avant de continuer. Et corrige toutes les erreurs avant d'aller plus loin.

@@ -14,7 +14,7 @@
 2. **`_pyfoundry_version` dans `cookiecutter.json`** recopie la version. cruft relit les variables privées dans le nouveau template à chaque `cruft update` : le `.cruft.json` d'un projet porte ainsi la version du template dont il vient.
 3. **SemVer adapté au template** : majeure si les projets existants doivent agir à la main en plus de `cruft update`, ou si une variable cookiecutter disparaît ; mineure pour une fonctionnalité ou une option ; patch pour une correction.
 4. **`CHANGELOG.md` tenu à la main** (Keep a Changelog), section « Non publié » complétée dans chaque PR. Génération depuis les commits écartée : l'historique est hétérogène, et les notes de migration doivent être rédigées pour un humain.
-5. **Releases par lots** : PR de release, puis tag posé par le mainteneur. Outil d'automatisation (release-please, commitizen) écarté pour l'instant.
+5. **Releases par lots** : PR de release, puis tag posé par le mainteneur. Outil d'automatisation (release-please, commitizen) écarté pour l'instant. *Remplacé par l'[ADR 0004](0004-publication-automatique-des-releases.md) : le merge de la PR de release publie, sans tag manuel.*
 6. **Contrôles** : `tests/test_versioning.py` vérifie la cohérence à chaque CI ; `.github/scripts/release.py check-tag` refuse un tag incohérent dans `release.yml`, et `release.py notes` y fournit les notes depuis le CHANGELOG.
 
 La première release de ce processus est la **1.0.0**, majeure en raison de la migration imposée par le HOME persistant ([ADR 0001](0001-persist-development-home.md)).

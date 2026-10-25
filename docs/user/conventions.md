@@ -117,7 +117,7 @@ docs: compléter la page d'installation
 
 Lors d'une mise à jour du template, chaque fichier a un propriétaire ([ADR 0003](../adr/0003-proprietaire-des-fichiers-mise-a-jour.md)) :
 
-- **fichiers du template** (`.devcontainer/`, `.github/workflows/`, `.claude/commands/`, `.claude/skills/`, `.pre-commit-config.yaml`, `docs/cheatsheets/`) : la version du template l'emporte. Chaque personnalisation vous sera redemandée à chaque mise à jour ;
+- **fichiers du template** (`.devcontainer/`, `.github/workflows/`, `.claude/commands/`, `.claude/skills/`, `.pre-commit-config.yaml`, `docs/cheatsheets/`, `TEMPLATE_VERSION`) : la version du template l'emporte. Chaque personnalisation vous sera redemandée à chaque mise à jour ;
 - **fichiers du projet** (`src/`, `tests/`, `notebooks/`, `data/`, `README.md`, `docs/user/`, `docs/dev/`, `docs/claude/memory/`) : votre version l'emporte ;
 - **fichiers mixtes** (`pyproject.toml`, `uv.lock`, `mkdocs.yml`, `CLAUDE.md`, `.gitignore`, `docs/agents/`, `.claude/settings.json`) : les deux versions sont fusionnées.
 

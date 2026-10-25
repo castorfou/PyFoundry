@@ -29,6 +29,7 @@ CATEGORIES: list[tuple[str, tuple[str, ...]]] = [
             ".claude/skills/",
             ".pre-commit-config.yaml",
             "docs/cheatsheets/",
+            "TEMPLATE_VERSION",
         ),
     ),
     (

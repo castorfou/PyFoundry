@@ -169,10 +169,11 @@ Le parcours réel se vérifie sur l'hôte :
 
 `tests/test_versioning.py` garde cohérentes les trois copies de la version (voir [Versions et releases](release.md)) :
 
-- la version de `pyproject.toml` est en SemVer strict et égale à `_pyfoundry_version` de `cookiecutter.json`. Le projet généré a cette variable dans son contexte ;
+- la version de `pyproject.toml` est en SemVer strict et égale à `_pyfoundry_version` de `cookiecutter.json`. Le projet généré a cette variable dans son contexte et dans son fichier `TEMPLATE_VERSION`. Un vrai `cruft update`, sur un mini-template git passé de 1.0.0 à 1.1.0, met `TEMPLATE_VERSION` à jour ;
 - `CHANGELOG.md` commence par `## [Non publié]`, a une section datée pour la version courante et couvre l'historique depuis la 0.4.0 ;
 - `.github/scripts/release.py` est lancé en sous-processus, avec `--root` pointant vers une copie des fichiers dans `tmp_path`. `check-tag` refuse un tag d'une autre version, un tag sans `v`, un `cookiecutter.json` désaligné ou une version absente du CHANGELOG. `notes` renvoie le corps exact d'une section ;
-- `release.yml` appelle `check-tag` et `notes`, sans `git log` ;
+- `release.py plan` tourne dans un dépôt git temporaire, tagué à la version courante, où `bump()` simule une PR de release. Il ne publie pas si la version est inchangée ; il publie sur une hausse cohérente (`release=true` dans `GITHUB_OUTPUT`) ; il échoue sur une baisse, un tag existant, une version sous la dernière release, un `cookiecutter.json` désaligné, une section du CHANGELOG absente ou vide. `GITHUB_OUTPUT` est retiré de l'environnement hérité, pour ne jamais écrire dans les sorties du job de CI ;
+- `release.yml` se déclenche sur un push vers `main`, compare au commit précédent (`fetch-depth: 0`), ne teste et ne publie que si `plan` a décidé une release, crée tag et release par un seul `gh release create --target`, n'accorde `contents: write` qu'à `publish` et tire ses notes de `notes`, sans `git log`. `test-template.yml` lance `plan` sur les pull requests ;
 - `/fix-issue` contient l'étape CHANGELOG et reste identique dans le dépôt et le squelette.
 
 ### Tester le HOME persistant

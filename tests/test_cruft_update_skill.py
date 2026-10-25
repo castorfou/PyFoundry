@@ -136,6 +136,7 @@ def repo(tmp_path: Path) -> Path:
         (".claude/skills/cruft-update/SKILL.md", "template"),
         (".pre-commit-config.yaml", "template"),
         ("docs/cheatsheets/uv.md", "template"),
+        ("TEMPLATE_VERSION", "template"),
         ("src/pkg/module.py", "projet"),
         ("tests/test_x.py", "projet"),
         ("notebooks/explo.ipynb", "projet"),

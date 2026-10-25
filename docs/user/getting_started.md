@@ -139,8 +139,7 @@ git push -u origin main
 Le projet inclut un repertoire `.github/workflows` pré-configuré. Dès le premier `git push`, GitHub déclenche un pipeline :
 
 - 📚 Deploy Documentation : (docs.yml) — build MkDocs strict et déploiement automatique sur GitHub Pages à chaque push sur main touchant docs/ ou mkdocs.yml. Peut aussi être lancé à la main pour publier la doc d'une autre branche (voir [Publier la doc d'une branche](usage.md#publier-la-doc-dune-branche-sur-github-pages)).
-- 🚀 Release Automation : (release.yml) — déclenché sur un tag v*.*.* : réexécute les tests, génère des release notes automatiques depuis le git log, et publie une GitHub Release (stable ou pre-release selon le format du tag).
-- 🧪 Test Template : (test-template.yml) — déclenché sur toutes les branches : lint ruff, pre-commit hooks, génération du projet via cruft et validation sur Python 3.11 et 3.12.
+- 🔄 Continuous Integration : (ci.yml) — déclenché sur les push vers main et develop, et sur les pull requests vers main : lint ruff, tests pytest, mypy, pre-commit hooks et build du package, sur la version Python du projet et 3.12.
 
 Le pipeline est visible sous **Actions** sur la page du projet GitHub.
 
