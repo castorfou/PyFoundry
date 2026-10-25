@@ -8,7 +8,9 @@
     "docker_in_docker": "n",
     "_copy_without_render": [
         ".devcontainer/resources/.p10k.zsh",
-        ".devcontainer/scripts/check_mounts.sh"
+        ".devcontainer/scripts/check_mounts.sh",
+        ".claude/skills/cruft-update/*",
+        ".claude/skills/cruft-update/scripts/*"
     ],
     "_pyfoundry_version": "1.0.0"
 }
