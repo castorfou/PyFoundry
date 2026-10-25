@@ -1,6 +1,6 @@
 {
   "template": "git@github.com:castorfou/PyFoundry.git",
-  "commit": "e69cceacd915e4a55b3f2ee8ae59d747099b356e",
+  "commit": "5571dcd469c6bd413378afa52eb85dec9c6e582d",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -17,9 +17,9 @@
         ".claude/skills/cruft-update/*",
         ".claude/skills/cruft-update/scripts/*"
       ],
-      "_pyfoundry_version": "1.1.0",
+      "_pyfoundry_version": "1.1.1",
       "_template": "git@github.com:castorfou/PyFoundry.git",
-      "_commit": "e69cceacd915e4a55b3f2ee8ae59d747099b356e"
+      "_commit": "5571dcd469c6bd413378afa52eb85dec9c6e582d"
     }
   },
   "directory": null
