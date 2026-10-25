@@ -431,7 +431,9 @@ Le SHA dans `.cruft.json` pointe vers un commit qui n'existe plus dans le dépô
 
 ### `cruft update` crée des fichiers `.rej`
 
-Cruft n'a pas réussi à merger automatiquement certains fichiers (ils ont trop divergé entre votre projet et le template).
+Cruft n'a pas réussi à merger automatiquement certains fichiers (ils ont trop divergé entre votre projet et le template). Les messages `patch failed` et `Retrying again with a different update strategy` qui les précèdent sont normaux.
+
+Le plus simple : demandez à Claude Code « mets à jour le projet depuis le template ». La skill `/cruft-update` reprend la mise à jour en cours, résout chaque rejet selon le propriétaire du fichier et vous demande dès qu'une personnalisation est en jeu (voir [Appliquer la mise à jour](usage.md#appliquer-la-mise-a-jour)). Sans Claude Code :
 
 1. Ouvrez chaque fichier `.rej` pour voir ce que le template voulait changer.
 2. Appliquez manuellement les modifications souhaitées dans le fichier concerné.

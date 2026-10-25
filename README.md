@@ -33,7 +33,7 @@ git push -u origin main
 
 **Mettre à jour (facultatif)**
 
-pour intégrer les dernieres fonctions de **`PyFoundry`**
+pour intégrer les dernieres fonctions de **`PyFoundry`**, demandez à Claude Code dans le projet : « mets à jour le projet depuis le template ». La skill `/cruft-update` lance `cruft update`, résume les nouveautés et les migrations, résout les rejets avec vous et vérifie le résultat. Sans Claude Code :
 
 ```bash
 cruft update
