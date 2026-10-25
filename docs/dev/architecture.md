@@ -144,6 +144,8 @@ Trois mécanismes complètent le montage :
 
 `~/.gitconfig` n'est plus monté : VS Code copie celui de l'hôte au démarrage.
 
+Au premier build, il n'y a donc pas encore d'identité git. `setup_git` fait alors le commit initial avec une identité ponctuelle (`git -c user.name=… -c user.email=… commit`) : `<GITHUB_USERNAME>@users.noreply.github.com`, ou `pyfoundry@users.noreply.github.com` sans `GITHUB_USERNAME`. Rien n'est écrit dans `.git/config`, où l'identité masquerait ensuite la globale. Sur un dépôt existant, `setup_git` retire l'ancienne identité par défaut (`Default User`) que les versions précédentes y écrivaient (issue #94).
+
 Le choix est détaillé dans l'ADR [0001 — HOME persistant](../adr/0001-persist-development-home.md).
 
 ### Authentification GitHub
