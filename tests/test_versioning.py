@@ -231,6 +231,13 @@ def bump(
         )
 
 
+# Versions de la PR de release simulée, relatives à la version courante :
+# les tests passent aussi sur une branche de release déjà montée de version.
+_MAJOR, _MINOR, _ = (int(part) for part in pyproject_version().split("."))
+NEXT = f"{_MAJOR}.{_MINOR + 1}.0"
+NEXT_MAJOR = f"{_MAJOR + 1}.0.0"
+
+
 def run_plan(root: Path, tmp_path: Path) -> tuple[subprocess.CompletedProcess, str]:
     output = tmp_path / "github_output"
     output.write_text("")
@@ -247,26 +254,26 @@ def test_plan_skips_release_when_version_unchanged(release_repo, tmp_path):
 
 
 def test_plan_releases_on_version_bump(release_repo, tmp_path):
-    bump(release_repo, "1.1.0")
+    bump(release_repo, NEXT)
 
     result, output = run_plan(release_repo, tmp_path)
 
     assert result.returncode == 0, result.stderr
     assert "release=true" in output.splitlines()
-    assert "version=1.1.0" in output.splitlines()
+    assert f"version={NEXT}" in output.splitlines()
 
 
 def test_plan_without_github_output_prints_decision(release_repo):
-    bump(release_repo, "1.1.0")
+    bump(release_repo, NEXT)
 
     result = run_release("plan", "--base", "HEAD", root=release_repo)
 
     assert result.returncode == 0, result.stderr
-    assert "v1.1.0" in result.stdout
+    assert f"v{NEXT}" in result.stdout
 
 
 def test_plan_rejects_version_decrease(release_repo, tmp_path):
-    bump(release_repo, "0.9.0")
+    bump(release_repo, "0.0.0")
 
     result, output = run_plan(release_repo, tmp_path)
 
@@ -276,28 +283,28 @@ def test_plan_rejects_version_decrease(release_repo, tmp_path):
 
 
 def test_plan_rejects_existing_tag(release_repo, tmp_path):
-    bump(release_repo, "1.1.0")
-    git(release_repo, "tag", "v1.1.0")
+    bump(release_repo, NEXT)
+    git(release_repo, "tag", f"v{NEXT}")
 
     result, output = run_plan(release_repo, tmp_path)
 
     assert result.returncode == 1
-    assert "v1.1.0 existe déjà" in result.stderr
+    assert f"v{NEXT} existe déjà" in result.stderr
     assert "release=true" not in output
 
 
 def test_plan_rejects_version_not_above_latest_tag(release_repo, tmp_path):
-    git(release_repo, "tag", "v2.0.0")
-    bump(release_repo, "1.1.0")
+    git(release_repo, "tag", f"v{NEXT_MAJOR}")
+    bump(release_repo, NEXT)
 
     result, _ = run_plan(release_repo, tmp_path)
 
     assert result.returncode == 1
-    assert "v2.0.0" in result.stderr
+    assert f"v{NEXT_MAJOR}" in result.stderr
 
 
 def test_plan_rejects_cookiecutter_out_of_sync(release_repo, tmp_path):
-    bump(release_repo, "1.1.0", cookiecutter=False)
+    bump(release_repo, NEXT, cookiecutter=False)
 
     result, _ = run_plan(release_repo, tmp_path)
 
@@ -306,7 +313,7 @@ def test_plan_rejects_cookiecutter_out_of_sync(release_repo, tmp_path):
 
 
 def test_plan_rejects_missing_changelog_section(release_repo, tmp_path):
-    bump(release_repo, "1.1.0", notes=None)
+    bump(release_repo, NEXT, notes=None)
 
     result, _ = run_plan(release_repo, tmp_path)
 
@@ -315,7 +322,7 @@ def test_plan_rejects_missing_changelog_section(release_repo, tmp_path):
 
 
 def test_plan_rejects_empty_changelog_section(release_repo, tmp_path):
-    bump(release_repo, "1.1.0", notes="")
+    bump(release_repo, NEXT, notes="")
 
     result, _ = run_plan(release_repo, tmp_path)
 
@@ -325,7 +332,7 @@ def test_plan_rejects_empty_changelog_section(release_repo, tmp_path):
 
 
 def test_plan_reports_every_error(release_repo, tmp_path):
-    bump(release_repo, "1.1.0", notes=None, cookiecutter=False)
+    bump(release_repo, NEXT, notes=None, cookiecutter=False)
 
     result, _ = run_plan(release_repo, tmp_path)
 
