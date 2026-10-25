@@ -3,16 +3,21 @@
 Avec docker-in-docker, `/tmp` est un tmpfs remonté à chaque démarrage : un
 redémarrage sans rebuild efface `/tmp/venv`. `postStartCommand` lance
 `.devcontainer/scripts/ensure_venv.sh`, qui le recrée s'il manque.
+
+Le venv est installé depuis `uv.lock` sans jamais le réécrire (issue #87) :
+`uv sync --frozen`, puis un avertissement si le lock est obsolète.
 """
 
 import os
 import re
+import shutil
 import stat
 import subprocess
 from pathlib import Path
 from typing import Any
 
 import pytest
+import yaml
 
 from tests.devcontainer_utils import REPO_DEVCONTAINER, parse_jsonc
 
@@ -22,10 +27,11 @@ GUARDED_ACTIVATE = "[[ ! -f /tmp/venv/bin/activate ]] || source /tmp/venv/bin/ac
 OLD_ACTIVATE = "source /tmp/venv/bin/activate"
 
 # Faux uv : journalise ses appels (avec VIRTUAL_ENV) ; `uv venv DIR` crée DIR/bin/python.
-# FAKE_UV_FAIL=1 le fait échouer.
+# FAKE_UV_FAIL=1 le fait échouer, FAKE_UV_LOCK_STALE=1 fait échouer `uv lock`.
 FAKE_UV = """#!/usr/bin/env bash
 echo "$*|VIRTUAL_ENV=${VIRTUAL_ENV:-}" >> "$FAKE_UV_LOG"
 [ "${FAKE_UV_FAIL:-}" = "1" ] && exit 1
+[ "$1" = "lock" ] && [ "${FAKE_UV_LOCK_STALE:-}" = "1" ] && exit 1
 if [ "$1" = "venv" ]; then
     mkdir -p "$2/bin"
     printf '#!/bin/sh\\n' > "$2/bin/python"
@@ -95,6 +101,9 @@ def fake_uv(tmp_path: Path) -> dict[str, str]:
     uv = bin_dir / "uv"
     uv.write_text(FAKE_UV)
     uv.chmod(uv.stat().st_mode | stat.S_IEXEC)
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "uv.lock").write_text("version = 1\n")
     env = {key: value for key, value in os.environ.items() if key != "VIRTUAL_ENV"}
     return {
         **env,
@@ -102,15 +111,18 @@ def fake_uv(tmp_path: Path) -> dict[str, str]:
         "FAKE_UV_LOG": str(tmp_path / "uv.log"),
         "VENV_HOME": str(tmp_path / "venv"),
         "PYTHON_VERSION": "3.11",
+        "PROJECT_DIR": str(project),
     }
 
 
 def run_ensure_venv(
     env: dict[str, str], *args: str
 ) -> subprocess.CompletedProcess[str]:
+    """Lance le script depuis le dossier projet, comme postStartCommand."""
     return subprocess.run(
         ["bash", str(SCRIPT), *args],
         env=env,
+        cwd=env["PROJECT_DIR"],
         check=False,
         capture_output=True,
         text=True,
@@ -137,7 +149,8 @@ def test_missing_venv_is_created_then_synced(fake_uv):
     assert result.returncode == 0, result.stderr
     assert uv_calls(fake_uv) == [
         f"venv {venv} --python 3.11|VIRTUAL_ENV=",
-        f"sync --active --all-extras|VIRTUAL_ENV={venv}",
+        f"sync --frozen --active --all-extras|VIRTUAL_ENV={venv}",
+        f"lock --check|VIRTUAL_ENV={venv}",
     ]
 
 
@@ -156,8 +169,9 @@ def test_sync_option_resyncs_existing_venv(fake_uv):
     result = run_ensure_venv(fake_uv, "--sync")
 
     assert result.returncode == 0, result.stderr
-    assert uv_calls(fake_uv) == [
-        f"sync --active --all-extras|VIRTUAL_ENV={fake_uv['VENV_HOME']}"
+    assert [call.split("|")[0] for call in uv_calls(fake_uv)] == [
+        "sync --frozen --active --all-extras",
+        "lock --check",
     ]
 
 
@@ -168,14 +182,96 @@ def test_venv_without_python_is_recreated(fake_uv):
     result = run_ensure_venv(fake_uv)
 
     assert result.returncode == 0, result.stderr
-    assert [call.split()[0] for call in uv_calls(fake_uv)] == ["venv", "sync"]
+    assert [call.split()[0] for call in uv_calls(fake_uv)] == ["venv", "sync", "lock"]
 
 
 def test_uv_failure_is_reported_with_workaround(fake_uv):
     result = run_ensure_venv({**fake_uv, "FAKE_UV_FAIL": "1"})
 
     assert result.returncode != 0
-    assert "uv sync --active --all-extras" in result.stdout + result.stderr
+    assert "uv sync --frozen --active --all-extras" in result.stdout + result.stderr
+
+
+# --- uv.lock jamais réécrit (issue #87) --------------------------------------------
+
+
+def test_up_to_date_lock_gives_no_warning(fake_uv):
+    result = run_ensure_venv(fake_uv)
+
+    assert result.returncode == 0, result.stderr
+    assert "uv lock" not in result.stdout + result.stderr
+
+
+def test_stale_lock_is_reported_without_failing(fake_uv):
+    """Un pyproject.toml modifié sans `uv lock` n'est pas installé : on le signale."""
+    result = run_ensure_venv({**fake_uv, "FAKE_UV_LOCK_STALE": "1"})
+
+    assert result.returncode == 0, result.stderr
+    assert "uv.lock" in result.stdout
+    assert "uv lock" in result.stdout
+
+
+def test_missing_lock_is_created_by_plain_sync(fake_uv):
+    """Projet neuf : le premier sync, avant le commit initial, crée uv.lock."""
+    Path(fake_uv["PROJECT_DIR"], "uv.lock").unlink()
+
+    result = run_ensure_venv(fake_uv)
+
+    assert result.returncode == 0, result.stderr
+    assert [call.split("|")[0] for call in uv_calls(fake_uv)][1:] == [
+        "sync --active --all-extras"
+    ]
+
+
+PYPROJECT = """[project]
+name = "demo"
+version = "{version}"
+requires-python = ">=3.11"
+dependencies = []
+"""
+
+
+@pytest.mark.skipif(shutil.which("uv") is None, reason="uv absent")
+def test_real_uv_leaves_lock_untouched(tmp_path):
+    """Lock d'un ancien format, en retard sur pyproject.toml : il reste intact."""
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "pyproject.toml").write_text(PYPROJECT.format(version="0.1.0"))
+    subprocess.run(["uv", "lock", "--offline"], cwd=project, check=True)
+    lock = project / "uv.lock"
+    lock.write_text(re.sub(r"(?m)^revision = \d+$", "revision = 1", lock.read_text()))
+    (project / "pyproject.toml").write_text(PYPROJECT.format(version="0.2.0"))
+    before = lock.read_bytes()
+    env = {key: value for key, value in os.environ.items() if key != "VIRTUAL_ENV"}
+    env |= {"VENV_HOME": str(tmp_path / "venv"), "PYTHON_VERSION": "3.11"}
+    env |= {"PROJECT_DIR": str(project), "UV_OFFLINE": "1"}
+    env.pop("UV_PROJECT_ENVIRONMENT", None)
+    env.pop("UV_PYTHON", None)
+
+    result = run_ensure_venv(env)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert lock.read_bytes() == before
+    assert "uv lock" in result.stdout
+
+
+# --- Contrôle du lock en CI (issue #87) --------------------------------------------
+
+
+def workflow_runs(workflow: Path) -> list[str]:
+    jobs = yaml.safe_load(workflow.read_text())["jobs"]
+    return [
+        step.get("run", "") for job in jobs.values() for step in job.get("steps", [])
+    ]
+
+
+def test_ci_checks_lock(devcontainer_dir):
+    root = devcontainer_dir.parent
+    name = "test-template.yml" if root == REPO_DEVCONTAINER.parent else "ci.yml"
+
+    runs = workflow_runs(root / ".github" / "workflows" / name)
+
+    assert any("uv lock --check" in run for run in runs)
 
 
 # --- Activation du venv dans .zshrc ----------------------------------------------
