@@ -30,6 +30,7 @@ PyFoundry/
 ├── .devcontainer/                       # Environnement de dev pour travailler sur le template
 │   └── scripts/
 │       ├── check_mounts.sh              # Vérification des montages (sur l'hôte, via initializeCommand)
+│       ├── ensure_venv.sh               # Recrée /tmp/venv s'il manque (postStartCommand)
 │       ├── gh_login.sh                  # Authentification gh au premier terminal zsh
 │       └── migrate_claude_history.sh    # Historique Claude Code vers la config partagée (sur l'hôte)
 ├── .github/
@@ -51,6 +52,7 @@ PyFoundry/
 │   ├── test_configurations.py           # Validation (TOML, YAML, JSON), conformité aux hooks pre-commit
 │   ├── test_mkdocs_integration.py       # Tests MkDocs (config, build)
 │   ├── test_persistent_home.py          # HOME persistant, montages, venv /tmp/venv
+│   ├── test_ensure_venv.py              # Venv recréé au démarrage, activation dans .zshrc
 │   ├── test_check_mounts.py             # Script check_mounts.sh
 │   ├── test_post_create_command.py      # setup_pre-commit de postCreateCommand.sh
 │   ├── test_timezone.py                 # Fuseau de l'hôte : montage, setup_timezone
@@ -232,6 +234,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_configurations.py` | Validité TOML/YAML/JSON, config ruff/mypy/devcontainer, fichiers générés conformes à `trailing-whitespace`, `end-of-file-fixer` et `check-json`, pas d'extension isort, hook `no-venv-at-root` |
 | `test_mkdocs_integration.py` | Config mkdocs.yml, build documentation, `docs.yml` (dépôt et projet généré) : publication sur `main` ou sur lancement manuel depuis n'importe quelle branche, jamais sur une pull request |
 | `test_persistent_home.py` | HOME persistant, montages, `initializeCommand` (dont chaque point de montage imbriqué, déduit des `mounts`), venv `/tmp/venv` et `UV_PROJECT_ENVIRONMENT` (dépôt et projet généré) |
+| `test_ensure_venv.py` | `ensure_venv.sh` (identique dans le dépôt et le squelette) lancé par `postStartCommand` : recrée `/tmp/venv` s'il manque ou sans interpréteur, ne fait rien sinon, `--sync` force la synchronisation, échec d'`uv` signalé avec le contournement ; `create_python_environment` lui délègue ; `.zshrc` n'active le venv que s'il existe et perd l'ancienne ligne non protégée |
 | `test_check_mounts.py` | `check_mounts.sh` : sources manquantes, résolution des variables, permissions `.ssh`, `[WARN]` sur les points de montage imbriqués d'un autre propriétaire (`CHECK_MOUNTS_UID`), lecture JSONC (commentaires en fin de ligne, marqueurs dans les chaînes, virgules finales) alignée sur `parse_jsonc` |
 | `test_post_create_command.py` | `setup_pre-commit` : un rebuild ne commite que `.pre-commit-config.yaml`, jamais le travail en cours |
 | `test_timezone.py` | Fuseau de l'hôte monté sur `/etc/localtime.host` (jamais sur `/etc/localtime`, qui écraserait `Etc/UTC`), pas de `TZ` transmis (vide = UTC), `setup_timezone` relie `/etc/localtime` à la zone de même contenu |

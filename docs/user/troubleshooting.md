@@ -146,6 +146,28 @@ Si c'est lent à chaque fois : vérifiez que Docker a assez de ressources (4 Go 
 
 ## Python et `uv`
 
+### Après un redémarrage : `no such file or directory: /tmp/venv/bin/activate`
+
+Après un redémarrage du conteneur sans rebuild (redémarrage de Docker ou de la machine), le terminal affiche :
+
+```
+/home/vscode/.zshrc:source:21: no such file or directory: /tmp/venv/bin/activate
+```
+
+et `python`, `pytest` ou `ruff` sont introuvables.
+
+**Cause** : avec Docker-in-Docker (`docker_in_docker=y`), `/tmp` est un tmpfs vidé à chaque démarrage, et `/tmp/venv` avec lui (`findmnt /tmp` affiche `tmpfs`).
+
+Depuis la correction de l'issue #86, `postStartCommand` recrée le venv à chaque démarrage s'il manque (`.devcontainer/scripts/ensure_venv.sh`), et le `.zshrc` n'active le venv que s'il existe. Si un terminal s'ouvre avant la fin de la recréation, ouvrez-en un nouveau. Un projet plus ancien reçoit la correction par `cruft update`, puis un rebuild.
+
+Si la recréation a échoué (pas de réseau, par exemple), le log « Dev Containers » de `postStartCommand` l'indique. Relancez-la à la main :
+
+```bash
+bash .devcontainer/scripts/ensure_venv.sh
+# ou, sans le script :
+uv venv /tmp/venv --python "$PYTHON_VERSION" && uv sync --active --all-extras
+```
+
 ### Package introuvable après installation
 
 Vous avez installé un package mais Python ne le trouve pas :

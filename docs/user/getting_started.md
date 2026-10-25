@@ -70,7 +70,7 @@ VS Code détecte `.devcontainer/` et propose **"Reopen in Container"** (ou `Ctrl
 
 Le premier build prend quelques minutes. Le script `postCreateCommand.sh` :
 
-- crée l'environnement Python dans `/tmp/venv` via `uv` (recréé à chaque rebuild)
+- crée l'environnement Python dans `/tmp/venv` via `uv` (recréé à chaque rebuild, et au démarrage s'il manque)
 - complète le HOME persistant avec les fichiers par défaut (`.bashrc`, `.profile`…) sans écraser l'existant
 - installe toutes les dépendances du projet en les récupérant depuis `pyproject.toml`
 - configure `pre-commit`, `zsh`, `gh` (GitHub CLI), Git

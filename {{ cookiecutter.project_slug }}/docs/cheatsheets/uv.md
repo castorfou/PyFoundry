@@ -1,6 +1,6 @@
 ## emplacement du venv
 
-Le venv actif est `/tmp/venv` (`echo $VIRTUAL_ENV`). Il est recréé à chaque rebuild depuis `uv.lock` : déclarez chaque package avec `uv add --active`, sinon il disparaît au rebuild suivant.
+Le venv actif est `/tmp/venv` (`echo $VIRTUAL_ENV`). Il est recréé à chaque rebuild depuis `uv.lock`, et au démarrage s'il manque : déclarez chaque package avec `uv add --active`, sinon il disparaît au rebuild suivant.
 
 ## installation package
 
