@@ -276,7 +276,7 @@ La configuration MkDocs du projet active :
 
 #### Autoriser les branches (une fois par projet)
 
-Quand GitHub Pages utilise la source « GitHub Actions », GitHub crée l'environnement `github-pages`. Par défaut, cet environnement n'accepte que les déploiements depuis la branche par défaut. Ce réglage appartient au dépôt GitHub et ne figure dans aucun fichier du projet : il faut l'ouvrir aux autres branches.
+Avec la source « GitHub Actions » (voir [Activer GitHub Pages](#activer-github-pages-une-fois-par-projet)), GitHub crée l'environnement `github-pages`. Par défaut, cet environnement n'accepte que les déploiements depuis la branche par défaut. Ce réglage appartient au dépôt GitHub et ne figure dans aucun fichier du projet : il faut l'ouvrir aux autres branches.
 
 === "Interface GitHub"
 
@@ -435,6 +435,32 @@ Le projet inclut un repertoire `.github/workflows` pré-configuré. Dès le prem
 - 🔄 Continuous Integration : (ci.yml) — déclenché sur les push vers main et develop, et sur les pull requests vers main : lint ruff, tests pytest, mypy, pre-commit hooks et build du package, sur la version Python du projet et 3.12.
 
 Le pipeline est visible sous **Actions** sur la page du projet GitHub.
+
+#### Activer GitHub Pages (une fois par projet)
+
+`docs.yml` publie la doc avec GitHub Actions. GitHub Pages doit donc utiliser la source **GitHub Actions**. Ce réglage appartient au dépôt GitHub et ne figure dans aucun fichier du projet.
+
+GitHub propose par défaut « Deploy from a branch ». Avec `main` / `(root)`, la doc semble publiée, car `docs.yml` la déploie quand même. Mais à chaque push, GitHub lance en plus un build Jekyll de tout le dépôt : ce run `pages build and deployment` échoue à l'étape « Build with Jekyll ».
+
+=== "Interface GitHub"
+
+    1. Sur la page du projet : **Settings → Pages**.
+    2. Dans **Build and deployment**, choisissez **Source : GitHub Actions** (et non « Deploy from a branch »).
+
+=== "CLI `gh`"
+
+    ```bash
+    # Pages pas encore activé
+    gh api -X POST "repos/{owner}/{repo}/pages" -f build_type=workflow
+
+    # Pages déjà activé avec la source « Deploy from a branch »
+    gh api -X PUT "repos/{owner}/{repo}/pages" -f build_type=workflow
+
+    # Vérifier : doit afficher workflow
+    gh api "repos/{owner}/{repo}/pages" --jq .build_type
+    ```
+
+    Copiez ces commandes telles quelles, sans remplacer `{owner}` ni `{repo}` : lancées depuis le dossier du projet, `gh` les remplace lui-même par le propriétaire et le nom du dépôt courant. Si `POST` répond `409`, Pages est déjà activé : utilisez `PUT`.
 
 ### CLI GitHub (`gh`)
 

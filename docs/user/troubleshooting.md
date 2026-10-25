@@ -482,6 +482,12 @@ Branch "ma-branche" is not allowed to deploy to github-pages due to environment 
 
 L'environnement `github-pages` du dépôt n'autorise que la branche par défaut. Ajoutez une règle de branche, une fois par projet : voir [Publier la doc d'une branche sur GitHub Pages](usage.md#autoriser-les-branches-une-fois-par-projet).
 
+### Run `pages build and deployment` en échec dans « Build with Jekyll »
+
+À chaque push, l'onglet **Actions** affiche un run rouge `pages build and deployment`, en échec à l'étape « Build with Jekyll ». Ce run n'est pas un workflow du projet : GitHub le lance lui-même quand GitHub Pages utilise la source « Deploy from a branch ». Il construit tout le dépôt avec Jekyll et bute sur des fichiers comme `CLAUDE.md` ou les cheatsheets. La doc reste publiée par `docs.yml`, ce qui masque la cause.
+
+Réglez la source de GitHub Pages sur **GitHub Actions**, une fois par projet : voir [Activer GitHub Pages](usage.md#activer-github-pages-une-fois-par-projet). Le run Jekyll disparaît au push suivant.
+
 ### Le serveur local ne détecte pas les changements
 
 `mkdocs serve` recharge automatiquement sur modification d'un `.md`. Si ça ne fonctionne pas :

@@ -155,6 +155,15 @@ gh api repos/:owner/PyFoundry \
   --field delete_branch_on_merge=true
 ```
 
+### Source GitHub Pages
+
+`docs.yml` déploie avec `actions/deploy-pages` : la source GitHub Pages du dépôt doit être **GitHub Actions** (`build_type: workflow`). Avec « Deploy from a branch », GitHub lance en plus, à chaque push, un run `pages build and deployment` qui échoue dans « Build with Jekyll ». Le workflow ne peut pas faire ce réglage lui-même : le `GITHUB_TOKEN` n'a pas les droits d'administration nécessaires. La procédure est dans le [guide d'utilisation](../user/usage.md#activer-github-pages-une-fois-par-projet).
+
+```bash
+# Doit afficher workflow
+gh api "repos/{owner}/{repo}/pages" --jq .build_type
+```
+
 ### Forcer un nouveau déploiement de documentation
 ```bash
 # Re-trigger le workflow docs
