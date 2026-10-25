@@ -80,6 +80,17 @@ ensure_zshrc_line() {
 }
 
 
+# Active le venv dans chaque terminal, s'il existe : un terminal peut s'ouvrir avant que
+# postStartCommand l'ait recréé (issue #86). Le HOME est persistant : on retire la ligne
+# non protégée des versions précédentes.
+setup_venv_activation() {
+    local zshrc="$HOME/.zshrc"
+    if [ -f "$zshrc" ]; then
+        sed -i '\#^source /tmp/venv/bin/activate$#d' "$zshrc"
+    fi
+    ensure_zshrc_line '[[ ! -f /tmp/venv/bin/activate ]] || source /tmp/venv/bin/activate'
+}
+
 # Le HOME est un dossier de l'hôte monté sur /home/vscode : il masque celui de l'image.
 # On recopie les fichiers par défaut (.bashrc, .profile...) sans écraser l'existant.
 seed_home() {
@@ -105,24 +116,11 @@ ensure_uv() {
 # Création de l'environnement Python
 create_python_environment() {
     echo "Configuration de l'environnement Python $PYTHON_VERSION ..."
-
-    echo "Création de l'environnement virtuel dans /tmp/venv"
-    # Hors du HOME persistant : le venv est recréé à chaque rebuild
-    VENV_HOME="/tmp/venv"
-    if [ -d "$VENV_HOME" ]; then
-        echo "Un venv existe déjà à $VENV_HOME, je l'utilise."
-    else
-        uv venv "$VENV_HOME" --python $PYTHON_VERSION
-    fi
-
-    # Activer l'environnement créé dans /tmp/venv
-    source "$VENV_HOME/bin/activate"
-    echo "Installation des dépendances..."
-    # Utiliser --active pour cibler l'environnement virtuel activé (hors du dossier projet)
-    uv sync --active --all-extras
-
-    echo "Environnement Python configuré"
-
+    # Hors du HOME persistant, dans /tmp/venv : recréé à chaque rebuild, et au démarrage
+    # par postStartCommand s'il manque (scripts/ensure_venv.sh, issue #86)
+    PYTHON_VERSION="$PYTHON_VERSION" bash .devcontainer/scripts/ensure_venv.sh --sync
+    # Les étapes suivantes (pre-commit...) utilisent les outils du venv
+    source /tmp/venv/bin/activate
 }
 
 {% if cookiecutter.use_node == "y" %}
@@ -313,7 +311,7 @@ config_zsh() {
 
     ensure_zshrc_line 'export PATH="$HOME/.local/bin:$PATH"'
 
-    ensure_zshrc_line 'source /tmp/venv/bin/activate'
+    setup_venv_activation
 
     # Propose l'authentification gh tant qu'elle manque (terminal VS Code : $BROWSER ouvre l'hôte)
     ensure_zshrc_line 'bash "$WORKSPACE_FOLDER/.devcontainer/scripts/gh_login.sh"'
