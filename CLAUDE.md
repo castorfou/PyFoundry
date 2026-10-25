@@ -269,6 +269,10 @@ Skills les plus utiles :
 - `/triage` : trier les issues GitHub à l'aide des labels
 - `/diagnosing-bugs` : enquêter méthodiquement sur un bug
 
+## Mise à jour du template
+
+PyFoundry est un projet généré de son propre template. Après chaque fonctionnalité mergée, revenir sur `main` et lancer `/cruft-update` (« mets à jour le template ») : en auto-mise à jour, la skill donne un verdict à chaque rejet (déjà appliqué, propre au projet généré, trou à combler ; voir `.claude/skills/cruft-update/AUTO-MISE-A-JOUR.md`). La skill se modifie à la racine, puis se recopie dans le squelette (R1.5).
+
 ## Agent skills
 
 ### Issue tracker
