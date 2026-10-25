@@ -12,5 +12,5 @@
         ".claude/skills/cruft-update/*",
         ".claude/skills/cruft-update/scripts/*"
     ],
-    "_pyfoundry_version": "1.1.0"
+    "_pyfoundry_version": "1.1.1"
 }

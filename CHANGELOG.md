@@ -4,6 +4,8 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 
 ## [Non publié]
 
+## [1.1.1] - 2026-10-25
+
 ### Ajouté
 
 - Script `scripts/clean_test_project.sh <dossier>` pour les contributeurs du template : il supprime le devcontainer d'un projet de test (retrouvé par le label `devcontainer.local_folder`), puis son dossier et son HOME persistant. Supprimer le dossier seul laissait le conteneur tourner (#92).
@@ -106,7 +108,8 @@ Première release depuis la 0.5.0. Elle impose une migration manuelle aux projet
 
 - Environnement reproductible : fichiers de lock uv, `.env.template`, devcontainer optimisé, configuration Jupyter.
 
-[Non publié]: https://github.com/castorfou/PyFoundry/compare/v1.1.0...HEAD
+[Non publié]: https://github.com/castorfou/PyFoundry/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/castorfou/PyFoundry/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/castorfou/PyFoundry/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/castorfou/PyFoundry/compare/v0.5.0...v1.0.0
 [0.5.0]: https://github.com/castorfou/PyFoundry/compare/v0.4.0...v0.5.0
