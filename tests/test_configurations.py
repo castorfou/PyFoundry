@@ -101,6 +101,18 @@ def test_devcontainer_has_no_isort_extension(cookies, minimal_template_context, 
 
 
 @pytest.mark.parametrize("source", ["repo", "generated"])
+def test_devcontainer_stops_when_window_closes(
+    cookies, minimal_template_context, source
+):
+    """Fermer la fenêtre VS Code arrête le conteneur, sinon il tourne orphelin (#92)."""
+    root = _project_root(source, cookies, minimal_template_context)
+
+    config = parse_jsonc(root / ".devcontainer" / "devcontainer.json")
+
+    assert config["shutdownAction"] == "stopContainer"
+
+
+@pytest.mark.parametrize("source", ["repo", "generated"])
 def test_precommit_rejects_venv_at_root(
     cookies, minimal_template_context, source, tmp_path
 ):

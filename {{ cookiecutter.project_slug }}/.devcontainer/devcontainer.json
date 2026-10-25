@@ -126,6 +126,7 @@
     "postStartCommand": "bash .devcontainer/scripts/ensure_venv.sh && echo '🚀 {{ cookiecutter.project_name }} - Environnement prêt!'",
     // Utilisateur non-root pour la sécurité
     "remoteUser": "vscode",
-    // Optimisations de performance
-    "shutdownAction": "none"
+    // Fermer la fenêtre VS Code arrête le conteneur, sinon il tourne jusqu'au prochain
+    // docker stop (#92). Un VS Code tué ou planté le laisse actif : voir troubleshooting
+    "shutdownAction": "stopContainer"
 }
