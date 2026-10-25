@@ -149,6 +149,10 @@ eval "$(conda shell.bash hook)" && conda activate pyfoundry && pytest tests -v
 # Via uv
 uv sync --active --all-extras
 uv run --active pytest tests/
+
+# Après une modification à la main de pyproject.toml : mettre à jour uv.lock et le commiter
+# (le devcontainer installe uv.lock sans le modifier, la CI vérifie qu'il est à jour)
+uv lock
 ```
 
 ### Linter / Formater
