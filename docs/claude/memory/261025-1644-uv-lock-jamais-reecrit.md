@@ -47,6 +47,7 @@ Spécification : [commentaire de l'issue #87](https://github.com/castorfou/PyFou
 
 - Dans PyFoundry : `ensure_venv.sh --sync` laisse `uv.lock` intact (même md5). Avec `six` ajouté à `pyproject.toml` sans `uv lock`, l'avertissement s'affiche et le lock est intact.
 - Test utilisateur sur un projet généré (`use_node=y`, `docker_in_docker=y`) : `uv.lock` identique après création, après redémarrage sans rebuild, et après une dépendance ajoutée à la main (avertissement affiché).
+- CI : la matrice de `test-template.yml` lance les tests sous Python 3.11 et 3.12. `test_real_uv_leaves_lock_untouched` imposait `PYTHON_VERSION=3.11`, absent du runner 3.12, et `uv` y était hors ligne (`UV_OFFLINE=1`) : échec de `uv venv`. Le test prend maintenant la version de l'interpréteur qui lance pytest (`sys.version_info`).
 - Une simulation de lock obsolète par `sed` sur `version = "1.1.0"` est trompeuse : elle touche aussi d'autres paquets en 1.1.0 et fait échouer `--frozen`. Pour simuler, ajouter une dépendance à `pyproject.toml`.
 
 ## Hors périmètre : issue #102
