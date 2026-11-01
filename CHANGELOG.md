@@ -4,6 +4,10 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 
 ## [Non publié]
 
+### Corrigé
+
+- Une dépendance publiée sans wheel, comme `scikit-surprise`, compile de nouveau dans le devcontainer. Le venv est créé avec un Python géré par uv (`--managed-python`) au lieu du Python Debian de l'image, qui n'a pas `Python.h`. Le premier build télécharge ce Python, conservé ensuite dans le HOME persistant (#113).
+
 ## [1.1.1] - 2026-10-25
 
 ### Ajouté
