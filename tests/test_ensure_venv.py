@@ -149,7 +149,7 @@ def test_missing_venv_is_created_then_synced(fake_uv):
 
     assert result.returncode == 0, result.stderr
     assert uv_calls(fake_uv) == [
-        f"venv {venv} --python 3.11|VIRTUAL_ENV=",
+        f"venv {venv} --python 3.11 --managed-python|VIRTUAL_ENV=",
         f"sync --frozen --active --all-extras|VIRTUAL_ENV={venv}",
         f"lock --check|VIRTUAL_ENV={venv}",
     ]
@@ -232,6 +232,33 @@ dependencies = []
 """
 
 
+def real_uv_env(tmp_path: Path, project: Path) -> dict[str, str]:
+    """Environnement du script avec le vrai uv, hors ligne.
+
+    Ignore le test si le Python des tests n'existe pas en version gérée par uv : le
+    script en a besoin (issue #113), et le télécharger n'est pas possible hors ligne.
+    """
+    env = {key: value for key, value in os.environ.items() if key != "VIRTUAL_ENV"}
+    env.pop("UV_PROJECT_ENVIRONMENT", None)
+    env.pop("UV_PYTHON", None)
+    python = f"{sys.version_info.major}.{sys.version_info.minor}"
+    found = subprocess.run(
+        ["uv", "python", "find", "--managed-python", python],
+        cwd=tmp_path,
+        env=env,
+        check=False,
+        capture_output=True,
+    )
+    if found.returncode != 0:
+        pytest.skip(f"Python {python} géré par uv absent")
+    return env | {
+        "VENV_HOME": str(tmp_path / "venv"),
+        "PYTHON_VERSION": python,
+        "PROJECT_DIR": str(project),
+        "UV_OFFLINE": "1",
+    }
+
+
 @pytest.mark.skipif(shutil.which("uv") is None, reason="uv absent")
 def test_real_uv_leaves_lock_untouched(tmp_path):
     """Lock d'un ancien format, en retard sur pyproject.toml : il reste intact."""
@@ -243,19 +270,35 @@ def test_real_uv_leaves_lock_untouched(tmp_path):
     lock.write_text(re.sub(r"(?m)^revision = \d+$", "revision = 1", lock.read_text()))
     (project / "pyproject.toml").write_text(PYPROJECT.format(version="0.2.0"))
     before = lock.read_bytes()
-    env = {key: value for key, value in os.environ.items() if key != "VIRTUAL_ENV"}
-    # Python qui lance les tests : seul interpréteur sûr d'être présent, hors ligne
-    python = f"{sys.version_info.major}.{sys.version_info.minor}"
-    env |= {"VENV_HOME": str(tmp_path / "venv"), "PYTHON_VERSION": python}
-    env |= {"PROJECT_DIR": str(project), "UV_OFFLINE": "1"}
-    env.pop("UV_PROJECT_ENVIRONMENT", None)
-    env.pop("UV_PYTHON", None)
 
-    result = run_ensure_venv(env)
+    result = run_ensure_venv(real_uv_env(tmp_path, project))
 
     assert result.returncode == 0, result.stdout + result.stderr
     assert lock.read_bytes() == before
     assert "uv lock" in result.stdout
+
+
+@pytest.mark.skipif(shutil.which("uv") is None, reason="uv absent")
+def test_real_uv_python_has_headers(tmp_path):
+    """Le venv a Python.h : une dépendance sans wheel peut compiler (issue #113)."""
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "pyproject.toml").write_text(PYPROJECT.format(version="0.1.0"))
+
+    result = run_ensure_venv(real_uv_env(tmp_path, project))
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    include_dir = subprocess.run(
+        [
+            str(tmp_path / "venv" / "bin" / "python"),
+            "-c",
+            "import sysconfig; print(sysconfig.get_config_var('INCLUDEPY'))",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    assert (Path(include_dir) / "Python.h").is_file()
 
 
 # --- Contrôle du lock en CI (issue #87) --------------------------------------------

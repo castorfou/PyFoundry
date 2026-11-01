@@ -190,8 +190,18 @@ Si la recréation a échoué (pas de réseau, par exemple), le log « Dev Contai
 ```bash
 bash .devcontainer/scripts/ensure_venv.sh
 # ou, sans le script :
-uv venv /tmp/venv --python "$PYTHON_VERSION" && uv sync --frozen --active --all-extras
+uv venv /tmp/venv --python "$PYTHON_VERSION" --managed-python && uv sync --frozen --active --all-extras
 ```
+
+### « fatal error: Python.h: No such file or directory »
+
+À la création du conteneur, l'installation d'une dépendance compilée (par exemple `scikit-surprise`, publiée sans wheel) échoue sur cette erreur.
+
+**Cause** : le venv a été créé avec le Python Debian de l'image (`/usr/bin/python3.11`), installé sans ses en-têtes.
+
+Depuis la correction de l'issue #113, `ensure_venv.sh` crée le venv avec un Python géré par uv, qui les contient. Un projet plus ancien reçoit la correction par `cruft update`, puis un rebuild.
+
+Ce Python se télécharge depuis GitHub au premier build, puis reste dans le HOME persistant. Si votre réseau bloque ce téléchargement, indiquez un miroir avec `UV_PYTHON_INSTALL_MIRROR` dans `containerEnv`.
 
 ### « uv.lock n'est plus à jour avec pyproject.toml »
 
