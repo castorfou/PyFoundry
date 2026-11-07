@@ -1,6 +1,6 @@
 {
   "template": "git@github.com:castorfou/PyFoundry.git",
-  "commit": "eb7780805696a88fbc7171a3f11ddca6c0dc98f7",
+  "commit": "efa462499dc1496cceab6ff0d67c855e6df66e81",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -19,7 +19,7 @@
       ],
       "_pyfoundry_version": "1.1.1",
       "_template": "git@github.com:castorfou/PyFoundry.git",
-      "_commit": "eb7780805696a88fbc7171a3f11ddca6c0dc98f7"
+      "_commit": "efa462499dc1496cceab6ff0d67c855e6df66e81"
     }
   },
   "directory": null
