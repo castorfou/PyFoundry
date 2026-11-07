@@ -23,7 +23,7 @@ jobs:
       version: ${{ steps.plan.outputs.version }}
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0  # commit précédent et tags existants
 
@@ -48,7 +48,7 @@ jobs:
       contents: write
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: 📝 Generate release notes from CHANGELOG.md
         env:
