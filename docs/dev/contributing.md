@@ -370,6 +370,26 @@ Les tests s'exécutent automatiquement via `.github/workflows/test-template.yml`
 - Validation du projet généré avec `uv`, `ruff`, `mypy`
 - Upload de couverture vers Codecov
 
+#### Versions des actions GitHub et Dependabot
+
+Chaque action est épinglée sur une majeure qui tourne sous Node 24 : Node 20 est retiré des runners GitHub (issue #120). `astral-sh/setup-uv` ne publie plus de tag flottant depuis v8 : on l'épingle sur un tag exact (`@v10.3.3`), jamais sur `@v10`, qui n'existe pas.
+
+Dependabot (`.github/dependabot.yml`) ouvre chaque semaine une seule PR pour toutes les actions des workflows du dépôt. Il ne voit pas les workflows du squelette. Sur une PR Dependabot :
+
+1. recopier les nouvelles versions dans `{{ cookiecutter.project_slug }}/.github/workflows/` (`tests/test_github_actions.py` échoue tant que les versions diffèrent) ;
+2. lire les notes de version de chaque nouvelle majeure ;
+3. ajouter une entrée au `CHANGELOG.md`, car les projets générés recevront ces versions.
+
+Les projets générés n'ont pas de Dependabot. Une PR Dependabot y modifierait `ci.yml` et `docs.yml`, qui viennent du template, et le `cruft update` suivant produirait des rejets. Ils reçoivent les nouvelles versions par `cruft update`.
+
+Pour ajouter une action à un workflow, vérifier d'abord sa version de Node, puis l'ajouter à `MIN_MAJOR` dans `tests/test_github_actions.py` :
+
+```bash
+gh api "repos/<owner>/<repo>/contents/action.yml?ref=<tag>" --jq .content | base64 -d | grep using
+```
+
+Une action `composite` n'a pas de version de Node propre : ce sont les actions qu'elle appelle qui comptent.
+
 #### Bonnes pratiques
 
 1. **Fixtures** : Utiliser `minimal_template_context` pour tests rapides, `default_template_context` pour tests complets

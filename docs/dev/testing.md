@@ -203,6 +203,22 @@ Le parcours réel se vérifie sur l'hôte :
 - `release.yml` se déclenche sur un push vers `main`, compare au commit précédent (`fetch-depth: 0`), ne teste et ne publie que si `plan` a décidé une release, crée tag et release par un seul `gh release create --target`, n'accorde `contents: write` qu'à `publish` et tire ses notes de `notes`, sans `git log`. `test-template.yml` lance `plan` sur les pull requests ;
 - `/fix-issue` contient l'étape CHANGELOG et reste identique dans le dépôt et le squelette.
 
+### Tester les versions des actions GitHub
+
+`tests/test_github_actions.py` lit les lignes `uses:` des workflows du dépôt et du projet généré, rendu une fois pour tout le module. Il ignore les workflows réutilisables locaux (`./…`). Il vérifie que :
+
+- chaque action a une majeure au moins égale à son entrée dans `MIN_MAJOR`, la première majeure qui tourne sous Node 24. Une action absente de `MIN_MAJOR` fait échouer le test ;
+- `astral-sh/setup-uv` est épinglée sur un tag exact `vX.Y.Z` ;
+- le squelette utilise la même version que le dépôt pour chaque action commune, et le dépôt n'utilise qu'une version par action ;
+- `.github/dependabot.yml` met à jour les actions (`github-actions` sur `/`), et le projet généré n'a pas de `dependabot.yml`.
+
+Pour vérifier l'absence de l'avertissement Node 20 sur un vrai run :
+
+```bash
+gh run view <run-id> --log | grep -i "node.js 20"
+# → ne doit rien afficher
+```
+
 ### Tester le HOME persistant
 
 Les tests automatisés couvrent la configuration :
