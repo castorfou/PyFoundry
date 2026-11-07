@@ -505,6 +505,21 @@ Branch "ma-branche" is not allowed to deploy to github-pages due to environment 
 
 L'environnement `github-pages` du dépôt n'autorise que la branche par défaut. Ajoutez une règle de branche, une fois par projet : voir [Publier la doc d'une branche sur GitHub Pages](usage.md#autoriser-les-branches-une-fois-par-projet).
 
+### `Setup Pages` en échec : `Get Pages site failed`
+
+Sur `main`, le workflow `📚 Deploy Documentation` échoue à l'étape `📋 Setup Pages` :
+
+```
+Get Pages site failed. Please verify that the repository has Pages enabled
+HttpError: Not Found
+```
+
+GitHub Pages n'est pas activé sur le dépôt. Le build MkDocs et les pull requests passent, car `Setup Pages` ne tourne que sur `main` ou en lancement manuel.
+
+Ouvrez un nouveau terminal dans le devcontainer : `.devcontainer/scripts/enable_pages.sh` active Pages si le dépôt est public et que vous en êtes admin. Sinon, il affiche la raison sur une ligne. Activez alors Pages à la main : voir [Activer GitHub Pages](usage.md#activer-github-pages-une-fois-par-projet). Relancez ensuite le déploiement avec `gh workflow run docs.yml`.
+
+Sur un projet généré avant l'arrivée de ce script, faites un rebuild du conteneur après `cruft update` : c'est lui qui ajoute l'appel au script dans `~/.zshrc`.
+
 ### Run `pages build and deployment` en échec dans « Build with Jekyll »
 
 À chaque push, l'onglet **Actions** affiche un run rouge `pages build and deployment`, en échec à l'étape « Build with Jekyll ». Ce run n'est pas un workflow du projet : GitHub le lance lui-même quand GitHub Pages utilise la source « Deploy from a branch ». Il construit tout le dépôt avec Jekyll et bute sur des fichiers comme `CLAUDE.md` ou les cheatsheets. La doc reste publiée par `docs.yml`, ce qui masque la cause.
