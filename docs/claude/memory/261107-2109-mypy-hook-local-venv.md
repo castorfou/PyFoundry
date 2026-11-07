@@ -45,4 +45,4 @@ L'étape « Test generated project validity » de `test-template.yml` faisait `u
 
 ## Pour un projet existant
 
-Un projet qui avait ajouté ses propres `additional_dependencies` au hook doit les reporter dans ses extras `dev`, puis lancer `uv lock` (note de migration du CHANGELOG).
+Un projet qui avait ajouté ses propres `additional_dependencies` au hook doit les reporter dans ses extras `dev`, puis lancer `uv lock`. Le CHANGELOG le dit dans « Modifié », sans section Migration : la skill `/cruft-update` résout ce rejet et lance `uv lock`, donc pas de release majeure.
