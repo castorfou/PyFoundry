@@ -70,6 +70,7 @@ PyFoundry/
 │   ├── test_cruft_update_skill.py       # Skill /cruft-update et son script
 │   ├── test_mypy.py                     # Hook mypy local, même périmètre que la CI
 │   ├── test_ci_strict.py                # ruff, mypy et pre-commit font échouer la CI
+│   ├── test_special_characters.py       # Nom et description avec « : », " ou \ : fichiers générés valides
 │   └── test_clean_test_project.py       # Script scripts/clean_test_project.sh
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── CHANGELOG.md                         # Évolutions par version (Keep a Changelog)
@@ -247,7 +248,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 
 - **Source de vérité unique** : `pyproject.toml` pour toutes les configurations.
 - **Formatage & Linting** : `ruff` configuré dans `pyproject.toml`.
-- **Templating** : syntaxe `{{ cookiecutter.variable }}` pour les fichiers dynamiques.
+- **Templating** : syntaxe `{{ cookiecutter.variable }}` pour les fichiers dynamiques. Une saisie libre (`project_name`, `description`) écrite dans un fichier YAML, TOML ou JSON va entre guillemets doubles avec `| replace('\\', '\\\\') | replace('"', '\\"')` ; dans une commande shell, lire `$PROJECT_NAME` plutôt qu'insérer le nom (#110).
 - **Exclusion ruff** : le dossier `{{ cookiecutter.project_slug }}` est exclu via `extend-exclude = ["[{][{]*"]`. Pour un fichier identique à la racine et dans le squelette (skill, scripts), `ruff format` ne modifie que la copie de la racine : recopie-la ensuite dans le squelette, sinon les tests d'égalité échouent.
 - **Commits** : convention `type(scope): message` — `feat`, `fix`, `docs`, `test`, `chore`, `refactor`.
 
@@ -273,6 +274,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_github_actions.py` | Actions externes des workflows (dépôt et projet généré) : majeure ≥ `MIN_MAJOR` (première majeure sous Node 24), toute action absente de `MIN_MAJOR` refusée, `astral-sh/setup-uv` sur un tag exact `vX.Y.Z` (pas de tag flottant après v7) ; le squelette reprend la version du dépôt pour chaque action commune ; `.github/dependabot.yml` (`github-actions`) dans le dépôt, absent du projet généré |
 | `test_mypy.py` | Hook mypy `repo: local` (`uv run --active mypy`, `language: system`, `pass_filenames: false`, sans `additional_dependencies`), identique dans le dépôt et le squelette ; projet généré : `files = ["src", "tests"]`, stubs (`pandas-stubs`, `types-requests`, `types-python-dateutil`) dans `dev`, `src/<package>/__init__.py` et `tests/test_<package>.py` livrés ; vrai mypy à 0 sur le dépôt et sur un projet généré ; CI (`ci.yml`, `test-template.yml`) : `uv run mypy` sans chemin, extra `dev` installé dans le projet généré avant mypy |
 | `test_ci_strict.py` | CI du template et CI générée : aucun `\|\| echo` après ruff, mypy ou pre-commit, pas de `--show-source`, `UV_PROJECT_ENVIRONMENT` sous `/tmp/` pour chaque étape pre-commit (hook `no-venv-at-root`), `git init` + commit avant pre-commit dans l'étape de validité, rejouée en local sur un projet généré ; aucun upload Codecov ni `fail_ci_if_error: false`, couverture du projet généré dans le log pytest (`term-missing`, sans `coverage.xml`) ; aucune étape de `ci.yml` ne masque un échec, plus d'étape « Verify package » ; chaque cible de `[project.scripts]` existe sous `src/`, le wheel construit s'importe dans un venv jetable |
+| `test_special_characters.py` | Nom et description avec `:`, `"`, `\`, `'`, accents, `$HOME`, `` `ls` `` : relus à l'identique dans `mkdocs.yml`, `pyproject.toml`, `devcontainer.json` et `package.json` (heredoc exécuté), accents non échappés, `echo` de `postStartCommand` via `$PROJECT_NAME`, `mkdocs build --strict` |
 | `test_cruft_update_skill.py` | Skill `/cruft-update` identique dans le dépôt et le projet généré (donc non rendue par Jinja, `_copy_without_render`), frontmatter (model-invoked), `template_update.py` : `categorie` (catégories de l'ADR 0003), `rejets` (`.rej` et vrai conflit `git apply -3`), `changelog` (template local ou clone léger depuis `.cruft.json`) |
 | `test_clean_test_project.py` | `scripts/clean_test_project.sh` (faux `docker` via `CLEAN_TEST_PROJECT_DOCKER`) : conteneur retrouvé par `devcontainer.local_folder` et supprimé avant le dossier, chemin relatif rendu absolu, dossier déjà supprimé, seul le HOME `<nom>-<id>` est supprimé, commande pour l'hôte sans docker, `sudo rm -rf` suggéré si le HOME résiste, refus sans argument, `/` ou `$HOME` |
 | `test_claude_auth.py` | Config Claude Code partagée entre devcontainers (`~/.config/claude-devcontainers` monté sur `~/.claude`, créé en `700`), `CLAUDE_CONFIG_DIR`, verrous `~/.claude/ide` propres au projet, `migrate_claude_history.sh` (copie sans écraser, une seule fois, jamais la connexion, jamais d'échec) |

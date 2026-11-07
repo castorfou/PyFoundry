@@ -1,5 +1,5 @@
-site_name: {{ cookiecutter.project_name }}
-site_description: {{ cookiecutter.description }}
+site_name: "{{ cookiecutter.project_name | replace('\\', '\\\\') | replace('"', '\\"') }}"
+site_description: "{{ cookiecutter.description | replace('\\', '\\\\') | replace('"', '\\"') }}"
 site_url: https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}
 repo_url: https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}
 use_directory_urls: true

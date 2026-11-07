@@ -261,6 +261,22 @@ Pour vérifier les montages sans rebuild, sur l'hôte à la racine du projet :
 bash .devcontainer/scripts/check_mounts.sh --host
 ```
 
+### Tester les caractères spéciaux
+
+`tests/test_special_characters.py` génère un projet dont le nom et la description contiennent `:`, `"`, `\`, `'`, des accents, `$HOME` et `` `ls` ``. Il relit `mkdocs.yml`, `pyproject.toml` et `devcontainer.json`, exécute l'`echo` de `postStartCommand` et le heredoc qui écrit `package.json`, puis lance `mkdocs build --strict`. Chaque valeur relue doit être égale à la saisie.
+
+À la main :
+
+```bash
+cd ~/temp
+cookiecutter /workspaces/PyFoundry --no-input use_node=y \
+  description='Outils de transcription : brute, "citée", C:\data'
+cd mon-projet-data-science && git init -q && git add -A && git commit -qm init
+uv run --active mkdocs build --strict
+```
+
+Le commit est nécessaire : hors d'un dépôt git, le plugin `git-revision-date-localized` émet un avertissement qui fait échouer `--strict`.
+
 ### Tester MkDocs
 
 ```bash

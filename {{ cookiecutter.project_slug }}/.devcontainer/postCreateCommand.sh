@@ -136,11 +136,11 @@ setup_node() {
         # Création d'un package.json basique s'il n'existe pas
         if [ ! -f "package.json" ]; then
             echo "Création du fichier package.json..."
-            cat > package.json << EOF
+            cat > package.json << 'EOF'
 {
   "name": "{{ cookiecutter.project_slug }}",
   "version": "1.0.0",
-  "description": "{{ cookiecutter.description }}",
+  "description": "{{ cookiecutter.description | replace('\\', '\\\\') | replace('"', '\\"') }}",
   "scripts": {
     "dev": "echo 'Add your development scripts here'",
     "build": "echo 'Add your build scripts here'"
