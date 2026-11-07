@@ -14,7 +14,7 @@ Spécification : [commentaire de l'issue #112](https://github.com/castorfou/PyFo
 | `{{ cookiecutter.project_slug }}/pyproject.toml` | `[tool.mypy] files = ["src", "tests"]` ; `pandas-stubs`, `types-python-dateutil`, `types-requests` dans les extras `dev` |
 | `{{ cookiecutter.project_slug }}/src/<package>/__init__.py`, `tests/test_<package>.py` | remplacent `src/.gitkeep` ; nom `{{ cookiecutter.project_slug\|replace('-', '_') }}` |
 | `{{ cookiecutter.project_slug }}/.github/workflows/ci.yml` | `uv run mypy` sans chemin (le `if [ -d src/ ]` disparaît) |
-| `.github/workflows/test-template.yml` | `uv run mypy --show-error-codes` sans `src/` sur le projet généré |
+| `.github/workflows/test-template.yml` | `uv run mypy --show-error-codes` sans `src/` sur le projet généré ; `uv sync --extra dev` au lieu de `uv sync` |
 | `pyproject.toml` (racine) | `mypy` et `types-PyYAML` dans l'extra `test` ; override `ignore_missing_imports` pour `cookiecutter.*` ; `files = ["tests"]` gardé (pas de `src/` à la racine) |
 | `tests/test_configurations.py` | annotation `cookies: Any` de `_project_root`, `expected_repos` attend `local` |
 | `tests/test_mypy.py` | nouveau : hook, périmètre, stubs, package du squelette, vrai mypy sur le dépôt et sur un projet généré, commandes de la CI |
@@ -38,6 +38,10 @@ Le job `test-template` de la CI installe `--extra test` seulement, et `tests/tes
 ### `uv run --active` en CI
 
 Pas de venv actif en CI : `uv run pre-commit` exporte `VIRTUAL_ENV` vers le venv du projet, et le `uv run --active mypy` du hook le réutilise. Dans le devcontainer, `/tmp/venv` est actif.
+
+### mypy n'avait jamais tourné sur le projet généré en CI
+
+L'étape « Test generated project validity » de `test-template.yml` faisait `uv sync` sans extra : ruff, mypy et pre-commit n'étaient pas installés (`Failed to spawn: mypy`), et le `|| echo` masquait l'échec. Elle installe maintenant l'extra `dev` (`test_generated_project_check_installs_dev_extra`). Lire le log d'une étape protégée par `|| echo`, pas seulement son statut.
 
 ## Pour un projet existant
 

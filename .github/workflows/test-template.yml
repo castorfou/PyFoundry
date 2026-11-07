@@ -105,7 +105,7 @@ jobs:
         ls -la
 
         echo "📦 Test project installation..."
-        uv sync
+        uv sync --extra dev
 
         echo "🔍 Test ruff configuration..."
         uv run ruff check . --show-source || echo "⚠️ Ruff issues found (expected for fresh project)"

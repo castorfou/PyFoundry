@@ -125,3 +125,18 @@ def test_ci_runs_mypy_without_path(workflow):
     assert lines, "Aucune commande mypy dans le workflow"
     for line in lines:
         assert not re.search(r"uv run mypy[^|]*\bsrc/?\b", line), line
+
+
+def test_generated_project_check_installs_dev_extra():
+    """La CI du template installe mypy dans le projet généré avant de le lancer."""
+    workflow = yaml.safe_load(
+        (REPO_ROOT / ".github" / "workflows" / "test-template.yml").read_text()
+    )
+    steps = workflow["jobs"]["test-template"]["steps"]
+    script = next(
+        step["run"]
+        for step in steps
+        if step.get("name", "").endswith("Test generated project validity")
+    )
+    before_mypy = script[: script.index("uv run mypy")]
+    assert re.search(r"^\s*uv sync --extra dev\s*$", before_mypy, re.MULTILINE)
