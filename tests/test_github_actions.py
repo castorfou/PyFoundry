@@ -23,7 +23,6 @@ MIN_MAJOR = {
     "actions/upload-pages-artifact": 5,  # composite, utilise upload-artifact v7
     "actions/deploy-pages": 5,
     "actions/upload-artifact": 6,  # v5 tournait encore sous Node 20 par défaut
-    "codecov/codecov-action": 6,
 }
 
 # Actions qui ne publient plus de tag flottant (`@v10` n'existe pas).

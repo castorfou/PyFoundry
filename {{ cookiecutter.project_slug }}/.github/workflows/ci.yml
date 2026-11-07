@@ -38,7 +38,7 @@ jobs:
     - name: 🧪 Run tests
       run: |
         if [ -f tests/test_*.py ] || [ -d tests/ ]; then
-          uv run pytest tests/ -v --cov=src --cov-report=term-missing --cov-report=xml
+          uv run pytest tests/ -v --cov=src --cov-report=term-missing
         else
           echo "No tests found. Creating placeholder test structure..."
           mkdir -p tests
@@ -50,14 +50,6 @@ jobs:
 
     - name: 🔧 Type check with mypy
       run: uv run mypy
-
-    - name: 📊 Upload coverage to Codecov
-      if: {% raw %}matrix.python-version == '3.11'{% endraw %}
-      uses: codecov/codecov-action@v7
-      with:
-        token: {% raw %}${{ secrets.CODECOV_TOKEN }}{% endraw %}
-        files: ./coverage.xml
-        fail_ci_if_error: false
 
   pre-commit:
     name: 🪝 Pre-commit hooks
