@@ -154,3 +154,85 @@ def test_generated_ci_coverage_in_log_only(generated):
     assert "--cov=src" in run
     assert "--cov-report=term-missing" in run
     assert "--cov-report=xml" not in run
+
+
+def _generated_ci(generated: Path) -> dict[str, Any]:
+    loaded: dict[str, Any] = yaml.safe_load(
+        (generated / ".github" / "workflows" / "ci.yml").read_text()
+    )
+    return loaded
+
+
+def test_generated_ci_never_swallows_failures(generated):
+    """Aucune étape de la CI générée ne masque un échec par `|| echo` (#125)."""
+    for _, step in _steps(_generated_ci(generated)):
+        for line in step["run"].splitlines():
+            assert not SWALLOW.search(line), f"{step.get('name')}: {line}"
+
+
+def test_generated_ci_has_no_verify_package_step(generated):
+    """L'étape « Verify package » ne vérifiait rien : elle est retirée (#125)."""
+    build = _generated_ci(generated)["jobs"]["build"]
+    names = [step.get("name", "") for step in build["steps"]]
+    assert not any("Verify package" in name for name in names), names
+    assert all("pip show" not in step.get("run", "") for step in build["steps"])
+    assert any(step.get("run") == "uv build" for step in build["steps"])
+
+
+def test_generated_entry_points_resolve(generated):
+    """Chaque console script du projet généré pointe vers un module de `src/`."""
+    import tomllib
+
+    pyproject = tomllib.loads((generated / "pyproject.toml").read_text())
+    scripts = pyproject["project"].get("scripts", {})
+    for name, target in scripts.items():
+        module = target.split(":")[0].replace(".", "/")
+        candidates = [
+            generated / "src" / f"{module}.py",
+            generated / "src" / module / "__init__.py",
+        ]
+        assert any(path.exists() for path in candidates), f"{name} = {target}"
+
+
+@pytest.mark.skipif(shutil.which("uv") is None, reason="uv absent")
+def test_generated_wheel_imports(generated, tmp_path):
+    """Le wheel construit s'installe dans un venv jetable et son package s'importe."""
+    env = {k: v for k, v in os.environ.items() if k not in {"VIRTUAL_ENV"}}
+    dist = tmp_path / "dist"
+    build = subprocess.run(
+        ["uv", "build", "--wheel", "--out-dir", str(dist)],
+        cwd=generated,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    output = build.stdout + build.stderr
+    if build.returncode and "Could not resolve host" in output:
+        pytest.skip("réseau indisponible pour construire le wheel")
+    assert build.returncode == 0, output
+    wheel = next(dist.glob("*.whl"))
+
+    package = generated.name.replace("-", "_")
+    run = subprocess.run(
+        [
+            "uv",
+            "run",
+            "--isolated",
+            "--no-project",
+            "--with",
+            str(wheel),
+            "python",
+            "-c",
+            f"import {package}",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    output = run.stdout + run.stderr
+    if run.returncode and "Could not resolve host" in output:
+        pytest.skip("réseau indisponible pour installer le wheel")
+    assert run.returncode == 0, output
