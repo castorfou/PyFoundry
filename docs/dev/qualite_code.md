@@ -73,8 +73,7 @@ repos:
     rev: v6.0.0      # Auto-mise à jour via pre-commit autoupdate
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.12.10    # Dernière version stable
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.17.1     # Compatible Python 3.11+
+  - repo: local      # mypy : uv run --active mypy, dans le venv du projet (#112)
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0      # Sans baseline pour simplifier
 ```
@@ -138,6 +137,27 @@ module = "notebooks.*"
 ignore_errors = true               # Notebooks exempts
 ```
 
+#### Même environnement, même périmètre (#112)
+
+Le hook mypy est un hook `local` :
+
+```yaml
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (type check)
+        entry: uv run --active mypy
+        language: system
+        types: [python]
+        pass_filenames: false
+```
+
+- **Environnement** : le hook tourne dans le venv du projet et voit les dépendances de `uv.lock`. Les stubs (`pandas-stubs`, `types-requests`, `types-python-dateutil`) sont dans les extras `dev`, pas dans `additional_dependencies`.
+- **Périmètre** : `pass_filenames: false`, donc mypy vérifie toujours `[tool.mypy] files = ["src", "tests"]`. Le hook, la CI (`uv run mypy`) et `mypy` lancé à la main vérifient les mêmes fichiers.
+- **Projet neuf** : le squelette livre `src/<package>/__init__.py` et `tests/test_<package>.py`. Sans fichier Python dans `src/`, mypy sort en erreur (`There are no .py[i] files in directory 'src'`).
+
+À la racine du dépôt, le même hook vérifie `tests/` (`files = ["tests"]`, pas de `src/`). `mypy` et `types-PyYAML` sont dans l'extra `test`, que le job `test-template` installe pour `tests/test_mypy.py`.
+
 ## 🔄 Gestion des erreurs et edge cases
 
 ### 1. Commit avec modifications des hooks
@@ -199,7 +219,7 @@ Solution : Supprimer `--baseline` argument, utiliser uniquement exclusions.
 # Dans projet généré :
 ruff check .                 # → 0 erreurs
 ruff format . --check        # → Déjà formaté
-mypy src/                    # → 0 erreurs (sur code minimal)
+mypy                         # → 0 erreurs (src/ et tests/, via [tool.mypy] files)
 pre-commit run --all-files   # → All passed, 0 warnings
 ```
 
