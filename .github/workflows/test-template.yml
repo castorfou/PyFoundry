@@ -54,6 +54,9 @@ jobs:
   pre-commit:
     name: 🪝 Pre-commit hooks
     runs-on: ubuntu-latest
+    env:
+      # Venv hors du dépôt, comme dans le devcontainer (hook no-venv-at-root)
+      UV_PROJECT_ENVIRONMENT: /tmp/venv
     steps:
     - name: 📥 Checkout repository
       uses: actions/checkout@v7
@@ -68,7 +71,7 @@ jobs:
       run: uv sync --extra dev
 
     - name: 🪝 Run pre-commit hooks
-      run: uv run pre-commit run --all-files --show-diff-on-failure || echo "⚠️ Pre-commit hooks found issues"
+      run: uv run pre-commit run --all-files --show-diff-on-failure
 
   test-template:
     name: Test on Python ${{ matrix.python-version }}
@@ -95,6 +98,9 @@ jobs:
       run: uv run pytest tests/ -v
 
     - name: 🏗️ Test generated project validity
+      env:
+        # Venv hors du projet généré (hook no-venv-at-root), distinct de celui du template
+        UV_PROJECT_ENVIRONMENT: /tmp/venv-generated
       run: |
         echo "🏗️ Generate test project..."
         uv run cruft create . --no-input --output-dir /tmp/test-projects
@@ -108,13 +114,17 @@ jobs:
         uv sync --extra dev
 
         echo "🔍 Test ruff configuration..."
-        uv run ruff check . --show-source || echo "⚠️ Ruff issues found (expected for fresh project)"
+        uv run ruff check .
 
         echo "🔧 Test mypy configuration..."
-        uv run mypy --show-error-codes || echo "⚠️ MyPy issues found (expected for fresh project)"
+        uv run mypy --show-error-codes
 
         echo "🪝 Test pre-commit configuration..."
-        uv run pre-commit run --all-files --show-diff-on-failure || echo "⚠️ Pre-commit issues found (expected for fresh project)"
+        # cruft create ne crée pas de dépôt git, pre-commit en a besoin
+        git init -q
+        git add -A
+        git -c user.name=pyfoundry-ci -c user.email=pyfoundry-ci@users.noreply.github.com commit -qm "Initial commit"
+        uv run pre-commit run --all-files --show-diff-on-failure
 
     - name: 📊 Upload coverage to Codecov
       if: matrix.python-version == '3.11'

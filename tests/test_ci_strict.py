@@ -1,0 +1,129 @@
+"""La CI échoue quand ruff, mypy ou pre-commit échouent (#111).
+
+Un `|| echo` après ces commandes masquait leurs échecs : option ruff retirée,
+pre-commit hors d'un dépôt git, hook `no-venv-at-root` face au `.venv` de `uv sync`.
+"""
+
+import os
+import re
+import shutil
+import subprocess
+from collections.abc import Iterator
+from pathlib import Path
+from typing import Any
+
+import pytest
+import yaml
+
+from tests.devcontainer_utils import REPO_ROOT
+
+
+CHECKERS = re.compile(r"\b(ruff|mypy|pre-commit)\b")
+SWALLOW = re.compile(r"\|\|\s*(echo|true|:)\b")
+
+
+@pytest.fixture(scope="module")
+def generated(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Projet généré avec le contexte par défaut."""
+    from cookiecutter.main import cookiecutter
+
+    out = tmp_path_factory.mktemp("ci_strict")
+    return Path(cookiecutter(str(REPO_ROOT), no_input=True, output_dir=str(out)))
+
+
+@pytest.fixture(params=["ci.yml", "test-template.yml"])
+def workflow(request: pytest.FixtureRequest, generated: Path) -> dict[str, Any]:
+    """Workflow rendu : CI du projet généré ou CI du template."""
+    path = {
+        "ci.yml": generated / ".github" / "workflows" / "ci.yml",
+        "test-template.yml": REPO_ROOT / ".github" / "workflows" / "test-template.yml",
+    }[request.param]
+    loaded: dict[str, Any] = yaml.safe_load(path.read_text())
+    return loaded
+
+
+def _steps(workflow: dict[str, Any]) -> Iterator[tuple[dict[str, Any], dict[str, Any]]]:
+    """(job, step) pour chaque étape `run:` du workflow."""
+    for job in workflow["jobs"].values():
+        for step in job.get("steps", []):
+            if "run" in step:
+                yield job, step
+
+
+def _validity_script() -> str:
+    workflow = yaml.safe_load(
+        (REPO_ROOT / ".github" / "workflows" / "test-template.yml").read_text()
+    )
+    script: str = next(
+        step["run"]
+        for step in workflow["jobs"]["test-template"]["steps"]
+        if step.get("name", "").endswith("Test generated project validity")
+    )
+    return script
+
+
+def test_checkers_failures_are_not_swallowed(workflow):
+    """Aucune commande ruff, mypy ou pre-commit n'est suivie d'un `|| echo`."""
+    for _, step in _steps(workflow):
+        for line in step["run"].splitlines():
+            if CHECKERS.search(line):
+                assert not SWALLOW.search(line), line
+
+
+def test_no_removed_ruff_option(workflow):
+    """`--show-source` a été retiré de ruff : la commande échouerait."""
+    for _, step in _steps(workflow):
+        assert "--show-source" not in step["run"], step["run"]
+
+
+def test_pre_commit_venv_outside_repo(workflow):
+    """Le venv vit hors du dépôt, sinon le hook `no-venv-at-root` échoue."""
+    found = False
+    for job, step in _steps(workflow):
+        if "pre-commit run" not in step["run"]:
+            continue
+        found = True
+        env = {**job.get("env", {}), **step.get("env", {})}
+        venv = env.get("UV_PROJECT_ENVIRONMENT", "")
+        assert venv.startswith("/tmp/"), f"{step.get('name')}: {venv!r}"
+    assert found, "Aucune étape pre-commit dans le workflow"
+
+
+def test_validity_step_commits_before_pre_commit():
+    """Le projet généré est un dépôt git avec un commit avant pre-commit."""
+    script = _validity_script()
+    pre_commit = script.index("pre-commit run")
+    init = script.find("git init")
+    add = script.find("git add -A")
+    commit = re.search(r"git -c user\.name=\S+ -c user\.email=\S+ commit", script)
+    assert 0 <= init < add < pre_commit, script
+    assert commit and add < commit.start() < pre_commit, script
+
+
+@pytest.mark.skipif(shutil.which("uv") is None, reason="uv absent")
+def test_validity_step_passes_on_generated_project(tmp_path):
+    """L'étape de validité du projet généré passe, rejouée en local.
+
+    `cruft create` est remplacé par cookiecutter, qui voit les fichiers non commités.
+    """
+    script = _validity_script()
+    lines = script.splitlines()
+    start = next(i for i, line in enumerate(lines) if line.strip().startswith("cd "))
+    from cookiecutter.main import cookiecutter
+
+    project = Path(
+        cookiecutter(str(REPO_ROOT), no_input=True, output_dir=str(tmp_path))
+    )
+    env = {k: v for k, v in os.environ.items() if k not in {"VIRTUAL_ENV", "GIT_DIR"}}
+    env["UV_PROJECT_ENVIRONMENT"] = str(tmp_path / "venv")
+    result = subprocess.run(
+        ["bash", "-e", "-c", "\n".join(lines[start + 1 :])],
+        cwd=project,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode and "Could not resolve host" in result.stdout + result.stderr:
+        pytest.skip("réseau indisponible pour installer les hooks")
+    assert result.returncode == 0, result.stdout + result.stderr

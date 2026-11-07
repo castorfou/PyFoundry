@@ -69,6 +69,7 @@ PyFoundry/
 │   ├── test_github_actions.py           # Versions des actions (Node 24), alignement du squelette, Dependabot
 │   ├── test_cruft_update_skill.py       # Skill /cruft-update et son script
 │   ├── test_mypy.py                     # Hook mypy local, même périmètre que la CI
+│   ├── test_ci_strict.py                # ruff, mypy et pre-commit font échouer la CI
 │   └── test_clean_test_project.py       # Script scripts/clean_test_project.sh
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── CHANGELOG.md                         # Évolutions par version (Keep a Changelog)
@@ -271,6 +272,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag`, `notes` et `plan` (inchangée, hausse, baisse, tag existant, version sous la dernière release, CHANGELOG absent ou vide) ; `release.yml` (push sur `main`, tag et release en une commande, permissions minimales) et `release-plan` sur les PR ; `TEMPLATE_VERSION` généré et suivi par `cruft update` ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |
 | `test_github_actions.py` | Actions externes des workflows (dépôt et projet généré) : majeure ≥ `MIN_MAJOR` (première majeure sous Node 24), toute action absente de `MIN_MAJOR` refusée, `astral-sh/setup-uv` sur un tag exact `vX.Y.Z` (pas de tag flottant après v7) ; le squelette reprend la version du dépôt pour chaque action commune ; `.github/dependabot.yml` (`github-actions`) dans le dépôt, absent du projet généré |
 | `test_mypy.py` | Hook mypy `repo: local` (`uv run --active mypy`, `language: system`, `pass_filenames: false`, sans `additional_dependencies`), identique dans le dépôt et le squelette ; projet généré : `files = ["src", "tests"]`, stubs (`pandas-stubs`, `types-requests`, `types-python-dateutil`) dans `dev`, `src/<package>/__init__.py` et `tests/test_<package>.py` livrés ; vrai mypy à 0 sur le dépôt et sur un projet généré ; CI (`ci.yml`, `test-template.yml`) : `uv run mypy` sans chemin, extra `dev` installé dans le projet généré avant mypy |
+| `test_ci_strict.py` | CI du template et CI générée : aucun `\|\| echo` après ruff, mypy ou pre-commit, pas de `--show-source`, `UV_PROJECT_ENVIRONMENT` sous `/tmp/` pour chaque étape pre-commit (hook `no-venv-at-root`), `git init` + commit avant pre-commit dans l'étape de validité, rejouée en local sur un projet généré |
 | `test_cruft_update_skill.py` | Skill `/cruft-update` identique dans le dépôt et le projet généré (donc non rendue par Jinja, `_copy_without_render`), frontmatter (model-invoked), `template_update.py` : `categorie` (catégories de l'ADR 0003), `rejets` (`.rej` et vrai conflit `git apply -3`), `changelog` (template local ou clone léger depuis `.cruft.json`) |
 | `test_clean_test_project.py` | `scripts/clean_test_project.sh` (faux `docker` via `CLEAN_TEST_PROJECT_DOCKER`) : conteneur retrouvé par `devcontainer.local_folder` et supprimé avant le dossier, chemin relatif rendu absolu, dossier déjà supprimé, seul le HOME `<nom>-<id>` est supprimé, commande pour l'hôte sans docker, `sudo rm -rf` suggéré si le HOME résiste, refus sans argument, `/` ou `$HOME` |
 | `test_claude_auth.py` | Config Claude Code partagée entre devcontainers (`~/.config/claude-devcontainers` monté sur `~/.claude`, créé en `700`), `CLAUDE_CONFIG_DIR`, verrous `~/.claude/ide` propres au projet, `migrate_claude_history.sh` (copie sans écraser, une seule fois, jamais la connexion, jamais d'échec) |
@@ -279,7 +281,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 
 | Workflow | Déclencheur | Rôle |
 |----------|-------------|------|
-| `test-template.yml` | Push toutes branches, PR main | `uv lock --check`, lint ruff + tests pytest ; sur les PR, `release.py plan` refuse une PR de release incohérente |
+| `test-template.yml` | Push toutes branches, PR main | `uv lock --check`, lint ruff + tests pytest, pre-commit ; projet généré vérifié (ruff, mypy, pre-commit) sans échec masqué ; sur les PR, `release.py plan` refuse une PR de release incohérente |
 | `docs.yml` | Push main (docs/ ou mkdocs.yml), lancement manuel depuis n'importe quelle branche | Déploiement GitHub Pages |
 | `release.yml` | Push main | `release.py plan` détecte une hausse de version ; si oui, lance les tests puis crée le tag `vX.Y.Z` et la release (section du CHANGELOG) en une commande |
 
