@@ -43,6 +43,8 @@ Ajout de l'option `docker_in_docker` au template PyFoundry, permettant d'utilise
 
 ## Décision technique clé : chemin du socket
 
+> **Erratum (#117)** : cette analyse était fausse. docker-in-docker ne lit jamais `/var/run/docker-host.sock` (le proxy socat appartient à docker-outside-of-docker). Le montage a été supprimé et la feature est passée en `:4` : voir `docs/claude/memory/261107-1756-docker-in-docker-4-sans-socket-hote.md`.
+
 **Problème rencontré** : en montant `/var/run/docker.sock` directement (target = `/var/run/docker.sock`), le GID du socket hôte (ex: 984) ne correspondait pas au GID du groupe `docker` dans le container (ex: 997), causant `permission denied`.
 
 **Solution** : monter vers `/var/run/docker-host.sock` (comme dans le projet de référence `castorfou/lmelp`). La feature `docker-in-docker:2` détecte ce fichier et configure automatiquement un **proxy socat** entre le daemon Docker interne (`/var/run/docker.sock`) et le socket hôte. Plus de problème de GID.

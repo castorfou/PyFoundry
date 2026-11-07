@@ -579,7 +579,7 @@ Puis utilisez `/test` dans Claude Code pour exécuter cette commande.
 
 Le Dev Container tourne dans Docker. Avec l'option `docker_in_docker`, il est possible d'utiliser Docker à l'intérieur du conteneur (ex. : builder des images, lancer des conteneurs de test).
 
-La feature `docker-in-docker:2` installe un daemon Docker interne et configure automatiquement un proxy socat vers le socket de l'hôte (`/var/run/docker-host.sock`). Aucune configuration manuelle de permissions n'est nécessaire.
+La feature `docker-in-docker:4` lance un daemon Docker propre au conteneur. Les images et conteneurs créés à l'intérieur sont séparés de ceux de l'hôte, et le socket Docker de l'hôte n'est pas monté. Le daemon choisit iptables au démarrage : `nft` si le noyau de l'hôte n'a pas le module `ip_tables`, `legacy` sinon.
 
 ---
 
@@ -630,11 +630,11 @@ Options choisies à la création du projet (`cruft create`). Elles modifient la 
 | Option             | Description                                                      | Défaut |
 | ------------------ | ---------------------------------------------------------------- | ------ |
 | `use_node`         | Installer Node.js/npm (extensions VS Code, outils web)           | `"n"`  |
-| `docker_in_docker` | Activer Docker dans le Dev Container (accès au daemon de l'hôte) | `"n"`  |
+| `docker_in_docker` | Activer Docker dans le Dev Container (daemon propre au conteneur) | `"n"`  |
 
 ### `docker_in_docker`
 
-Active la feature `docker-in-docker:2` et monte le socket Docker de l'hôte vers `/var/run/docker-host.sock`. Un proxy socat est configuré automatiquement par la feature — aucune configuration manuelle de permissions n'est nécessaire.
+Active la feature `docker-in-docker:4` : un daemon Docker tourne dans le conteneur, sans accès au Docker de l'hôte. Aucune configuration de permissions n'est nécessaire.
 
 ```bash
 # Créer un projet avec Docker-in-Docker activé
