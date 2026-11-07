@@ -7,6 +7,7 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 ### Corrigé
 
 - Une dépendance publiée sans wheel, comme `scikit-surprise`, compile de nouveau dans le devcontainer. Le venv est créé avec un Python géré par uv (`--managed-python`) au lieu du Python Debian de l'image, qui n'a pas `Python.h`. Le premier build télécharge ce Python, conservé ensuite dans le HOME persistant (#113).
+- Avec `docker_in_docker=y`, `dockerd` démarre de nouveau sur un noyau hôte sans module `ip_tables` (erreur `can't initialize iptables table 'nat'`). La feature passe de `docker-in-docker:2`, figée à 2.17.0, à `docker-in-docker:4`, qui choisit iptables `nft` ou `legacy` au démarrage. Le socket Docker de l'hôte n'est plus monté sur `/var/run/docker-host.sock` : la feature ne s'en servait pas, et il donnait un accès root au Docker de l'hôte. Le daemon tourne dans le conteneur. La correction s'applique au rebuild qui suit `cruft update` ; si le projet a un `.devcontainer/devcontainer-lock.json`, régénérez-le d'abord (`npx @devcontainers/cli upgrade --workspace-folder .`). Voir le [dépannage](https://castorfou.github.io/PyFoundry/user/troubleshooting/) (#117).
 
 ## [1.1.1] - 2026-10-25
 
