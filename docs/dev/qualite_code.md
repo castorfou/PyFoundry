@@ -158,6 +158,12 @@ Le hook mypy est un hook `local` :
 
 À la racine du dépôt, le même hook vérifie `tests/` (`files = ["tests"]`, pas de `src/`). `mypy` et `types-PyYAML` sont dans l'extra `test`, que le job `test-template` installe pour `tests/test_mypy.py`.
 
+### 4. La CI échoue sur ruff, mypy et pre-commit
+
+Dans la CI du projet généré (`ci.yml`) et dans celle du template (`test-template.yml`), un échec de ruff, de mypy ou d'un hook pre-commit fait échouer le build. Aucun `|| echo` ne suit ces commandes (#111). Les jobs pre-commit placent le venv hors du dépôt (`UV_PROJECT_ENVIRONMENT: /tmp/venv`, comme le devcontainer), sinon le hook `no-venv-at-root` refuse le `.venv` de `uv sync`.
+
+L'étape « Test generated project validity » du template vérifie un projet généré par `cruft create` : `uv sync --extra dev`, `ruff check .`, `mypy`, puis pre-commit après un `git init` et un commit initial. Son venv est `/tmp/venv-generated`.
+
 ## 🔄 Gestion des erreurs et edge cases
 
 ### 1. Commit avec modifications des hooks

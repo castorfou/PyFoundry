@@ -119,6 +119,16 @@ Le `.pre-commit-config.yaml` de PyFoundry exclut `{{ cookiecutter.project_slug }
 - `tests/test_configurations.py` exécute aussi la commande du hook local `no-venv-at-root` (dépôt et projet généré) dans un dossier temporaire, avec et sans `.venv`.
 - `tests/test_post_create_command.py` exécute `setup_pre-commit` (dépôt et projet généré) dans un dépôt temporaire, avec un faux `pre-commit` et du travail en cours : un rebuild ne doit commiter que `.pre-commit-config.yaml`. Sans identité git (voir ci-dessous), ce commit est fait sous l'adresse noreply, et une création simulée (`setup_git` puis `setup_pre-commit`) laisse un `git status` vide avec un seul avertissement.
 
+### Tester la sévérité de la CI
+
+`tests/test_ci_strict.py` vérifie que ruff, mypy et pre-commit font échouer la CI du template (`test-template.yml`) et la CI générée (`ci.yml`, lue dans un projet rendu, car le squelette contient du Jinja que YAML refuse). Les cas couverts :
+
+- aucune commande ruff, mypy ou pre-commit n'est suivie d'un `|| echo`, `|| true` ou `|| :` ;
+- aucune option retirée de ruff (`--show-source`) ;
+- chaque étape qui lance `pre-commit run` a un `UV_PROJECT_ENVIRONMENT` sous `/tmp/`, au niveau du job ou de l'étape. Sinon `uv sync` crée `.venv` à la racine et le hook `no-venv-at-root` échoue ;
+- l'étape « Test generated project validity » fait `git init`, `git add -A` puis un commit (identité passée en `-c`) avant pre-commit : `cruft create` ne crée pas de dépôt git ;
+- `test_validity_step_passes_on_generated_project` rejoue le script de cette étape, après son `cd`, sur un projet généré par cookiecutter. Le test est ignoré sans `uv` et sans réseau (installation des hooks).
+
 Si un test signale une fin de fichier incorrecte sur un fichier qui se termine par un bloc Jinja, vérifier le rendu des deux branches : un `{% if %}` faux en fin de fichier laisse souvent une ligne vide en trop. Le contrôle d'espaces Jinja (`{%- if %}`, `{%- endif %}`) règle le problème.
 
 ### Tester l'identité git
