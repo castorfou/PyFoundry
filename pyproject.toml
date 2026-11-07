@@ -29,6 +29,8 @@ test = [
     "pytest",
     "pytest-cookies",
     "pytest-cov",
+    "mypy",          # tests/test_mypy.py lance mypy sur le dépôt et un projet généré
+    "types-PyYAML",
 ]
 doc = [
     "mkdocs>=1.5.0",
@@ -141,7 +143,7 @@ classmethod-decorators = ["classmethod", "pydantic.validator"]
 python_version = "3.11"
 platform = "linux"
 
-# Chemins à analyser : exclure src/ car déjà dans sys.path via editable install
+# Chemins à analyser : le dépôt n'a pas de src/, seulement les tests du template
 files = ["tests"]
 
 # Ne pas chercher de namespace packages pour éviter la détection en double
@@ -180,6 +182,11 @@ module = [
 ignore_missing_imports = true
 
 # Configuration spéciale pour notebooks
+# cookiecutter ne publie pas de types
+[[tool.mypy.overrides]]
+module = ["cookiecutter.*"]
+ignore_missing_imports = true
+
 [[tool.mypy.overrides]]
 module = "notebooks.*"
 ignore_errors = true

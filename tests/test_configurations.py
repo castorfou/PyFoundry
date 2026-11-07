@@ -6,6 +6,7 @@ import shlex
 import subprocess
 import tomllib
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -53,7 +54,7 @@ def test_precommit_config_valid(cookies, minimal_template_context):
     expected_repos = [
         "https://github.com/pre-commit/pre-commit-hooks",
         "https://github.com/astral-sh/ruff-pre-commit",
-        "https://github.com/pre-commit/mirrors-mypy",
+        "local",
     ]
 
     for expected_repo in expected_repos:
@@ -80,7 +81,7 @@ def test_devcontainer_json_valid(cookies, minimal_template_context):
     assert "// Configuration du shell" in content
 
 
-def _project_root(source: str, cookies, context: dict[str, str]) -> Path:
+def _project_root(source: str, cookies: Any, context: dict[str, str]) -> Path:
     """Racine du dépôt PyFoundry ou d'un projet généré."""
     if source == "repo":
         return REPO_ROOT
