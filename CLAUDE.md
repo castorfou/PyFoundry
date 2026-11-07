@@ -68,6 +68,7 @@ PyFoundry/
 │   ├── test_versioning.py               # Version, CHANGELOG, release.py, release.yml
 │   ├── test_github_actions.py           # Versions des actions (Node 24), alignement du squelette, Dependabot
 │   ├── test_cruft_update_skill.py       # Skill /cruft-update et son script
+│   ├── test_mypy.py                     # Hook mypy local, même périmètre que la CI
 │   └── test_clean_test_project.py       # Script scripts/clean_test_project.sh
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
 ├── CHANGELOG.md                         # Évolutions par version (Keep a Changelog)
@@ -113,7 +114,7 @@ mon-projet-data-science/
 │   ├── agents/                    # Config pré-remplie des skills Matt Pocock
 │   └── claude/memory/             # Mémoire Claude Code
 ├── notebooks/
-├── src/
+├── src/<package>/                 # Package du projet (mypy vérifie src/ et tests/)
 ├── tests/
 ├── .gitignore
 ├── .pre-commit-config.yaml
@@ -269,6 +270,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_enable_pages.py` | `enable_pages.sh` (identique dans le dépôt et le squelette) lancé par `.zshrc` après `gh_login.sh`, avec un faux `gh` : active Pages en `build_type=workflow` sur un dépôt public dont on est admin ; silencieux si déjà en `workflow` ; jamais de `PUT` sur « Deploy from a branch » ; une ligne sans `POST` pour un dépôt privé ou sans droits admin ; dépôt introuvable ou `POST` en échec : nouvel essai au terminal suivant ; marqueur `.git/pyfoundry-pages` (`owner/repo`) sans appel réseau ensuite, revérifié si `origin` change ; silencieux sans `gh`, sans authentification ou sans `origin` GitHub ; sortie `0`, stderr vide ; activation automatique documentée |
 | `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag`, `notes` et `plan` (inchangée, hausse, baisse, tag existant, version sous la dernière release, CHANGELOG absent ou vide) ; `release.yml` (push sur `main`, tag et release en une commande, permissions minimales) et `release-plan` sur les PR ; `TEMPLATE_VERSION` généré et suivi par `cruft update` ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |
 | `test_github_actions.py` | Actions externes des workflows (dépôt et projet généré) : majeure ≥ `MIN_MAJOR` (première majeure sous Node 24), toute action absente de `MIN_MAJOR` refusée, `astral-sh/setup-uv` sur un tag exact `vX.Y.Z` (pas de tag flottant après v7) ; le squelette reprend la version du dépôt pour chaque action commune ; `.github/dependabot.yml` (`github-actions`) dans le dépôt, absent du projet généré |
+| `test_mypy.py` | Hook mypy `repo: local` (`uv run --active mypy`, `language: system`, `pass_filenames: false`, sans `additional_dependencies`), identique dans le dépôt et le squelette ; projet généré : `files = ["src", "tests"]`, stubs (`pandas-stubs`, `types-requests`, `types-python-dateutil`) dans `dev`, `src/<package>/__init__.py` et `tests/test_<package>.py` livrés ; vrai mypy à 0 sur le dépôt et sur un projet généré ; CI (`ci.yml`, `test-template.yml`) : `uv run mypy` sans chemin, extra `dev` installé dans le projet généré avant mypy |
 | `test_cruft_update_skill.py` | Skill `/cruft-update` identique dans le dépôt et le projet généré (donc non rendue par Jinja, `_copy_without_render`), frontmatter (model-invoked), `template_update.py` : `categorie` (catégories de l'ADR 0003), `rejets` (`.rej` et vrai conflit `git apply -3`), `changelog` (template local ou clone léger depuis `.cruft.json`) |
 | `test_clean_test_project.py` | `scripts/clean_test_project.sh` (faux `docker` via `CLEAN_TEST_PROJECT_DOCKER`) : conteneur retrouvé par `devcontainer.local_folder` et supprimé avant le dossier, chemin relatif rendu absolu, dossier déjà supprimé, seul le HOME `<nom>-<id>` est supprimé, commande pour l'hôte sans docker, `sudo rm -rf` suggéré si le HOME résiste, refus sans argument, `/` ou `$HOME` |
 | `test_claude_auth.py` | Config Claude Code partagée entre devcontainers (`~/.config/claude-devcontainers` monté sur `~/.claude`, créé en `700`), `CLAUDE_CONFIG_DIR`, verrous `~/.claude/ide` propres au projet, `migrate_claude_history.sh` (copie sans écraser, une seule fois, jamais la connexion, jamais d'échec) |

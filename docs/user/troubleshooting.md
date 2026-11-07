@@ -386,6 +386,8 @@ namespace_packages = false            # Éviter la détection duplicate
 
 **Clé**: Laisser PYTHONPATH gérer `src/` et scanner uniquement les dossiers "application".
 
+Un projet généré n'a pas ce problème : avec la mise en page `src/<package>/` et l'installation editable, `files = ["src", "tests"]` ne détecte aucun module en double (#112).
+
 ---
 
 ### 2. Cycle Infini Ruff-Mypy
@@ -426,25 +428,21 @@ Commit suivant: on remet sur la même ligne → Ruff reformate à nouveau → cy
 
 ---
 
-### 3. Pandas-stubs Manquant dans Pre-commit
+### 3. Stubs manquants dans le hook mypy
 
-**Symptôme**: Hook mypy échouait avec:
+**Symptôme** : le hook mypy échoue avec :
 ```
-app/dashboard.py:7: error: Library stubs not installed for "pandas" [import-untyped]
-```
-
-**Root Cause**:
-- pandas-stubs était installé dans l'environnement local (`uv add --active pandas-stubs`)
-- Mais le hook pre-commit crée un **environment isolé** sans dépendances supplémentaires
-- Mypy dans ce nouvel environment ne trouvait pas les stubs
-
-**Solution** ✅:
-```yaml
-# .pre-commit-config.yaml - Hook mypy
-additional_dependencies: ["pandas-stubs"]
+src/mon_package/dashboard.py:7: error: Library stubs not installed for "requests" [import-untyped]
 ```
 
-**Clé**: Les `additional_dependencies` dans pre-commit sont installées dans le virtualenv temporaire du hook.
+**Cause** : le paquet de stubs n'est pas dans le venv du projet. Depuis #112, le hook mypy est un hook `local` qui lance `uv run --active mypy` : il lit les dépendances de `uv.lock`, comme `mypy` lancé à la main et la CI. Il n'y a plus d'`additional_dependencies` à recopier dans `.pre-commit-config.yaml`.
+
+**Solution** ✅ : ajouter les stubs aux extras `dev` du `pyproject.toml`, puis synchroniser.
+```bash
+uv add --active --optional dev types-requests
+```
+
+`pandas-stubs`, `types-requests` et `types-python-dateutil` sont déjà dans les extras `dev` d'un projet généré.
 
 ---
 

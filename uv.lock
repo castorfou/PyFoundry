@@ -1540,6 +1540,7 @@ all = [
     { name = "pytest-cookies" },
     { name = "pytest-cov" },
     { name = "ruff" },
+    { name = "types-pyyaml" },
 ]
 dev = [
     { name = "click" },
@@ -1558,6 +1559,7 @@ dev = [
     { name = "pytest-cookies" },
     { name = "pytest-cov" },
     { name = "ruff" },
+    { name = "types-pyyaml" },
 ]
 doc = [
     { name = "click" },
@@ -1572,9 +1574,11 @@ doc = [
     { name = "pymdown-extensions" },
 ]
 test = [
+    { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-cookies" },
     { name = "pytest-cov" },
+    { name = "types-pyyaml" },
 ]
 
 [package.metadata]
@@ -1591,6 +1595,7 @@ requires-dist = [
     { name = "mkdocs-rtd-dropdown", marker = "extra == 'doc'" },
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'doc'" },
     { name = "mypy", marker = "extra == 'dev'" },
+    { name = "mypy", marker = "extra == 'test'" },
     { name = "nbdev", marker = "extra == 'doc'", specifier = ">=2.4.6" },
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "pyfoundry", extras = ["dev"], marker = "extra == 'all'" },
@@ -1601,6 +1606,7 @@ requires-dist = [
     { name = "pytest-cookies", marker = "extra == 'test'" },
     { name = "pytest-cov", marker = "extra == 'test'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "types-pyyaml", marker = "extra == 'test'" },
 ]
 provides-extras = ["test", "doc", "dev", "all"]
 
@@ -2045,6 +2051,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f5/24/cb09efec5cc954f7f9b930bf8279447d24618bb6758d4f6adf2574c41780/typer-0.24.1.tar.gz", hash = "sha256:e39b4732d65fbdcde189ae76cf7cd48aeae72919dea1fdfc16593be016256b45", size = 118613, upload-time = "2026-02-21T16:54:40.609Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4a/91/48db081e7a63bb37284f9fbcefda7c44c277b18b0e13fbc36ea2335b71e6/typer-0.24.1-py3-none-any.whl", hash = "sha256:112c1f0ce578bfb4cab9ffdabc68f031416ebcc216536611ba21f04e9aa84c9e", size = 56085, upload-time = "2026-02-21T16:54:41.616Z" },
+]
+
+[[package]]
+name = "types-pyyaml"
+version = "6.0.12.20261103"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d9/82/2ed4d215a2840b467a9a864f03b0d21904250e28f5e1f006ad36fba0311a/types_pyyaml-6.0.12.20261103.tar.gz", hash = "sha256:7a1b5f837881dd35d5448b5f18275164f89f206185e31e8eae6e0b42607bc001", size = 18911, upload-time = "2026-11-03T08:45:23.714Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/10/4353eb86278f6a59aeb9fe2be4d979c20b110b4009fa455a3ea6467cf5cb/types_pyyaml-6.0.12.20261103-py3-none-any.whl", hash = "sha256:444654c61f635dab82c092a511aa96a0ce31164810784b9a37314e3e56532ac8", size = 21299, upload-time = "2026-11-03T08:45:22.749Z" },
 ]
 
 [[package]]

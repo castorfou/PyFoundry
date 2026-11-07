@@ -479,7 +479,7 @@ Après avoir généré un projet test, vérifier :
 - [ ] **Scripts setup** : `postCreateCommand.sh` s'exécute correctement
 - [ ] **Git** : Repository initialisé, `.gitignore` approprié
 - [ ] **Dependencies** : `uv pip sync` fonctionne
-- [ ] **Quality tools** : `ruff check .` et `mypy src/` passent
+- [ ] **Quality tools** : `ruff check .` et `mypy` passent
 - [ ] **Tests** : `pytest` trouve et exécute les tests
 - [ ] **Documentation** : README.md correct avec bonnes URLs
 

@@ -49,12 +49,7 @@ jobs:
         fi
 
     - name: 🔧 Type check with mypy
-      run: |
-        if [ -d src/ ]; then
-          uv run mypy src/ || echo "⚠️ MyPy found issues (expected for new projects)"
-        else
-          echo "No src/ directory found"
-        fi
+      run: uv run mypy || echo "⚠️ MyPy found issues (expected for new projects)"
 
     - name: 📊 Upload coverage to Codecov
       if: {% raw %}matrix.python-version == '3.11'{% endraw %}
