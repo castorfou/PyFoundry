@@ -326,6 +326,9 @@ config_zsh() {
     # Propose l'authentification gh tant qu'elle manque (terminal VS Code : $BROWSER ouvre l'hôte)
     ensure_zshrc_line 'bash "$WORKSPACE_FOLDER/.devcontainer/scripts/gh_login.sh"'
 
+    # Active GitHub Pages (source GitHub Actions) sur un dépôt public, une fois gh authentifié
+    ensure_zshrc_line 'bash "$WORKSPACE_FOLDER/.devcontainer/scripts/enable_pages.sh"'
+
     echo "✅ zsh configuré"
 }
 
