@@ -438,7 +438,24 @@ Le pipeline est visible sous **Actions** sur la page du projet GitHub.
 
 #### Activer GitHub Pages (une fois par projet)
 
-`docs.yml` publie la doc avec GitHub Actions. GitHub Pages doit donc utiliser la source **GitHub Actions**. Ce réglage appartient au dépôt GitHub et ne figure dans aucun fichier du projet.
+`docs.yml` publie la doc avec GitHub Actions. GitHub Pages doit donc être activé, avec la source **GitHub Actions**. Ce réglage appartient au dépôt GitHub et ne figure dans aucun fichier du projet. Tant que Pages n'est pas activé, `docs.yml` échoue à l'étape `Setup Pages` (`Get Pages site failed`).
+
+##### Activation automatique
+
+Le devcontainer active Pages tout seul, avec votre compte `gh`. À chaque ouverture d'un terminal, juste après l'authentification GitHub, `.devcontainer/scripts/enable_pages.sh` vérifie le dépôt `origin` :
+
+| État du dépôt GitHub | Ce que fait le script |
+|----------------------|-----------------------|
+| Public, vous êtes admin, Pages désactivé | Active Pages avec la source GitHub Actions et affiche `✅ GitHub Pages activé` |
+| Pages déjà en source GitHub Actions | Rien |
+| Pages en « Deploy from a branch » | Affiche une ligne, sans modifier la source : passez-la à la main (ci-dessous) |
+| Privé ou interne | Affiche une ligne, sans activer Pages : la doc publiée serait publique |
+| Pas de droits admin | Affiche une ligne : demandez à un admin du dépôt |
+| Dépôt pas encore créé, réseau indisponible | Rien : nouvel essai au terminal suivant |
+
+Il suffit donc de créer le dépôt sur GitHub, de pousser, puis d'ouvrir un nouveau terminal. Une fois le dépôt réglé, le script note `owner/repo` dans `.git/pyfoundry-pages` et ne fait plus d'appel réseau. Pour forcer une nouvelle vérification, supprimez ce fichier.
+
+##### Réglage manuel
 
 GitHub propose par défaut « Deploy from a branch ». Avec `main` / `(root)`, la doc semble publiée, car `docs.yml` la déploie quand même. Mais à chaque push, GitHub lance en plus un build Jekyll de tout le dépôt : ce run `pages build and deployment` échoue à l'étape « Build with Jekyll ».
 

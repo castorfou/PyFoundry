@@ -167,6 +167,16 @@ cd mon-projet-data-science && git init -q && git add -A && pre-commit run --all-
 
 Le parcours réel se vérifie sur l'hôte : générer un projet, le rebuild, ouvrir un terminal (le navigateur de l'hôte s'ouvre), puis rebuild à nouveau : `gh auth status` doit rester connecté.
 
+### Tester l'activation de GitHub Pages
+
+`tests/test_enable_pages.py` exécute `enable_pages.sh` dans un dépôt git temporaire, dont `origin` est réglable, avec un faux `gh`. Ce faux `gh` journalise ses appels et répond selon `FAKE_REPO` (lignes `visibility`, `admin`, `has_pages`, ou `fail`), `FAKE_BUILD_TYPE` et `FAKE_POST`. Le marqueur est placé dans `tmp_path` (`PAGES_MARKER`). `WORKSPACE_FOLDER` est toujours fixé au dépôt temporaire, car celui du devcontainer est défini dans l'environnement.
+
+- Chaque exécution vérifie le code de sortie `0`, un stderr vide et au plus une ligne sur stdout.
+- Cas couverts : activation (`POST … build_type=workflow`) ; source `workflow` sans message ; source `legacy` sans `-X` ; dépôt `private` ou `internal`, ou pas de droits admin, sans `POST` ; dépôt introuvable ou `POST` en échec, sans marqueur, puis nouvel essai ; aucun appel `gh api` une fois le marqueur posé, sauf si `origin` change ; marqueur par défaut dans `.git/` ; terminal ouvert hors du projet ; URL HTTPS, `git@` et `ssh://` ; silence sans `gh`, sans authentification, sans `origin`, avec un `origin` hors GitHub, hors dépôt git.
+- Le script est identique dans le dépôt et les projets générés (défaut et `docker_in_docker=y`), et `config_zsh` ajoute son hook après celui de `gh_login.sh`.
+
+Le parcours réel se vérifie sur l'hôte : générer un projet, ouvrir un terminal avant de créer le dépôt GitHub (rien ne s'affiche), lancer `gh repo create --public` puis pousser, et ouvrir un nouveau terminal : `gh api "repos/{owner}/{repo}/pages" --jq .build_type` doit afficher `workflow`.
+
 ### Tester la config Claude Code partagée
 
 `tests/test_claude_auth.py` couvre le dépôt et les projets générés (défaut et `docker_in_docker=y`) :

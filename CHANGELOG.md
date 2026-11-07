@@ -4,6 +4,10 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 
 ## [Non publié]
 
+### Ajouté
+
+- Le devcontainer active GitHub Pages tout seul, avec la source **GitHub Actions**. À chaque ouverture d'un terminal, après l'authentification `gh`, `.devcontainer/scripts/enable_pages.sh` active Pages sur le dépôt `origin` s'il est public et que vous en êtes admin. Sans Pages, `📚 Deploy Documentation` échouait à `Setup Pages` (`Get Pages site failed`) à chaque push sur `main`. Le script ne modifie jamais une source « Deploy from a branch » et n'active rien sur un dépôt privé : il affiche alors une ligne qui renvoie aux commandes manuelles. Il réessaie tant que le dépôt GitHub n'existe pas, puis ne fait plus d'appel réseau une fois le dépôt réglé. Sur un projet existant, il s'applique au rebuild qui suit `cruft update`, y compris si Pages n'a jamais été activé (#116).
+
 ### Corrigé
 
 - Une dépendance publiée sans wheel, comme `scikit-surprise`, compile de nouveau dans le devcontainer. Le venv est créé avec un Python géré par uv (`--managed-python`) au lieu du Python Debian de l'image, qui n'a pas `Python.h`. Le premier build télécharge ce Python, conservé ensuite dans le HOME persistant (#113).

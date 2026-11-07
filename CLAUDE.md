@@ -31,6 +31,7 @@ PyFoundry/
 ├── .devcontainer/                       # Environnement de dev pour travailler sur le template
 │   └── scripts/
 │       ├── check_mounts.sh              # Vérification des montages (sur l'hôte, via initializeCommand)
+│       ├── enable_pages.sh              # Active GitHub Pages (dépôt public) au terminal zsh
 │       ├── ensure_venv.sh               # Recrée /tmp/venv s'il manque (postStartCommand)
 │       ├── gh_login.sh                  # Authentification gh au premier terminal zsh
 │       └── migrate_claude_history.sh    # Historique Claude Code vers la config partagée (sur l'hôte)
@@ -61,6 +62,7 @@ PyFoundry/
 │   ├── test_setup_git.py                # setup_git : commit initial sans identité locale
 │   ├── test_timezone.py                 # Fuseau de l'hôte : montage, setup_timezone
 │   ├── test_github_auth.py              # Authentification gh : montage partagé, gh_login.sh
+│   ├── test_enable_pages.py             # Activation automatique de GitHub Pages au terminal
 │   ├── test_claude_auth.py              # Config Claude Code partagée, migration de l'historique
 │   ├── test_versioning.py               # Version, CHANGELOG, release.py, release.yml
 │   ├── test_cruft_update_skill.py       # Skill /cruft-update et son script
@@ -262,6 +264,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_setup_git.py` | `setup_git` et `git_commit_with_fallback` (dépôt et projet généré) : sans identité, commit initial sous `<GITHUB_USERNAME>@users.noreply.github.com` (ou `PyFoundry`) sans rien écrire dans `.git/config` ; au rebuild, l'ancienne identité `Default User` est retirée, une autre identité locale conservée ; aucun fichier ne cite le domaine interne |
 | `test_timezone.py` | Fuseau de l'hôte monté sur `/etc/localtime.host` (jamais sur `/etc/localtime`, qui écraserait `Etc/UTC`), pas de `TZ` transmis (vide = UTC), `setup_timezone` relie `/etc/localtime` à la zone de même contenu |
 | `test_github_auth.py` | Config gh partagée entre devcontainers (`~/.config/gh-devcontainers`, créé en `700`), aucun `gh auth login` dans `postCreateCommand`, `setup_gh_credential_helper`, `gh_login.sh` (silencieux si authentifié, sans réseau, une seule tentative par conteneur, jamais d'échec du shell) |
+| `test_enable_pages.py` | `enable_pages.sh` (identique dans le dépôt et le squelette) lancé par `.zshrc` après `gh_login.sh`, avec un faux `gh` : active Pages en `build_type=workflow` sur un dépôt public dont on est admin ; silencieux si déjà en `workflow` ; jamais de `PUT` sur « Deploy from a branch » ; une ligne sans `POST` pour un dépôt privé ou sans droits admin ; dépôt introuvable ou `POST` en échec : nouvel essai au terminal suivant ; marqueur `.git/pyfoundry-pages` (`owner/repo`) sans appel réseau ensuite, revérifié si `origin` change ; silencieux sans `gh`, sans authentification ou sans `origin` GitHub ; sortie `0`, stderr vide ; activation automatique documentée |
 | `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag`, `notes` et `plan` (inchangée, hausse, baisse, tag existant, version sous la dernière release, CHANGELOG absent ou vide) ; `release.yml` (push sur `main`, tag et release en une commande, permissions minimales) et `release-plan` sur les PR ; `TEMPLATE_VERSION` généré et suivi par `cruft update` ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |
 | `test_cruft_update_skill.py` | Skill `/cruft-update` identique dans le dépôt et le projet généré (donc non rendue par Jinja, `_copy_without_render`), frontmatter (model-invoked), `template_update.py` : `categorie` (catégories de l'ADR 0003), `rejets` (`.rej` et vrai conflit `git apply -3`), `changelog` (template local ou clone léger depuis `.cruft.json`) |
 | `test_clean_test_project.py` | `scripts/clean_test_project.sh` (faux `docker` via `CLEAN_TEST_PROJECT_DOCKER`) : conteneur retrouvé par `devcontainer.local_folder` et supprimé avant le dossier, chemin relatif rendu absolu, dossier déjà supprimé, seul le HOME `<nom>-<id>` est supprimé, commande pour l'hôte sans docker, `sudo rm -rf` suggéré si le HOME résiste, refus sans argument, `/` ou `$HOME` |
