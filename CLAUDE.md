@@ -36,6 +36,7 @@ PyFoundry/
 │       ├── gh_login.sh                  # Authentification gh au premier terminal zsh
 │       └── migrate_claude_history.sh    # Historique Claude Code vers la config partagée (sur l'hôte)
 ├── .github/
+│   ├── dependabot.yml                   # Mise à jour hebdomadaire des actions (dépôt seul)
 │   ├── scripts/release.py               # Détection d'une hausse de version, contrôles, notes du CHANGELOG
 │   └── workflows/
 │       ├── test-template.yml            # CI : lint + tests, plan de release sur les PR
@@ -65,6 +66,7 @@ PyFoundry/
 │   ├── test_enable_pages.py             # Activation automatique de GitHub Pages au terminal
 │   ├── test_claude_auth.py              # Config Claude Code partagée, migration de l'historique
 │   ├── test_versioning.py               # Version, CHANGELOG, release.py, release.yml
+│   ├── test_github_actions.py           # Versions des actions (Node 24), alignement du squelette, Dependabot
 │   ├── test_cruft_update_skill.py       # Skill /cruft-update et son script
 │   └── test_clean_test_project.py       # Script scripts/clean_test_project.sh
 ├── {{ cookiecutter.project_slug }}/     # Contenu du projet généré
@@ -266,6 +268,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test_github_auth.py` | Config gh partagée entre devcontainers (`~/.config/gh-devcontainers`, créé en `700`), aucun `gh auth login` dans `postCreateCommand`, `setup_gh_credential_helper`, `gh_login.sh` (silencieux si authentifié, sans réseau, une seule tentative par conteneur, jamais d'échec du shell) |
 | `test_enable_pages.py` | `enable_pages.sh` (identique dans le dépôt et le squelette) lancé par `.zshrc` après `gh_login.sh`, avec un faux `gh` : active Pages en `build_type=workflow` sur un dépôt public dont on est admin ; silencieux si déjà en `workflow` ; jamais de `PUT` sur « Deploy from a branch » ; une ligne sans `POST` pour un dépôt privé ou sans droits admin ; dépôt introuvable ou `POST` en échec : nouvel essai au terminal suivant ; marqueur `.git/pyfoundry-pages` (`owner/repo`) sans appel réseau ensuite, revérifié si `origin` change ; silencieux sans `gh`, sans authentification ou sans `origin` GitHub ; sortie `0`, stderr vide ; activation automatique documentée |
 | `test_versioning.py` | Version de `pyproject.toml` en SemVer strict, égale à `_pyfoundry_version` de `cookiecutter.json` ; `CHANGELOG.md` (section « Non publié » en tête, section datée pour la version courante) ; `release.py check-tag`, `notes` et `plan` (inchangée, hausse, baisse, tag existant, version sous la dernière release, CHANGELOG absent ou vide) ; `release.yml` (push sur `main`, tag et release en une commande, permissions minimales) et `release-plan` sur les PR ; `TEMPLATE_VERSION` généré et suivi par `cruft update` ; étape CHANGELOG de `/fix-issue`, identique dans le dépôt et le squelette |
+| `test_github_actions.py` | Actions externes des workflows (dépôt et projet généré) : majeure ≥ `MIN_MAJOR` (première majeure sous Node 24), toute action absente de `MIN_MAJOR` refusée, `astral-sh/setup-uv` sur un tag exact `vX.Y.Z` (pas de tag flottant après v7) ; le squelette reprend la version du dépôt pour chaque action commune ; `.github/dependabot.yml` (`github-actions`) dans le dépôt, absent du projet généré |
 | `test_cruft_update_skill.py` | Skill `/cruft-update` identique dans le dépôt et le projet généré (donc non rendue par Jinja, `_copy_without_render`), frontmatter (model-invoked), `template_update.py` : `categorie` (catégories de l'ADR 0003), `rejets` (`.rej` et vrai conflit `git apply -3`), `changelog` (template local ou clone léger depuis `.cruft.json`) |
 | `test_clean_test_project.py` | `scripts/clean_test_project.sh` (faux `docker` via `CLEAN_TEST_PROJECT_DOCKER`) : conteneur retrouvé par `devcontainer.local_folder` et supprimé avant le dossier, chemin relatif rendu absolu, dossier déjà supprimé, seul le HOME `<nom>-<id>` est supprimé, commande pour l'hôte sans docker, `sudo rm -rf` suggéré si le HOME résiste, refus sans argument, `/` ou `$HOME` |
 | `test_claude_auth.py` | Config Claude Code partagée entre devcontainers (`~/.config/claude-devcontainers` monté sur `~/.claude`, créé en `700`), `CLAUDE_CONFIG_DIR`, verrous `~/.claude/ide` propres au projet, `migrate_claude_history.sh` (copie sans écraser, une seule fois, jamais la connexion, jamais d'échec) |
@@ -277,6 +280,8 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | `test-template.yml` | Push toutes branches, PR main | `uv lock --check`, lint ruff + tests pytest ; sur les PR, `release.py plan` refuse une PR de release incohérente |
 | `docs.yml` | Push main (docs/ ou mkdocs.yml), lancement manuel depuis n'importe quelle branche | Déploiement GitHub Pages |
 | `release.yml` | Push main | `release.py plan` détecte une hausse de version ; si oui, lance les tests puis crée le tag `vX.Y.Z` et la release (section du CHANGELOG) en une commande |
+
+Dependabot (`.github/dependabot.yml`) ouvre chaque semaine une PR groupée qui met à jour les actions des workflows du dépôt. Il ne voit pas le squelette : sur cette PR, recopier les nouvelles versions dans `{{ cookiecutter.project_slug }}/.github/workflows/`, sinon `test_github_actions.py` échoue. Les projets générés n'ont pas de Dependabot : ils reçoivent les versions par `cruft update`, sans rejets.
 
 ## Skills Matt Pocock
 

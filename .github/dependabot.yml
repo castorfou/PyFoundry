@@ -1,0 +1,16 @@
+# Met à jour les actions des workflows du dépôt (#120). Le squelette n'en a pas :
+# ses workflows viennent du template, une PR Dependabot y créerait des rejets au
+# prochain `cruft update`. Sur une PR Dependabot, recopier les nouvelles versions
+# dans `{{ cookiecutter.project_slug }}/.github/workflows/` (tests/test_github_actions.py).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore
+      include: scope

@@ -8,6 +8,10 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 
 - Le devcontainer active GitHub Pages tout seul, avec la source **GitHub Actions**. À chaque ouverture d'un terminal, après l'authentification `gh`, `.devcontainer/scripts/enable_pages.sh` active Pages sur le dépôt `origin` s'il est public et que vous en êtes admin. Sans Pages, `📚 Deploy Documentation` échouait à `Setup Pages` (`Get Pages site failed`) à chaque push sur `main`. Le script ne modifie jamais une source « Deploy from a branch » et n'active rien sur un dépôt privé : il affiche alors une ligne qui renvoie aux commandes manuelles. Il réessaie tant que le dépôt GitHub n'existe pas, puis ne fait plus d'appel réseau une fois le dépôt réglé. Sur un projet existant, il s'applique au rebuild qui suit `cruft update`, y compris si Pages n'a jamais été activé (#116).
 
+### Modifié
+
+- Les workflows des projets générés (`ci.yml`, `docs.yml`) utilisent des actions qui tournent sous Node 24 : `actions/checkout@v7`, `astral-sh/setup-uv@v10.3.3`, `actions/configure-pages@v6`, `actions/upload-pages-artifact@v5`, `actions/deploy-pages@v5`, `actions/upload-artifact@v7` et `codecov/codecov-action@v7`. Les runs n'affichent plus l'avertissement `Node.js 20 is deprecated`, et ne casseront pas au retrait de Node 20 des runners GitHub. `setup-uv` utilise ses réglages de cache par défaut, qui suivent `uv.lock` en plus de `pyproject.toml`. Le dépôt du template a maintenant Dependabot pour ses actions ; les projets générés reçoivent les nouvelles versions par `cruft update` (#120).
+
 ### Corrigé
 
 - Une dépendance publiée sans wheel, comme `scikit-surprise`, compile de nouveau dans le devcontainer. Le venv est créé avec un Python géré par uv (`--managed-python`) au lieu du Python Debian de l'image, qui n'a pas `Python.h`. Le premier build télécharge ce Python, conservé ensuite dans le HOME persistant (#113).
