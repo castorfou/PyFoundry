@@ -125,11 +125,3 @@ jobs:
         git add -A
         git -c user.name=pyfoundry-ci -c user.email=pyfoundry-ci@users.noreply.github.com commit -qm "Initial commit"
         uv run pre-commit run --all-files --show-diff-on-failure
-
-    - name: 📊 Upload coverage to Codecov
-      if: matrix.python-version == '3.11'
-      uses: codecov/codecov-action@v7
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./coverage.xml
-        fail_ci_if_error: false

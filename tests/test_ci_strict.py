@@ -127,3 +127,30 @@ def test_validity_step_passes_on_generated_project(tmp_path):
     if result.returncode and "Could not resolve host" in result.stdout + result.stderr:
         pytest.skip("réseau indisponible pour installer les hooks")
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_no_codecov_upload(workflow):
+    """Pas d'upload Codecov : il échouait en silence, sans secret (#126)."""
+    text = yaml.safe_dump(workflow)
+    assert "codecov" not in text.lower(), "étape Codecov encore présente"
+    assert "CODECOV_TOKEN" not in text
+
+
+def test_no_silenced_step_errors(workflow):
+    """Aucune étape ne masque son échec par `fail_ci_if_error: false` (#126)."""
+    for job in workflow["jobs"].values():
+        for step in job.get("steps", []):
+            assert step.get("with", {}).get("fail_ci_if_error") is not False, step
+
+
+def test_generated_ci_coverage_in_log_only(generated):
+    """La couverture reste dans le log pytest, sans `coverage.xml` inutilisé."""
+    ci = yaml.safe_load((generated / ".github" / "workflows" / "ci.yml").read_text())
+    run = next(
+        step["run"]
+        for step in ci["jobs"]["tests"]["steps"]
+        if "pytest" in step.get("run", "")
+    )
+    assert "--cov=src" in run
+    assert "--cov-report=term-missing" in run
+    assert "--cov-report=xml" not in run
