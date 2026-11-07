@@ -56,9 +56,6 @@ Documentation = "https://{{ cookiecutter.github_username }}.github.io/{{ cookiec
 Repository = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.git"
 Issues = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/issues"
 
-[project.scripts]
-{{ cookiecutter.project_slug|replace('-', '_') }}_setup = "scripts.setup:main"
-
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
