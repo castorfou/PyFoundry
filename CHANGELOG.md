@@ -4,6 +4,8 @@ Toutes les évolutions notables de PyFoundry sont listées ici. Le format suit [
 
 ## [Non publié]
 
+## [1.1.2] - 2026-11-08
+
 ### Ajouté
 
 - Le devcontainer active GitHub Pages tout seul, avec la source **GitHub Actions**. À chaque ouverture d'un terminal, après l'authentification `gh`, `.devcontainer/scripts/enable_pages.sh` active Pages sur le dépôt `origin` s'il est public et que vous en êtes admin. Sans Pages, `📚 Deploy Documentation` échouait à `Setup Pages` (`Get Pages site failed`) à chaque push sur `main`. Le script ne modifie jamais une source « Deploy from a branch » et n'active rien sur un dépôt privé : il affiche alors une ligne qui renvoie aux commandes manuelles. Il réessaie tant que le dépôt GitHub n'existe pas, puis ne fait plus d'appel réseau une fois le dépôt réglé. Sur un projet existant, il s'applique au rebuild qui suit `cruft update`, y compris si Pages n'a jamais été activé (#116).
@@ -126,7 +128,8 @@ Première release depuis la 0.5.0. Elle impose une migration manuelle aux projet
 
 - Environnement reproductible : fichiers de lock uv, `.env.template`, devcontainer optimisé, configuration Jupyter.
 
-[Non publié]: https://github.com/castorfou/PyFoundry/compare/v1.1.1...HEAD
+[Non publié]: https://github.com/castorfou/PyFoundry/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/castorfou/PyFoundry/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/castorfou/PyFoundry/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/castorfou/PyFoundry/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/castorfou/PyFoundry/compare/v0.5.0...v1.0.0
