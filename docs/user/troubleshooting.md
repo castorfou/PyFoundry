@@ -134,6 +134,19 @@ failed to fetch image ghcr.io/va-h/devcontainers-features/uv:1
 
 Le Dev Container utilise des features hébergées sur `ghcr.io` (GitHub Container Registry). Si le réseau bloque `ghcr.io` ou que la connexion est instable, le build échoue. Vérifiez votre accès Internet et relancez le build.
 
+### Docker-in-Docker : `can't initialize iptables table 'nat'`
+
+```
+failed to start daemon: Error initializing network controller: ... failed to create NAT chain DOCKER:
+iptables v1.8.9 (legacy): can't initialize iptables table `nat': Table does not exist (do you need to insmod?)
+```
+
+Avec `docker_in_docker=y`, `dockerd` ne démarre pas : le noyau de l'hôte n'a pas le module `ip_tables`, et la feature `docker-in-docker:2` (figée à 2.17.0) a choisi iptables `legacy` au build. Le template utilise maintenant `docker-in-docker:4`, qui choisit `nft` au démarrage dans ce cas.
+
+1. `cruft update`, puis vérifiez que `.devcontainer/devcontainer.json` cite `docker-in-docker:4`.
+2. Si le projet a un `.devcontainer/devcontainer-lock.json`, régénérez-le : `npx @devcontainers/cli upgrade --workspace-folder .`
+3. **Dev Containers: Rebuild Container**.
+
 ### Le conteneur se construit mais tout est lent
 
 Premier build : c'est normal. Docker télécharge l'image de base, installe les features, exécute `postCreateCommand.sh` (dépendances Python, hooks pre-commit). Comptez 5 à 15 minutes selon la connexion.

@@ -90,7 +90,9 @@ bash /workspaces/PyFoundry/scripts/clean_test_project.sh ~/temp/mon-projet-data-
 cd ~/temp
 cookiecutter /workspaces/PyFoundry --no-input --extra-context '{"docker_in_docker": "y"}'
 grep "docker-in-docker" mon-projet-data-science/.devcontainer/devcontainer.json
-# → doit montrer la feature
+# → doit montrer la feature, en :4
+grep -c "docker.sock" mon-projet-data-science/.devcontainer/devcontainer.json
+# → doit retourner 0 : le socket de l'hôte n'est jamais monté
 ```
 
 ### Tester le devcontainer
