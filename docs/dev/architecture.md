@@ -53,6 +53,14 @@ PyFoundry/                                    # Dépôt du template
 - Normalisation des noms (minuscules, tirets)
 - Validation des versions Python supportées
 
+**Saisies dans les fichiers structurés** : `project_name` et `description` sont du texte libre. Dans un fichier YAML, TOML ou JSON, le squelette les écrit entre guillemets doubles et échappe `\` puis `"` :
+
+```yaml
+site_description: "{{ cookiecutter.description | replace('\\', '\\\\') | replace('"', '\\"') }}"
+```
+
+Le résultat est une chaîne valide dans les trois formats, et les accents restent lisibles. Sans cet échappement, une description contenant « : » rendait `mkdocs.yml` invalide (#110). Le filtre `tojson` est écarté : il écrit `\u00e9` à la place de `é`. Dans une commande shell, lisez la variable d'environnement `PROJECT_NAME` (`containerEnv`) au lieu d'y insérer le nom ; dans un heredoc, utilisez `<< 'EOF'`.
+
 ### Configuration devcontainer
 
 ```json
