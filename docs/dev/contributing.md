@@ -367,8 +367,7 @@ def nouveau_contexte():
 Les tests s'exécutent automatiquement via `.github/workflows/test-template.yml` :
 - Déclenchement sur `push` et `pull_request`
 - Test sur Python 3.11 et 3.12
-- Validation du projet généré avec `uv`, `ruff`, `mypy`
-- Upload de couverture vers Codecov
+- Validation du projet généré avec `uv`, `ruff`, `mypy`, `pre-commit`
 
 #### Versions des actions GitHub et Dependabot
 
