@@ -252,7 +252,7 @@ Chaque changement visible pour un utilisateur du template va dans la section `##
 | Fichier | Rôle |
 |---------|------|
 | `conftest.py` | Fixtures : `default_template_context`, `minimal_template_context` |
-| `test_template_generation.py` | Structure générée, fichiers présents, variables injectées |
+| `test_template_generation.py` | Structure générée, fichiers présents, variables injectées ; `docker_in_docker=y` : feature `docker-in-docker` en majeure 4 ou plus (`iptablesSwitchAtRuntime` jamais à `false`), aucun montage du socket Docker de l'hôte |
 | `test_configurations.py` | Validité TOML/YAML/JSON, config ruff/mypy/devcontainer (dont `shutdownAction: stopContainer`), fichiers générés conformes à `trailing-whitespace`, `end-of-file-fixer` et `check-json`, pas d'extension isort, hook `no-venv-at-root` |
 | `test_mkdocs_integration.py` | Config mkdocs.yml (dont `repo_url` rendu à la génération, aucun script `update_mkdocs_repo_url.sh`), build documentation, `docs.yml` (dépôt et projet généré) : publication sur `main` ou sur lancement manuel depuis n'importe quelle branche, jamais sur une pull request ; réglage de la source GitHub Pages sur « GitHub Actions » documenté (usage, cheatsheets du dépôt et du projet généré, troubleshooting) |
 | `test_persistent_home.py` | HOME persistant, montages, `initializeCommand` (dont chaque point de montage imbriqué, déduit des `mounts`), venv `/tmp/venv` et `UV_PROJECT_ENVIRONMENT` (dépôt et projet généré) |
