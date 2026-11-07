@@ -2,7 +2,10 @@
 
 import json
 
+from tests.devcontainer_utils import parse_jsonc
 
+
+DIND_FEATURE = "ghcr.io/devcontainers/features/docker-in-docker"
 MATTPOCOCK_PLUGIN = "mattpocock-skills@claude-plugins-official"
 
 
@@ -162,19 +165,49 @@ def test_docker_in_docker_disabled_by_default(cookies, default_template_context)
 def test_docker_in_docker_enabled_when_requested(
     cookies, docker_in_docker_template_context
 ):
-    """Test que Docker-in-Docker est correctement configuré quand docker_in_docker=yes."""
+    """Docker-in-Docker activé : feature en majeure 4 ou plus, iptables choisi au démarrage.
+
+    La 2.x (figée à 2.17.0) choisit iptables legacy au build : dockerd ne démarre
+    pas sur un noyau sans module ip_tables (#117). Depuis la 4.0,
+    `iptablesSwitchAtRuntime` (vrai par défaut) bascule sur nft au démarrage.
+    """
     result = cookies.bake(extra_context=docker_in_docker_template_context)
+    config = parse_jsonc(result.project_path / ".devcontainer" / "devcontainer.json")
 
-    devcontainer_content = (
-        result.project_path / ".devcontainer" / "devcontainer.json"
-    ).read_text()
+    dind = {
+        feature: options
+        for feature, options in config["features"].items()
+        if feature.startswith(DIND_FEATURE + ":")
+    }
+    assert len(dind) == 1, f"Une seule feature docker-in-docker attendue : {dind}"
+    [(feature, options)] = dind.items()
 
-    # Vérifier la feature DinD
-    assert "ghcr.io/devcontainers/features/docker-in-docker:2" in devcontainer_content
-    assert '"moby": false' in devcontainer_content
+    major = int(feature.rsplit(":", 1)[1].split(".")[0])
+    assert major >= 4, f"{feature} : majeure 4 ou plus attendue (#117)"
+    assert options.get("moby") is False
+    assert options.get("iptablesSwitchAtRuntime", True) is True
 
-    # Vérifier le montage du socket Docker (vers docker-host.sock pour socat proxy)
-    assert "docker-host.sock" in devcontainer_content
+
+def test_docker_in_docker_does_not_mount_host_docker_socket(
+    cookies, docker_in_docker_template_context
+):
+    """Le socket Docker de l'hôte n'est jamais monté (#117).
+
+    docker-in-docker lance son propre daemon et ne lit pas docker-host.sock
+    (le proxy socat appartient à docker-outside-of-docker) : ce montage ne
+    servait à rien et donnait un accès root au Docker de l'hôte.
+    """
+    result = cookies.bake(extra_context=docker_in_docker_template_context)
+    devcontainer_dir = result.project_path / ".devcontainer"
+    config = parse_jsonc(devcontainer_dir / "devcontainer.json")
+
+    docker_mounts = [m for m in config["mounts"] if "docker.sock" in m]
+    docker_mounts += [m for m in config["mounts"] if "docker-host.sock" in m]
+    assert docker_mounts == []
+
+    postcreate = (devcontainer_dir / "postCreateCommand.sh").read_text()
+    assert "docker-host.sock" not in postcreate
+    assert "socat" not in postcreate
 
 
 def test_claude_md_file_created(cookies, minimal_template_context):
